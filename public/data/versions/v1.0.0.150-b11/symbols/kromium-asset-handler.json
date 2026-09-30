@@ -1,0 +1,24 @@
+{
+  "id": "kromium-asset-handler",
+  "name": "KromiumAssetHandler",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.scheme",
+  "summary": "Functional interface for handling intercepted virtual asset requests.",
+  "declaration": "fun interface KromiumAssetHandler",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "handle",
+      "signature": "fun handle(request: KromiumAssetRequest): KromiumAssetResponse?",
+      "returnType": "KromiumAssetResponse?",
+      "description": "Handles an incoming KromiumAssetRequest and returns a KromiumAssetResponse, or null to produce a 404 response.",
+      "parameters": [
+        {
+          "name": "request",
+          "type": "KromiumAssetRequest",
+          "description": "The intercepted virtual HTTP request."
+        }
+      ]
+    }
+  ]
+}

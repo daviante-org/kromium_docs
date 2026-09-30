@@ -1,0 +1,122 @@
+{
+  "id": "kromium-browser",
+  "name": "KromiumBrowser",
+  "module": "kromium-api",
+  "category": "Browser & Client Components",
+  "package": "org.daviante.kromium.api.core",
+  "declaration": "interface KromiumBrowser : AutoCloseable",
+  "description": "Main interface for the Kromium browser instance. Structured into multiple dedicated facades for separation of concerns: navigation, view, search, devTools, jsBridge, clipboard, downloads, automation, storage, proxyManager, security, and assets.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Obtain via client.createBrowser() to render, control, and interact with a Chromium web view instance.",
+  "options": [],
+  "properties": [
+    {
+      "name": "navigation",
+      "signature": "val navigation: KromiumNavigation",
+      "description": "Facade for URL loading, lifecycle waiting (DOMContentLoaded, NetworkIdle), and history traversal.",
+      "type": "KromiumNavigation",
+      "default": "none"
+    },
+    {
+      "name": "view",
+      "signature": "val view: KromiumView",
+      "description": "Facade for zoom control, audio muting, viewport resizing, and rendering visibility.",
+      "type": "KromiumView",
+      "default": "none"
+    },
+    {
+      "name": "search",
+      "signature": "val search: KromiumSearch",
+      "description": "Facade for finding text on page, highlighting matches, and navigating find results.",
+      "type": "KromiumSearch",
+      "default": "none"
+    },
+    {
+      "name": "devTools",
+      "signature": "val devTools: KromiumDevTools",
+      "description": "Facade for opening and closing the native Chromium Developer Tools window.",
+      "type": "KromiumDevTools",
+      "default": "none"
+    },
+    {
+      "name": "jsBridge",
+      "signature": "val jsBridge: KromiumJsBridge",
+      "description": "Facade for bidirectional JavaScript interoperability, script execution, and native object binding.",
+      "type": "KromiumJsBridge",
+      "default": "none"
+    },
+    {
+      "name": "clipboard",
+      "signature": "val clipboard: KromiumClipboard",
+      "description": "Facade for clipboard operations (cut, copy, paste, select all, undo, redo).",
+      "type": "KromiumClipboard",
+      "default": "none"
+    },
+    {
+      "name": "downloads",
+      "signature": "val downloads: KromiumDownloads",
+      "description": "Facade for managing and controlling file downloads.",
+      "type": "KromiumDownloads",
+      "default": "none"
+    },
+    {
+      "name": "automation",
+      "signature": "val automation: KromiumAutomation",
+      "description": "Facade for headless automation, mouse/keyboard simulation, DOM querying, and PDF export.",
+      "type": "KromiumAutomation",
+      "default": "none"
+    },
+    {
+      "name": "storage",
+      "signature": "val storage: KromiumStorage",
+      "description": "Facade for cache management, local storage inspection, and cookie clearing.",
+      "type": "KromiumStorage",
+      "default": "none"
+    },
+    {
+      "name": "proxyManager",
+      "signature": "val proxyManager: KromiumProxyManager",
+      "description": "Facade for runtime dynamic proxy reconfiguration.",
+      "type": "KromiumProxyManager",
+      "default": "none"
+    },
+    {
+      "name": "security",
+      "signature": "val security: KromiumSecurity",
+      "description": "Facade for host locking, subresource restrictions, and iframe security.",
+      "type": "KromiumSecurity",
+      "default": "none"
+    },
+    {
+      "name": "assets",
+      "signature": "val assets: KromiumAssets",
+      "description": "Facade for dynamic network asset filtering and content blocking.",
+      "type": "KromiumAssets",
+      "default": "none"
+    }
+  ],
+  "methods": [
+    {
+      "name": "close",
+      "signature": "override fun close()",
+      "description": "Closes this browser instance and cleans up underlying resources.",
+      "returns": "Unit",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.core.KromiumBrowser\nimport org.daviante.kromium.api.core.KromiumClient\nimport org.daviante.kromium.api.ui.KromiumUiFramework\n\nfun setupBrowser(client: KromiumClient): KromiumBrowser {\n    val browser = client.createBrowser(\"https://github.com\", KromiumUiFramework.COMPOSE)\n    browser.navigation.loadUrl(\"https://google.com\")\n    return browser\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.core.KromiumBrowser;\nimport org.daviante.kromium.api.core.KromiumClient;\nimport org.daviante.kromium.api.ui.KromiumUiFramework;\n\npublic class BrowserCreator {\n    public static void create(KromiumClient client) {\n        try (KromiumBrowser browser = client.createBrowser(\"https://example.com\", KromiumUiFramework.SWING)) {\n            browser.getNavigation().loadUrl(\"https://example.com\");\n        }\n    }\n}"
+    }
+  ]
+}

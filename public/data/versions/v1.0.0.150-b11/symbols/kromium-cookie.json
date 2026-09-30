@@ -1,0 +1,85 @@
+{
+  "id": "kromium-cookie",
+  "name": "KromiumCookie",
+  "module": "kromium-api",
+  "category": "Storage & Cookies",
+  "package": "org.daviante.kromium.api.cookie",
+  "declaration": "data class KromiumCookie(val name: String, val value: String, val domain: String?, val path: String, val isSecure: Boolean, val isHttpOnly: Boolean, val hasExpires: Boolean, val expires: Date?)",
+  "description": "Represents a single HTTP cookie in the Kromium engine, capturing name, value, domain, path, security flags (isSecure, isHttpOnly), and expiration date.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Used with KromiumCookieManager to inspect, set, or delete individual HTTP cookies across browser sessions.",
+  "options": [],
+  "properties": [
+    {
+      "name": "name",
+      "signature": "val name: String",
+      "description": "The cookie name identifier.",
+      "type": "String",
+      "default": "none"
+    },
+    {
+      "name": "value",
+      "signature": "val value: String",
+      "description": "The cookie value string.",
+      "type": "String",
+      "default": "none"
+    },
+    {
+      "name": "domain",
+      "signature": "val domain: String?",
+      "description": "The domain scope of the cookie (e.g. \".example.com\"), or null for origin-only.",
+      "type": "String?",
+      "default": "none"
+    },
+    {
+      "name": "path",
+      "signature": "val path: String",
+      "description": "The URL path scope of the cookie (e.g. \"/\").",
+      "type": "String",
+      "default": "none"
+    },
+    {
+      "name": "isSecure",
+      "signature": "val isSecure: Boolean",
+      "description": "Whether the cookie is restricted to secure HTTPS connections.",
+      "type": "Boolean",
+      "default": "none"
+    },
+    {
+      "name": "isHttpOnly",
+      "signature": "val isHttpOnly: Boolean",
+      "description": "Whether the cookie is hidden from document.cookie JavaScript access.",
+      "type": "Boolean",
+      "default": "none"
+    },
+    {
+      "name": "hasExpires",
+      "signature": "val hasExpires: Boolean",
+      "description": "Whether the cookie specifies a fixed expiration date.",
+      "type": "Boolean",
+      "default": "none"
+    },
+    {
+      "name": "expires",
+      "signature": "val expires: Date?",
+      "description": "The expiration timestamp, or null for session cookies.",
+      "type": "Date?",
+      "default": "none"
+    }
+  ],
+  "methods": [],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.cookie.KromiumCookie\nimport java.util.Date\n\nval cookie = KromiumCookie(\n    name = \"session_id\",\n    value = \"xyz123\",\n    domain = \".example.com\",\n    path = \"/\",\n    isSecure = true,\n    isHttpOnly = true,\n    hasExpires = true,\n    expires = Date(System.currentTimeMillis() + 86400000L)\n)"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.cookie.KromiumCookie;\nimport java.util.Date;\n\npublic class CookieFactory {\n    public static KromiumCookie createSessionCookie(String name, String value) {\n        return new KromiumCookie(\n            name,\n            value,\n            \"example.com\",\n            \"/\",\n            true,\n            true,\n            false,\n            null\n        );\n    }\n}"
+    }
+  ]
+}

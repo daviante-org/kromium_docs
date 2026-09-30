@@ -1,0 +1,19 @@
+{
+  "id": "asset-filter-mode",
+  "name": "AssetFilterMode",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Operating mode for KromiumAssetFilter.",
+  "declaration": "enum class AssetFilterMode",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    {
+      "name": "BLOCKLIST",
+      "description": "Default allow: requests proceed unless matched by a blocking rule. Any configured allow rules act as bypass exceptions that unblock specific requests."
+    },
+    {
+      "name": "ALLOWLIST",
+      "description": "Default block: all requests are blocked unless explicitly permitted by an allow rule."
+    }
+  ]
+}

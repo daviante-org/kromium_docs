@@ -1,0 +1,69 @@
+{
+  "id": "kromium-auth-request",
+  "name": "KromiumAuthRequest",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Details of an authentication challenge requested by a web server or proxy.",
+  "declaration": "data class KromiumAuthRequest(\n    val isProxy: Boolean,\n    val host: String,\n    val port: Int,\n    val realm: String,\n    val scheme: String\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumAuthRequest(isProxy: Boolean, host: String, port: Int, realm: String, scheme: String)",
+      "description": "Constructs an authentication challenge request descriptor.",
+      "parameters": [
+        {
+          "name": "isProxy",
+          "type": "Boolean",
+          "description": "Whether the challenge was issued by an HTTP/HTTPS proxy."
+        },
+        {
+          "name": "host",
+          "type": "String",
+          "description": "Hostname requiring authentication."
+        },
+        {
+          "name": "port",
+          "type": "Int",
+          "description": "Port number requiring authentication."
+        },
+        {
+          "name": "realm",
+          "type": "String",
+          "description": "Authentication realm specified by the challenge."
+        },
+        {
+          "name": "scheme",
+          "type": "String",
+          "description": "Authentication scheme (e.g., Basic, Digest, NTLM)."
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "isProxy",
+      "type": "Boolean",
+      "description": "Whether the challenge was issued by an HTTP/HTTPS proxy."
+    },
+    {
+      "name": "host",
+      "type": "String",
+      "description": "Hostname requiring authentication."
+    },
+    {
+      "name": "port",
+      "type": "Int",
+      "description": "Port number requiring authentication."
+    },
+    {
+      "name": "realm",
+      "type": "String",
+      "description": "Authentication realm specified by the challenge."
+    },
+    {
+      "name": "scheme",
+      "type": "String",
+      "description": "Authentication scheme (e.g., Basic, Digest, NTLM)."
+    }
+  ]
+}

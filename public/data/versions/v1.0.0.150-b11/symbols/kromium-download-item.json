@@ -1,0 +1,143 @@
+{
+  "id": "kromium-download-item",
+  "name": "KromiumDownloadItem",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.download",
+  "summary": "Metadata representing a file download event from the browser engine.",
+  "declaration": "data class KromiumDownloadItem(\n    val id: Int,\n    val url: String,\n    val suggestedFileName: String,\n    val totalBytes: Long,\n    val receivedBytes: Long,\n    val percentComplete: Int,\n    val speed: Long,\n    val isInProgress: Boolean,\n    val isComplete: Boolean,\n    val isCanceled: Boolean,\n    val isPaused: Boolean = false,\n    val fullPath: String = \"\"\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumDownloadItem(id: Int, url: String, suggestedFileName: String, totalBytes: Long, receivedBytes: Long, percentComplete: Int, speed: Long, isInProgress: Boolean, isComplete: Boolean, isCanceled: Boolean, isPaused: Boolean = false, fullPath: String = \"\")",
+      "description": "Constructs a download item metadata instance.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "Int",
+          "description": "Unique identifier of the download."
+        },
+        {
+          "name": "url",
+          "type": "String",
+          "description": "Source URL of the download."
+        },
+        {
+          "name": "suggestedFileName",
+          "type": "String",
+          "description": "Suggested filename for the download item."
+        },
+        {
+          "name": "totalBytes",
+          "type": "Long",
+          "description": "Total size of the file in bytes, or -1 if unknown."
+        },
+        {
+          "name": "receivedBytes",
+          "type": "Long",
+          "description": "Number of bytes received so far."
+        },
+        {
+          "name": "percentComplete",
+          "type": "Int",
+          "description": "Download completion percentage (0-100), or -1 if indeterminate."
+        },
+        {
+          "name": "speed",
+          "type": "Long",
+          "description": "Estimated transfer speed in bytes per second."
+        },
+        {
+          "name": "isInProgress",
+          "type": "Boolean",
+          "description": "Whether the download is currently in progress."
+        },
+        {
+          "name": "isComplete",
+          "type": "Boolean",
+          "description": "Whether the download has finished successfully."
+        },
+        {
+          "name": "isCanceled",
+          "type": "Boolean",
+          "description": "Whether the download was canceled."
+        },
+        {
+          "name": "isPaused",
+          "type": "Boolean",
+          "description": "Whether the download is paused.",
+          "optional": true,
+          "defaultValue": "false"
+        },
+        {
+          "name": "fullPath",
+          "type": "String",
+          "description": "Destination file path on disk.",
+          "optional": true,
+          "defaultValue": "\"\""
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "id",
+      "type": "Int",
+      "description": "Unique identifier of the download."
+    },
+    {
+      "name": "url",
+      "type": "String",
+      "description": "Source URL of the download."
+    },
+    {
+      "name": "suggestedFileName",
+      "type": "String",
+      "description": "Suggested filename for the download item."
+    },
+    {
+      "name": "totalBytes",
+      "type": "Long",
+      "description": "Total size of the file in bytes, or -1 if unknown."
+    },
+    {
+      "name": "receivedBytes",
+      "type": "Long",
+      "description": "Number of bytes received so far."
+    },
+    {
+      "name": "percentComplete",
+      "type": "Int",
+      "description": "Download completion percentage (0-100), or -1 if indeterminate."
+    },
+    {
+      "name": "speed",
+      "type": "Long",
+      "description": "Estimated transfer speed in bytes per second."
+    },
+    {
+      "name": "isInProgress",
+      "type": "Boolean",
+      "description": "Whether the download is currently in progress."
+    },
+    {
+      "name": "isComplete",
+      "type": "Boolean",
+      "description": "Whether the download has finished successfully."
+    },
+    {
+      "name": "isCanceled",
+      "type": "Boolean",
+      "description": "Whether the download was canceled."
+    },
+    {
+      "name": "isPaused",
+      "type": "Boolean",
+      "description": "Whether the download is paused."
+    },
+    {
+      "name": "fullPath",
+      "type": "String",
+      "description": "Destination file path on disk."
+    }
+  ]
+}

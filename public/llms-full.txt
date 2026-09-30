@@ -1,0 +1,5836 @@
+# Kromium Library — Complete Documentation Manual
+**Version:** v1.0.0.150-b11  
+**Package:** `org.daviante.kromium`  
+**Repository:** https://github.com/daviante-org/kromium  
+
+---
+
+# PART 1: CORE GUIDES & WORKFLOWS
+
+
+---
+
+# 5-Minute Quickstart Guide
+
+> Add Kromium to your Gradle project, bootstrap the Chromium engine, and create your first browser instance.
+
+- **Category:** Getting Started
+- **Read Time:** 5 min
+- **Last Updated:** 2026-09-27
+
+## Prerequisites
+
+Before integrating Kromium, ensure your environment meets the minimum runtime requirements:
+- **JDK:** Java 17 or higher (Java 21 LTS recommended, e.g., Eclipse Temurin).
+- **Supported Operating Systems:**
+  - **Windows:** 10 / 11 (x86_64, ARM64)
+  - **macOS:** 12+ Monterey, Ventura, Sonoma, Sequoia (Intel x86_64, Apple Silicon ARM64)
+  - **Linux:** Ubuntu 20.04+, Debian 11+, Fedora, Arch (x86_64, ARM64) with GTK 3+ installed.
+
+## Adding Gradle Dependencies
+
+Add Kromium to your build.gradle.kts using either Gradle Version Catalog or direct coordinates.
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    val kromiumVersion = "1.0.0.150-b11"
+    
+    implementation("org.daviante.kromium:kromium-api:$kromiumVersion")
+    implementation("org.daviante.kromium:kromium-provider-jcef:$kromiumVersion")
+
+    // Target UI integration:
+    implementation("org.daviante.kromium:kromium-compose:$kromiumVersion")
+    // implementation("org.daviante.kromium:kromium-swing:$kromiumVersion")
+    // implementation("org.daviante.kromium:kromium-javafx:$kromiumVersion")
+    // implementation("org.daviante.kromium:kromium-swt:$kromiumVersion")
+    // implementation("org.daviante.kromium:kromium-awt:$kromiumVersion")
+}
+```
+
+## Basic Engine Lifecycle & First Browser
+
+Kromium separates the engine lifecycle into three clean stages:
+1. **KromiumEngine**: Manages the underlying native Chromium runtime, process models, and shared cache.
+2. **KromiumClient**: Represents an isolated session (cookies, storage, and global listeners).
+3. **KromiumBrowser**: Represents a single web page view and its control facades.
+
+```kotlin
+val config = KromiumConfig.builder()
+    .browserConfig { b ->
+        b.cachePath(File(System.getProperty("user.home"), ".myapp-cache").absolutePath)
+    }
+    .build()
+
+// 1. Instantiate and initialize engine
+val engine = Kromium.createEngine(config)
+engine.initialize() // Suspends until native runtime is extracted and ready
+
+// 2. Create isolated client session
+val client = engine.createClient()
+
+// 3. Create browser instance for your UI toolkit
+val browser = client.createBrowser(
+    url = "https://example.com",
+    framework = KromiumUiFramework.SWING
+)
+```
+
+## Controlling the Browser
+
+Once created, browser exposes dedicated facades for all web operations: navigation, DevTools, downloads, cookies, and automation.
+
+```kotlin
+// --- Navigation ---
+browser.navigation.loadUrl("https://github.com")
+
+// Suspending load (waits until DOM is ready):
+val loaded = browser.navigation.loadUrl(
+    url = "https://github.com",
+    waitUntil = NavigationStage.LOADED,
+    timeoutMs = 15_000L
+)
+
+// --- DevTools ---
+browser.devTools.openDevTools()
+```
+
+## Observing Reactive Navigation State
+
+browser.navigation.navigationState is a coroutine StateFlow<KromiumNavigationState> that continuously emits real-time loading updates.
+
+```kotlin
+scope.launch {
+    browser.navigation.navigationState.collect { state ->
+        println("URL: ${state.url}")
+        println("Page Title: ${state.title}")
+        println("Is Loading: ${state.isLoading}")
+        println("Can Go Back: ${state.canGoBack}")
+        println("Can Go Forward: ${state.canGoForward}")
+    }
+}
+```
+
+## Related APIs
+
+- [Kromium](/llms/api/kromium.md)
+- [KromiumEngine](/llms/api/kromium-engine.md)
+- [KromiumBrowser](/llms/api/kromium-browser.md)
+- [KromiumClient](/llms/api/kromium-client.md)
+
+
+---
+
+# Multi-Framework UI Integration Guide
+
+> Learn how to embed Kromium's off-screen rendering (OSR) surface in Jetpack Compose, Swing, JavaFX, SWT, and AWT.
+
+- **Category:** UI Integrations
+- **Read Time:** 10 min
+- **Last Updated:** 2026-10-01
+
+## Supported UI Frameworks
+
+Kromium features a decoupled Off-Screen Rendering (OSR) engine that streams raw Chromium BGRA pixel buffers directly into the native graphical surface of your chosen UI toolkit.
+
+| Framework | Target Module | Framework Identifier | Canvas Surface |
+| :--- | :--- | :--- | :--- |
+| **Compose Multiplatform** | `kromium-compose` | `KromiumUiFramework.COMPOSE` | `KromiumView` Composable |
+| **Swing** | `kromium-swing` | `KromiumUiFramework.SWING` | `KromiumSwingCanvas` (`JPanel`) |
+| **JavaFX** | `kromium-javafx` | `KromiumUiFramework.JAVAFX` | `KromiumJavaFxCanvas` (`StackPane`) |
+| **Eclipse SWT** | `kromium-swt` | `KromiumUiFramework.SWT` | `KromiumSwtCanvas` (`Canvas`) |
+| **Pure AWT** | `kromium-awt` | `KromiumUiFramework.AWT` | `KromiumAwtCanvas` (`Canvas`) |
+
+## Compose Multiplatform Integration
+
+The kromium-compose module provides the declarative @Composable KromiumView component with built-in reactive navigation state collection.
+
+```kotlin
+val client = engine.createClient()
+val browser = client.createBrowser(
+    url = "https://example.com",
+    framework = KromiumUiFramework.COMPOSE
+)
+
+// In your Composable hierarchy:
+KromiumView(
+    browser = browser,
+    modifier = Modifier.fillMaxSize()
+)
+```
+
+## Java Swing Integration
+
+In Swing applications, Kromium unwraps into a standard javax.swing.JPanel component.
+
+```kotlin
+val browser = client.createBrowser(
+    url = "https://example.com",
+    framework = KromiumUiFramework.SWING
+)
+
+val panel = browser.view.surface.unwrap(Component::class) as JPanel
+frame.contentPane.add(panel, BorderLayout.CENTER)
+```
+
+## JavaFX Integration
+
+For JavaFX applications, Kromium provides hardware-accelerated texture blitting into a JavaFX Region.
+
+```kotlin
+val browser = client.createBrowser(
+    url = "https://example.com",
+    framework = KromiumUiFramework.JAVAFX
+)
+
+val fxNode = browser.view.surface.unwrap(javafx.scene.Node::class)
+rootStackPane.children.add(fxNode)
+```
+
+## Eclipse SWT Integration
+
+For Eclipse SWT/RCP applications, `kromium-swt` provides `KromiumSwtCanvas` which renders Chromium frames into an SWT `Canvas` widget using an internal `SwtOsrBuffer`. A keyboard bridge handles SWT-to-CEF key event translation automatically.
+
+```kotlin
+val browser = client.createBrowser(
+    url = "https://example.com",
+    framework = KromiumUiFramework.SWT
+)
+
+val swtCanvas = browser.view.surface.unwrap(org.eclipse.swt.widgets.Canvas::class)
+// Add the canvas to your SWT Composite layout
+val layoutData = GridData(SWT.FILL, SWT.FILL, true, true)
+swtCanvas.layoutData = layoutData
+parent.layout(true, true)
+```
+
+## Pure AWT Integration
+
+For lightweight Pure AWT applications without Swing dependencies, `kromium-awt` provides `KromiumAwtCanvas` which renders directly into a `java.awt.Canvas` component using Java2D `BufferedImage` blitting.
+
+```kotlin
+val browser = client.createBrowser(
+    url = "https://example.com",
+    framework = KromiumUiFramework.AWT
+)
+
+val awtCanvas = browser.view.surface.unwrap(java.awt.Canvas::class)
+val frame = Frame("Kromium AWT Browser")
+frame.add(awtCanvas, BorderLayout.CENTER)
+frame.setSize(1280, 800)
+frame.isVisible = true
+```
+
+## Related APIs
+
+- [KromiumUiFramework](/llms/api/kromium-ui-framework.md)
+- [KromiumView](/llms/api/kromium-view.md)
+- [KromiumRenderSurface](/llms/api/kromium-render-surface.md)
+
+
+---
+
+# Cloudflare R2 Maven Repository Guide
+
+> How Kromium packages are published to Cloudflare R2 and how downstream projects configure their Maven / Gradle builds.
+
+- **Category:** Deployment
+- **Read Time:** 6 min
+- **Last Updated:** 2026-09-27
+
+## Overview & Architecture
+
+Kromium publishes standard Maven repository layouts directly to Cloudflare R2 under https://repo.daviante.org/artifacts.
+
+### Benefits of Cloudflare R2
+- **Zero Egress Fees:** $0 for outbound data transfer.
+- **S3-Compatible API:** Operates seamlessly with standard build tools.
+- **Edge Caching:** Fast global distribution via Cloudflare's CDN.
+
+## Configuring Downstream Projects
+
+To consume Kromium artifacts in downstream Gradle or Maven projects, add the repository URL to your repository configuration.
+
+```kotlin
+// settings.gradle.kts or build.gradle.kts
+repositories {
+    mavenCentral()
+    maven("https://repo.daviante.org/artifacts")
+}
+```
+
+## Related APIs
+
+- [KromiumEngineDownloadConfig](/llms/api/kromium-engine-download-config.md)
+
+
+---
+
+# Web Automation & DOM Interaction API
+
+> Playwright-inspired automation engine for SPAs, MutationObserver-backed waiting, form filling, and keystroke dispatch.
+
+- **Category:** Core API
+- **Read Time:** 7 min
+- **Last Updated:** 2026-09-27
+
+## Waiting for Elements & URLs
+
+Kromium's waitForSelector injects an in-V8 MutationObserver to avoid IPC polling overhead, resuming your coroutine the millisecond the element appears.
+
+```kotlin
+// Suspends until element matching CSS selector appears
+val found = browser.automation.waitForSelector(
+    selector = "#login-form",
+    timeoutMs = 10_000L
+)
+
+// Wait for redirect to dashboard
+val redirected = browser.automation.waitForUrl(
+    pattern = "https://app.example.com/dashboard",
+    timeoutMs = 15_000L
+)
+```
+
+## Form Inputs & Keystroke Simulation
+
+Automate forms using fill, type, selectOption, and click.
+
+```kotlin
+// Instant fill (dispatches input and change events)
+browser.automation.fill("input#username", "admin@company.com")
+
+// Human-like keystroke typing with delay
+browser.automation.type("input#password", "secret", delayMs = 50L)
+
+// Select option
+browser.automation.selectOption("select#country", "US")
+
+// Click button
+browser.automation.click("button[type='submit']")
+```
+
+## DOM Extraction & State Querying
+
+Inspect DOM properties and content directly without writing raw JavaScript strings.
+
+```kotlin
+val text = browser.automation.getTextContent("h1.title")
+val href = browser.automation.getAttribute("a#download-link", "href")
+val isVisible = browser.automation.isVisible(".modal-dialog")
+val totalItems = browser.automation.count(".item-row")
+```
+
+## JavaScript Bridge & Async Evaluation
+
+Execute arbitrary JavaScript and await results via browser.jsBridge.
+
+```kotlin
+val result = browser.jsBridge.evaluateJavaScript("window.innerWidth * window.devicePixelRatio")
+val html = browser.jsBridge.getHtml()
+```
+
+## Related APIs
+
+- [KromiumAutomation](/llms/api/kromium-automation.md)
+- [KromiumJsBridge](/llms/api/kromium-js-bridge.md)
+
+
+---
+
+# Enterprise Networking & Proxies API
+
+> Configure HTTP, HTTPS, SOCKS5, and PAC proxies, remote DNS leak protection, and dynamic proxy switching.
+
+- **Category:** Networking
+- **Read Time:** 6 min
+- **Last Updated:** 2026-09-27
+
+## Supported Proxy Modes
+
+Kromium models proxy configurations via the type-safe sealed class KromiumProxy.
+
+| Mode | Class | Description |
+| :--- | :--- | :--- |
+| **System Default** | `KromiumProxy.System` | Adopts host OS proxy settings. |
+| **Direct** | `KromiumProxy.Direct` | Bypasses all proxies. |
+| **Auto-Detect** | `KromiumProxy.AutoDetect` | Uses WPAD via DHCP and DNS queries. |
+| **PAC Script** | `KromiumProxy.Pac(pacUrl)` | Downloads and evaluates PAC script. |
+| **HTTP / HTTPS** | `KromiumProxy.Http(...)` | Standard HTTP or TLS-encrypted forward proxy. |
+| **SOCKS5 / SOCKS4** | `KromiumProxy.Socks5(...)` | SOCKS proxy with optional remote DNS leak protection. |
+| **Multi-Protocol** | `KromiumProxy.MultiProtocol(...)` | Routes different protocols through separate endpoints. |
+
+## Configuring Proxies
+
+Configure the proxy when building KromiumConfig before engine startup.
+
+```kotlin
+val config = KromiumConfig.builder()
+    .browserConfig { b ->
+        b.proxy(
+            KromiumProxy.Http(
+                host = "proxy.corp.internal",
+                port = 8080,
+                username = "corporate_user",
+                password = "secure_password",
+                isSecure = true,
+                bypassList = listOf("<local>", "127.0.0.1", "*.internal.net")
+            )
+        )
+    }
+    .build()
+```
+
+## SOCKS5 with Remote DNS Leak Protection
+
+Setting remoteDns = true ensures DNS queries are resolved exclusively through the proxy rather than leaking to local ISP.
+
+```kotlin
+val socks5 = KromiumProxy.Socks5(
+    host = "10.0.0.1",
+    port = 1080,
+    remoteDns = true
+)
+```
+
+## Dynamic Runtime Proxy Switching
+
+Switch proxies dynamically on active client sessions without restarting the engine.
+
+```kotlin
+val proxyManager = client.proxyManager
+proxyManager.setProxy(KromiumProxy.Direct)
+```
+
+## Related APIs
+
+- [KromiumProxy](/llms/api/kromium-proxy.md)
+- [KromiumProxyManager](/llms/api/kromium-proxy-manager.md)
+
+
+---
+
+# Downloads, Permissions & SSL Security API
+
+> Intercept downloads, handle camera/microphone permissions, and enforce SSL certificate policies and domain whitelists.
+
+- **Category:** Security
+- **Read Time:** 6 min
+- **Last Updated:** 2026-09-27
+
+## File Download Management
+
+Control file downloads with beforeDownloadListener to customize target paths or cancel downloads, and downloadListener to track real-time progress.
+
+```kotlin
+client.beforeDownloadListener = KromiumBeforeDownloadListener { item, suggestedFileName ->
+    if (suggestedFileName.endsWith(".exe")) {
+        return@KromiumBeforeDownloadListener "" // Cancel download
+    }
+    File(downloadsDir, suggestedFileName).absolutePath
+}
+
+client.downloadListener = KromiumDownloadListener { item ->
+    println("Progress: ${item.percentComplete}%")
+}
+```
+
+## Camera, Microphone & Device Permissions
+
+Intercept WebRTC camera, microphone, and screen share requests via KromiumPermissionListener.
+
+```kotlin
+client.permissionListener = KromiumPermissionListener { request ->
+    if (request.origin.endsWith("meet.google.com")) {
+        KromiumPermissionDecision.GRANT
+    } else {
+        KromiumPermissionDecision.DENY
+    }
+}
+```
+
+## SSL/TLS Certificate Policies
+
+Configure certificate validation error handling using SslErrorPolicy.
+
+```kotlin
+val config = KromiumClientConfig.builder()
+    .sslErrorPolicy(SslErrorPolicy.allowDomains("*.corp.internal", "localhost"))
+    .build()
+```
+
+## Domain Sandboxing & Host Locking
+
+Lock the browser to navigate strictly within an allowed set of hostnames or domains.
+
+```kotlin
+browser.security.hostLock = setOf("app.internal.net", "accounts.google.com")
+browser.security.hostLockSubresources = true
+```
+
+## Related APIs
+
+- [KromiumSecurity](/llms/api/kromium-security.md)
+- [SslErrorPolicy](/llms/api/ssl-error-policy.md)
+- [KromiumPermissionListener](/llms/api/kromium-permission-listener.md)
+- [KromiumDownloads](/llms/api/kromium-downloads.md)
+
+
+---
+
+# Cookie & Storage Management
+
+> Read, set, and delete cookies, clear browser cache, and manage Local Storage via KromiumCookieManager and KromiumStorage facades.
+
+- **Category:** Core API
+- **Read Time:** 6 min
+- **Last Updated:** 2026-10-01
+
+## Global Cookie Manager
+
+The engine-level `KromiumCookieManager` provides full cookie CRUD operations across all domains. Access it via `engine.cookieManager`.
+
+| Method | Description |
+| :--- | :--- |
+| `getCookies(url)` | Retrieves all cookies for a URL as key-value map (suspend) |
+| `getCookie(url, name)` | Retrieves a specific cookie by name (suspend) |
+| `getAllCookies()` | Retrieves all cookies across all domains (suspend) |
+| `setCookie(url, name, value, ...)` | Sets a cookie with domain, path, secure, httpOnly, expiry |
+| `deleteCookie(url, name)` | Deletes a specific cookie |
+| `clearCookies()` | Deletes all cookies from the store |
+| `flush()` | Flushes the cookie store to disk for persistence |
+
+```kotlin
+// Read all cookies for a URL
+val cookies = engine.cookieManager.getCookies("https://example.com")
+println("Session: ${cookies["session_id"]}")
+
+// Set a secure, HTTP-only cookie with expiry
+engine.cookieManager.setCookie(
+    url = "https://example.com",
+    name = "auth_token",
+    value = "jwt_value_here",
+    domain = ".example.com",
+    path = "/",
+    isSecure = true,
+    isHttpOnly = true,
+    expires = Date(System.currentTimeMillis() + 86_400_000L)
+)
+
+// Delete and flush
+engine.cookieManager.deleteCookie("https://example.com", "auth_token")
+engine.cookieManager.flush()
+```
+
+## Browser-Level Storage Facade
+
+Each browser instance also exposes a `KromiumStorage` facade (`browser.storage`) for per-page cookie and web storage operations including clearing Local Storage, Session Storage, and browsing data.
+
+```kotlin
+// Set a cookie from browser context
+browser.storage.setCookie(
+    name = "theme",
+    value = "dark",
+    domain = ".myapp.com"
+)
+
+// Clear all web storage (Local Storage + Session Storage)
+browser.storage.clearWebStorageAsync().thenAccept { success ->
+    println("Web storage cleared: $success")
+}
+
+// Clear all browsing data at once
+browser.storage.clearBrowsingDataAsync(
+    clearCookies = true,
+    clearStorage = true
+)
+```
+
+## Java CompletableFuture Interop
+
+All suspend cookie methods have `*Async` counterparts returning Java `CompletableFuture` for seamless Java interop.
+
+```java
+// Java: Read cookies asynchronously
+engine.getCookieManager().getCookiesAsync("https://example.com")
+    .thenAccept(cookies -> {
+        System.out.println("Found " + cookies.size() + " cookies");
+    });
+
+// Java: Get all cookies across all domains
+engine.getCookieManager().getAllCookiesAsync()
+    .thenAccept(allCookies -> {
+        for (KromiumCookie cookie : allCookies) {
+            System.out.println(cookie.getName() + " = " + cookie.getValue());
+        }
+    });
+```
+
+## Related APIs
+
+- [KromiumCookieManager](/llms/api/kromium-cookie-manager.md)
+- [KromiumCookie](/llms/api/kromium-cookie.md)
+- [KromiumStorage](/llms/api/kromium-storage.md)
+
+
+---
+
+# Custom Protocol Scheme Handlers
+
+> Register custom protocols (app://, kromium://) to serve web assets from the classpath, local directories, or dynamic handlers.
+
+- **Category:** Core API
+- **Read Time:** 8 min
+- **Last Updated:** 2026-10-01
+
+## How Custom Schemes Work
+
+Custom schemes allow you to intercept `app://myapp/index.html` style URLs and serve content from JVM resources, local files, or dynamically generated responses. This enables building fully offline desktop apps with web UIs.
+
+**Two-step process:**
+1. **Register the scheme** with `KromiumCustomScheme` in `KromiumConfig` (before engine init).
+2. **Register the handler** via `engine.registerSchemeHandler(...)` (after engine init).
+
+## Registering a Custom Scheme
+
+Custom schemes must be declared before engine initialization. Use `KromiumCustomScheme.secure()` for a secure scheme with CORS and Fetch API enabled, or construct with full control over security flags.
+
+```kotlin
+val config = KromiumConfig.builder()
+    .browserConfig { b ->
+        b.customSchemes(listOf(
+            KromiumCustomScheme.secure("app"),
+            KromiumCustomScheme(
+                schemeName = "local",
+                isStandard = true,
+                isLocal = true,
+                isSecure = true,
+                isCorsEnabled = true,
+                isCspBypassing = false,
+                isFetchEnabled = true
+            )
+        ))
+    }
+    .build()
+```
+
+## Serving Assets from the Classpath
+
+`KromiumSchemeHandler.fromClasspath()` creates a turnkey handler that streams resources bundled inside your application JAR. Supports SPA fallback routing for React/Vue/Angular apps.
+
+```kotlin
+val engine = Kromium.createEngine(config)
+engine.initialize()
+
+// Serve from src/main/resources/web/
+val handler = KromiumSchemeHandler.fromClasspath(
+    resourcePath = "web",
+    spaFallback = "index.html"
+)
+engine.registerSchemeHandler("app", "myapp", handler)
+
+// Now navigate to app://myapp/index.html
+val browser = engine.createClient().createBrowser("app://myapp/index.html")
+```
+
+## Serving Assets from a Local Directory
+
+`KromiumSchemeHandler.fromDirectory()` serves files from a local filesystem directory with built-in directory traversal protection and SPA fallback support.
+
+```kotlin
+val handler = KromiumSchemeHandler.fromDirectory(
+    directory = File("./frontend/dist"),
+    spaFallback = "index.html",
+    defaultHeaders = mapOf(
+        "X-Frame-Options" to "DENY"
+    )
+)
+engine.registerSchemeHandler("app", "myapp", handler)
+```
+
+## Dynamic Custom Handlers
+
+For dynamic content, implement `KromiumAssetHandler` directly. Return `KromiumAssetResponse.json()`, `.html()`, `.text()`, or `.stream()` — or `null` for 404.
+
+```kotlin
+val apiHandler = KromiumSchemeHandler.create { request ->
+    when {
+        request.path == "/api/user" -> {
+            KromiumAssetResponse.json("""
+                {"id": 1, "name": "Alice"}
+            """.trimIndent())
+        }
+        request.path.startsWith("/api/") -> {
+            KromiumAssetResponse.notFound("Endpoint not found: ${request.path}")
+        }
+        else -> null // 404
+    }
+}
+engine.registerSchemeHandler("app", "api", apiHandler)
+```
+
+## Related APIs
+
+- [KromiumCustomScheme](/llms/api/kromium-custom-scheme.md)
+- [KromiumSchemeHandler](/llms/api/kromium-scheme-handler.md)
+- [KromiumAssetHandler](/llms/api/kromium-asset-handler.md)
+- [KromiumAssetRequest](/llms/api/kromium-asset-request.md)
+- [KromiumAssetResponse](/llms/api/kromium-asset-response.md)
+
+
+---
+
+# PDF Export & Print API
+
+> Export web pages to vector PDF documents with configurable paper size, margins, headers/footers, accessible tagging, and page ranges.
+
+- **Category:** Core API
+- **Read Time:** 5 min
+- **Last Updated:** 2026-10-01
+
+## Basic PDF Export
+
+Export any loaded web page to a PDF file using `browser.automation` with `KromiumPdfSettings`. The PDF is generated using Chromium's built-in print-to-PDF pipeline, producing high-quality vector output.
+
+```kotlin
+import org.daviante.kromium.api.print.KromiumPdfSettings
+import org.daviante.kromium.api.print.KromiumPaperSize
+import java.io.File
+
+// Wait for page to fully load first
+browser.navigation.loadUrl("https://example.com", waitUntil = NavigationStage.LOADED)
+
+// Export with default A4 portrait settings
+val settings = KromiumPdfSettings.Default
+browser.automation.printToPdf(File("output.pdf"), settings)
+```
+
+## Advanced PDF Configuration
+
+Use the fluent `KromiumPdfSettings.builder()` for full control over orientation, background printing, custom paper sizes, margins, page ranges, and accessibility features.
+
+| Setting | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `landscape` | `Boolean` | `false` | Landscape orientation |
+| `printBackground` | `Boolean` | `false` | Include CSS backgrounds and gradients |
+| `scale` | `Double` | `1.0` | Page scaling (1.0 = 100%) |
+| `paperSize` | `KromiumPaperSize` | `A4` | Paper dimensions |
+| `margins` | `KromiumPdfMargins` | `Default` | Page margins |
+| `pageRanges` | `String` | `""` | Pages to print (e.g. "1-5, 8") |
+| `displayHeaderFooter` | `Boolean` | `false` | Show header/footer templates |
+| `generateTaggedPdf` | `Boolean` | `false` | Accessible tagged PDF |
+| `generateDocumentOutline` | `Boolean` | `false` | Bookmarks from headings |
+
+```kotlin
+val settings = KromiumPdfSettings.builder()
+    .landscape(true)
+    .printBackground(true)
+    .paperSize(KromiumPaperSize.LETTER)
+    .margins(KromiumPdfMargins(top = 1.0, bottom = 1.0, left = 0.5, right = 0.5))
+    .pageRanges("1-3, 5")
+    .displayHeaderFooter(true)
+    .headerTemplate("<div style='font-size:8px;text-align:center;'>Company Report</div>")
+    .footerTemplate("<div style='font-size:8px;text-align:center;'>Page <span class='pageNumber'></span> of <span class='totalPages'></span></div>")
+    .generateTaggedPdf(true)
+    .generateDocumentOutline(true)
+    .createDirectories(true)
+    .build()
+
+browser.automation.printToPdf(File("reports/quarterly.pdf"), settings)
+```
+
+## Standard Paper Sizes
+
+`KromiumPaperSize` provides constants for standard paper dimensions:
+- `KromiumPaperSize.A4` — 210 × 297 mm (ISO standard)
+- `KromiumPaperSize.LETTER` — 8.5 × 11 inches (US standard)
+- `KromiumPaperSize.LEGAL` — 8.5 × 14 inches
+- `KromiumPaperSize.TABLOID` — 11 × 17 inches
+- Custom sizes via `KromiumPaperSize(widthInches, heightInches)`
+
+## Related APIs
+
+- [KromiumPdfSettings](/llms/api/kromium-pdf-settings.md)
+- [KromiumPaperSize](/llms/api/kromium-paper-size.md)
+- [KromiumPdfMargins](/llms/api/kromium-pdf-margins.md)
+- [KromiumAutomation](/llms/api/kromium-automation.md)
+
+
+---
+
+# Context Menu Customization
+
+> Suppress, customize, or build rich right-click context menus using KromiumMenuBuilder's declarative DSL with built-in browser action shortcuts.
+
+- **Category:** UI
+- **Read Time:** 6 min
+- **Last Updated:** 2026-10-01
+
+## Built-In Preset Menus
+
+`KromiumContextMenuListener` provides turnkey presets for common scenarios:
+
+| Preset | Description |
+| :--- | :--- |
+| `KromiumContextMenuListener.disabled()` | Suppresses all context menus (kiosk mode) |
+| `KromiumContextMenuListener.defaultMenu()` | Preserves native Chromium menu items |
+| `KromiumContextMenuListener.devToolsOnly()` | Shows only "Inspect Element" |
+| `KromiumContextMenuListener.minimalEditing()` | Smart menu: Copy Link on links, Copy/Search on selections, Cut/Paste/Select All in editable fields |
+
+```kotlin
+// Suppress all right-click menus
+client.contextMenuListener = KromiumContextMenuListener.disabled()
+
+// Or use the smart minimal editing menu with Inspect Element
+client.contextMenuListener = KromiumContextMenuListener.minimalEditing(
+    includeInspectElement = true
+)
+```
+
+## Declarative Menu Builder DSL
+
+Use `client.setContextMenu { ... }` with the `KromiumMenuBuilder` DSL to construct custom menus with items, checkboxes, radio buttons, submenus, and separators.
+
+```kotlin
+client.setContextMenu { ctx ->
+    clear() // Remove default items
+
+    item("Navigate Home") { it.browser.navigation.loadUrl("https://myapp.com") }
+    separator()
+
+    if (ctx.params.hasSelection()) {
+        copy()
+        searchWeb()
+        separator()
+    }
+
+    if (ctx.params.isLink()) {
+        copyLink()
+        separator()
+    }
+
+    if (ctx.params.hasMedia()) {
+        saveImageAs()
+        copyImageUrl()
+        separator()
+    }
+
+    subMenu("Developer") {
+        inspectElement()
+        viewSource()
+        reload()
+    }
+}
+```
+
+## Built-In Action Shortcuts
+
+KromiumMenuBuilder provides turnkey browser action methods that automatically wire up native commands:
+
+| Method | Action |
+| :--- | :--- |
+| `back()` / `forward()` / `reload()` | Navigation commands |
+| `copy()` / `cut()` / `paste()` / `selectAll()` | Clipboard commands |
+| `print()` | Native print dialog |
+| `viewSource()` | View page source |
+| `inspectElement()` | Opens DevTools at click position |
+| `copyLink()` | Copies the hovered link URL |
+| `saveImageAs()` | Downloads the hovered image |
+| `copyImageUrl()` | Copies the hovered image URL |
+| `searchWeb()` | Searches Google for selected text |
+
+## Java Usage
+
+Context menu customization works identically in Java using `KromiumContextMenuListener` and the Consumer overloads of `addItem()`.
+
+```java
+client.setContextMenuListener(KromiumContextMenuListener.minimalEditing(true));
+
+// Or custom:
+client.setContextMenuListener((builder, context) -> {
+    builder.clear();
+    builder.addItem("Open Dashboard", ctx -> {
+        ctx.getBrowser().getNavigation().loadUrl("https://dashboard.app");
+    });
+    builder.inspectElement();
+});
+```
+
+## Related APIs
+
+- [KromiumContextMenuListener](/llms/api/kromium-context-menu-listener.md)
+- [KromiumMenuBuilder](/llms/api/kromium-menu-builder.md)
+- [KromiumContextMenuContext](/llms/api/kromium-context-menu-context.md)
+- [KromiumContextMenuParams](/llms/api/kromium-context-menu-params.md)
+
+
+---
+
+# Error Handling & Debugging
+
+> Handle Kromium's sealed exception hierarchy, recover from download failures, diagnose GPU errors, and monitor console messages for debugging.
+
+- **Category:** Core API
+- **Read Time:** 7 min
+- **Last Updated:** 2026-10-01
+
+## KromiumException Sealed Hierarchy
+
+All Kromium errors extend the sealed class `KromiumException` which provides an `errorCode` (enum) and `isRecoverable` flag for programmatic error handling.
+
+| Exception | Error Code | Recoverable | When Thrown |
+| :--- | :--- | :---: | :--- |
+| `NotInitialized` | `INITIALIZATION_ERROR` | ❌ | Engine used before `initialize()` |
+| `Disposed` | `INITIALIZATION_ERROR` | ❌ | Operations attempted after `dispose()` |
+| `UnsupportedPlatform` | `UNSUPPORTED_PLATFORM` | ❌ | Unsupported OS/architecture combination |
+| `InstallationFailed` | `INSTALLATION_FAILED` | ✅ | Cannot prepare installation directory |
+| `AutoDownloadDisabled` | `DOWNLOAD_DISABLED` | ❌ | No binaries and auto-download is off |
+| `NoBundleAvailable` | `NO_BUNDLE_AVAILABLE` | ❌ | No compatible JCEF bundle for platform |
+| `DownloadFailed` | `DOWNLOAD_FAILED` | ✅ | Network failure downloading engine |
+| `ChecksumMismatch` | `CHECKSUM_MISMATCH` | ✅ | Archive hash doesn't match (retry) |
+| `ExtractionFailed` | `EXTRACTION_FAILED` | ✅ | Cannot extract engine archive |
+| `MaliciousArchiveEntry` | `MALICIOUS_ARCHIVE` | ❌ | Directory traversal in archive |
+| `BootstrapFailed` | `BOOTSTRAP_FAILED` | ❌ | CEF native bootstrap failure |
+| `InstallationCorrupted` | `INSTALLATION_CORRUPTED` | ✅ | Corrupted binaries (re-download) |
+| `JsEvaluationTimeout` | `JS_TIMEOUT` | ✅ | JavaScript evaluation timed out |
+| `InvalidConfig` | `INVALID_CONFIG` | ❌ | Invalid configuration parameters |
+| `ProxyError` | `PROXY_ERROR` | ✅ | Proxy configuration error |
+| `PdfPrintFailed` | `PDF_PRINT_FAILED` | ✅ | PDF export failure |
+| `FrameworkRequired` | `FRAMEWORK_REQUIRED` | ❌ | No UI framework specified for OSR |
+| `CanvasNotAvailable` | `CANVAS_NOT_AVAILABLE` | ❌ | Missing kromium-swing/compose/etc on classpath |
+
+## Pattern-Matching Error Recovery
+
+Use Kotlin `when` exhaustive matching or Java `instanceof` checks on the sealed hierarchy for type-safe error recovery.
+
+```kotlin
+try {
+    engine.initialize()
+} catch (e: KromiumException) {
+    when (e) {
+        is KromiumException.DownloadFailed -> {
+            println("Download failed from ${e.url}, retrying...")
+            engine.initialize() // Retry
+        }
+        is KromiumException.ChecksumMismatch -> {
+            println("Checksum mismatch: expected=${e.expected}, actual=${e.actual}")
+            // Delete corrupted file and retry
+        }
+        is KromiumException.UnsupportedPlatform -> {
+            println("Platform not supported: ${e.os} / ${e.arch}")
+        }
+        is KromiumException.CanvasNotAvailable -> {
+            println("Add kromium-${e.framework.name.lowercase()} to your dependencies")
+        }
+        else -> {
+            if (e.isRecoverable) {
+                println("Recoverable error [${e.errorCode}]: ${e.message}")
+            } else {
+                throw e
+            }
+        }
+    }
+}
+```
+
+## Console Message Monitoring
+
+Intercept browser console output (`console.log`, `console.error`, `console.warn`) via `KromiumConsoleMessageListener` for runtime debugging and error tracking.
+
+```kotlin
+client.consoleMessageListener = KromiumConsoleMessageListener { message ->
+    val level = message.level // INFO, WARNING, ERROR
+    val text = message.message
+    val source = message.source
+    val line = message.lineNumber
+    println("[$level] $source:$line — $text")
+}
+```
+
+## Page Load Error Handling
+
+Detect navigation failures (DNS errors, timeouts, certificate rejections) with `KromiumLoadErrorListener`.
+
+```kotlin
+client.loadErrorListener = KromiumLoadErrorListener { error ->
+    println("Load error: ${error.errorCode} — ${error.errorText}")
+    println("Failed URL: ${error.failedUrl}")
+}
+```
+
+## Related APIs
+
+- [KromiumException](/llms/api/kromium-exception.md)
+- [KromiumErrorCode](/llms/api/kromium-error-code.md)
+- [KromiumConsoleMessage](/llms/api/kromium-console-message.md)
+- [KromiumConsoleMessageListener](/llms/api/kromium-console-message-listener.md)
+- [KromiumLoadError](/llms/api/kromium-load-error.md)
+- [KromiumLoadErrorListener](/llms/api/kromium-load-error-listener.md)
+
+
+---
+
+# DevTools, Text Search & JavaScript Bridge
+
+> Open Chromium DevTools, find text on pages, execute JavaScript, extract HTML/text content, and resolve favicons.
+
+- **Category:** Core API
+- **Read Time:** 5 min
+- **Last Updated:** 2026-10-01
+
+## Opening Developer Tools
+
+The `browser.devTools` facade provides direct control over the native Chromium Developer Tools window.
+
+```kotlin
+// Open DevTools (docked or undocked based on Chromium default)
+browser.devTools.openDevTools()
+
+// Open DevTools targeting a specific element at coordinates
+browser.devTools.openDevTools(inspectPoint = Point(300, 200))
+
+// Close DevTools
+browser.devTools.closeDevTools()
+```
+
+## Find Text on Page
+
+The `browser.search` facade provides in-page text search with highlighting, case sensitivity, and directional navigation — similar to Ctrl+F in a browser.
+
+```kotlin
+// Start a case-insensitive forward search
+browser.search.find(
+    searchText = "Kromium",
+    forward = true,
+    matchCase = false,
+    findNext = false
+)
+
+// Navigate to the next match
+browser.search.find(
+    searchText = "Kromium",
+    forward = true,
+    findNext = true
+)
+
+// Navigate to the previous match
+browser.search.find(
+    searchText = "Kromium",
+    forward = false,
+    findNext = true
+)
+
+// Stop searching and clear highlights
+browser.search.stopFinding(clearSelection = true)
+```
+
+## JavaScript Execution & Bridge
+
+The `browser.jsBridge` facade provides bidirectional JavaScript interoperability with both fire-and-forget execution and async evaluated results.
+
+```kotlin
+// Fire-and-forget JavaScript execution
+browser.jsBridge.executeJavaScript("document.title = 'Hello from Kotlin'")
+
+// Evaluate and await a result (suspend)
+val width = browser.jsBridge.evaluateJavaScript(
+    "window.innerWidth * window.devicePixelRatio"
+)
+println("Viewport width: $width")
+
+// Get full page HTML
+val html = browser.jsBridge.getHtml()
+
+// Get visible text content
+val text = browser.jsBridge.getText()
+
+// Resolve the page's favicon URL
+val favicon = browser.jsBridge.getFaviconUrl()
+```
+
+## Java CompletableFuture Interop
+
+All suspend JS bridge methods have `*Async` counterparts for Java interop.
+
+```java
+// Java: Get HTML asynchronously
+browser.getJsBridge().getHtmlAsync()
+    .thenAccept(html -> System.out.println("Page HTML length: " + html.length()));
+
+// Java: Get text content
+browser.getJsBridge().getTextAsync()
+    .thenAccept(text -> System.out.println("Visible text: " + text));
+
+// Java: Resolve favicon
+browser.getJsBridge().getFaviconUrlAsync()
+    .thenAccept(url -> System.out.println("Favicon: " + url));
+```
+
+## Related APIs
+
+- [KromiumDevTools](/llms/api/kromium-dev-tools.md)
+- [KromiumSearch](/llms/api/kromium-search.md)
+- [KromiumJsBridge](/llms/api/kromium-js-bridge.md)
+- [KromiumConsoleMessage](/llms/api/kromium-console-message.md)
+
+
+---
+
+# Sample Applications & Reference Code
+
+> Explore the 5 official Kromium desktop sample applications covering Compose Multiplatform, Swing, JavaFX, SWT, and AWT.
+
+- **Category:** Getting Started
+- **Read Time:** 8 min
+- **Last Updated:** 2026-10-01
+
+## Official Sample Applications
+
+The Kromium repository provides 5 fully functional desktop sample applications in the `samples/` directory. Each sample demonstrates production-grade architecture, theming, window management, and Kromium feature integration.
+
+| Sample Application | Path | UI Framework | Features Covered |
+| :--- | :--- | :--- | :--- |
+| **`kromium-sample-compose`** | `samples/kromium-sample-compose` | Compose Multiplatform (Desktop) | 9 Feature Panels: Automation, Cookies/Storage, DevTools, DOM Extraction, Downloads, Navigation, PDF Print, Security/Network, View Tools |
+| **`kromium-sample-swing`** | `samples/kromium-sample-swing` | Java Swing | 9 Feature Panels with custom dark/light theme, card components, traffic light window controls, and logging console |
+| **`kromium-sample-javafx`** | `samples/kromium-sample-javafx` | OpenJFX / JavaFX | FXML-free declarative Kotlin UI, TabPane navigation, hardware texture blitting, and automation |
+| **`kromium-sample-swt`** | `samples/kromium-sample-swt` | Eclipse SWT | SWT Composite embedding, native OS event loop integration, key event bridge, and developer tools |
+| **`kromium-sample-awt`** | `samples/kromium-sample-awt` | Pure Java AWT | Minimalist dependency-free browser, Java2D BufferedImage blitting, and navigation controls |
+
+## Running the Samples
+
+You can launch any sample directly from the root repository using Gradle:
+
+```bash
+# Run Compose Multiplatform sample
+./gradlew :samples:kromium-sample-compose:run
+
+# Run Swing sample
+./gradlew :samples:kromium-sample-swing:run
+
+# Run JavaFX sample
+./gradlew :samples:kromium-sample-javafx:run
+
+# Run Eclipse SWT sample
+./gradlew :samples:kromium-sample-swt:run
+
+# Run Pure AWT sample
+./gradlew :samples:kromium-sample-awt:run
+```
+
+## Compose Multiplatform Sample Architecture
+
+Located at `samples/kromium-sample-compose`, this sample demonstrates how to build a tabbed developer workbench using Compose Desktop with reactive StateFlow collection.
+
+```kotlin
+// From samples/kromium-sample-compose/src/main/kotlin/org/daviante/kromium/sample/Main.kt
+fun main() = application {
+    val engine = remember { Kromium.createEngine() }
+    DisposableEffect(Unit) {
+        engine.initialize()
+        onDispose { engine.dispose() }
+    }
+
+    val client = remember(engine) { engine.createClient() }
+    val browser = remember(client) {
+        client.createBrowser(
+            url = "https://example.com",
+            framework = KromiumUiFramework.COMPOSE
+        )
+    }
+
+    Window(onCloseRequest = ::exitApplication, title = "Kromium Compose Sample") {
+        SampleAppShell(browser = browser)
+    }
+}
+```
+
+## Swing Sample Architecture & UI Shell
+
+Located at `samples/kromium-sample-swing`, this sample illustrates embedding `KromiumSwingCanvas` inside a custom-themed Swing layout with `BorderLayout` and custom swing components.
+
+```kotlin
+// From samples/kromium-sample-swing/src/main/kotlin/org/daviante/kromium/sample/swing/Main.kt
+SwingUtilities.invokeLater {
+    val engine = Kromium.createEngine()
+    engine.initialize()
+
+    val client = engine.createClient()
+    val browser = client.createBrowser(
+        url = "https://example.com",
+        framework = KromiumUiFramework.SWING
+    )
+
+    val frame = JFrame("Kromium Swing Sample")
+    frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+    frame.setSize(1400, 900)
+
+    val canvas = browser.view.surface.unwrap(Component::class.java) as JPanel
+    frame.contentPane.add(canvas, BorderLayout.CENTER)
+    frame.isVisible = true
+}
+```
+
+## Feature Code Samples in the Repository
+
+The sample applications contain dedicated feature files that developers can directly copy into their projects:
+
+- **`AutomationFeature.kt`**: Automatic form filling, clicking buttons by CSS selector, typing into inputs, and dispatching keyboard events.
+- **`CookieStorageFeature.kt`**: Reading/setting cookies, inspecting Local Storage, and clearing browser cache.
+- **`DevToolsFeature.kt`**: Launching undocked DevTools window, inspecting specific elements, and measuring page performance.
+- **`DomExtractionFeature.kt`**: Extracting page title, outer HTML, text content, and resolving dynamic elements.
+- **`DownloadsFeature.kt`**: Intercepting download items, tracking download speed and bytes received, and pausing/canceling.
+- **`NavigationFeature.kt`**: URL loading, back/forward history, stop/reload, and navigation stage state listeners.
+- **`PdfPrintFeature.kt`**: Vector PDF generation with custom margins, paper sizes, and headers/footers.
+- **`SecurityNetworkFeature.kt`**: Custom SOCKS5/HTTP proxy setup, SSL certificate exception handling, and media permissions.
+- **`ViewToolsFeature.kt`**: Zoom level manipulation, window resizing, and screenshot capture.
+
+## Related APIs
+
+- [KromiumUiFramework](/llms/api/kromium-ui-framework.md)
+- [KromiumView](/llms/api/kromium-view.md)
+- [KromiumBrowser](/llms/api/kromium-browser.md)
+- [KromiumAutomation](/llms/api/kromium-automation.md)
+
+
+---
+
+# Troubleshooting & FAQ
+
+> Solutions for JVM module access errors, GPU rasterization failures, VM/Docker environments, and platform-specific native dependencies.
+
+- **Category:** Getting Started
+- **Read Time:** 7 min
+- **Last Updated:** 2026-10-01
+
+## Java 9+ JVM Module Access (--add-opens)
+
+On Java 9 and newer, Java Strong Encapsulation restricts reflection into internal `sun.awt` and `sun.java2d` packages. Kromium includes `KromiumJvmModuleOpener` which attempts to open these modules dynamically at runtime. However, if your application runs under strict modularity or custom security managers, add the following JVM flags to your Gradle build or startup scripts:
+
+```bash
+--add-opens=java.desktop/sun.awt=ALL-UNNAMED
+--add-opens=java.desktop/sun.java2d=ALL-UNNAMED
+--add-opens=java.desktop/sun.awt.windows=ALL-UNNAMED # Windows only
+--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED      # macOS only
+--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED    # Linux only
+```
+
+In Gradle `build.gradle.kts`:
+```kotlin
+application {
+    applicationDefaultJvmArgs = listOf(
+        "--add-opens=java.desktop/sun.awt=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.java2d=ALL-UNNAMED"
+    )
+}
+```
+
+## GPU Device Loss, VM & CI Rendering Failures
+
+If you encounter Direct3D device reset errors (`DXGI_ERROR_DEVICE_REMOVED`, `0x887a0005`) on Windows or are running in virtual machines, Docker containers, or headless CI runners without physical GPUs, configure `KromiumGpuMode.SOFTWARE` or `KromiumGpuMode.ANGLE_WARP` in `KromiumHardwareConfig`.
+
+```kotlin
+val config = KromiumConfig.builder()
+    .hardwareConfig { hw ->
+        // On Windows with overclocked/unstable drivers:
+        // hw.gpuMode(KromiumGpuMode.ANGLE_WARP)
+
+        // In headless CI or VMs without GPU drivers:
+        hw.gpuMode(KromiumGpuMode.SOFTWARE)
+    }
+    .build()
+```
+
+## Linux Native Library Requirements
+
+Chromium Embedded Framework (CEF) requires native shared libraries on Linux. If the engine fails to initialize on Debian/Ubuntu, install the required packages:
+
+```bash
+sudo apt-get update && sudo apt-get install -y \
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0
+```
+
+## Process Model & Compose Desktop Compatibility
+
+Always keep `KromiumProcessModel.AUTO` (the default) when embedding in Jetpack Compose, Swing, or JavaFX. In `AUTO` mode, Kromium executes the browser host inside the JVM while spawning `jcef_helper` subprocesses for GPU rasterization and web page sandboxing. Avoid `OUT_OF_PROCESS` unless you implement a custom `CefNativeRenderHandler`.
+
+## Capturing Chromium Diagnostic Logs
+
+To diagnose native crashes, network handshakes, or certificate errors, enable verbose logging and specify a dedicated log file path.
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumLogSeverity
+import java.io.File
+
+val config = KromiumConfig.builder()
+    .loggingConfig { log ->
+        log.severity(KromiumLogSeverity.VERBOSE)
+        log.logFile(File("./logs/chromium-debug.log"))
+    }
+    .build()
+```
+
+## Related APIs
+
+- [KromiumGpuMode](/llms/api/kromium-gpu-mode.md)
+- [KromiumProcessModel](/llms/api/kromium-process-model.md)
+- [KromiumLoggingConfig](/llms/api/kromium-logging-config.md)
+- [KromiumException](/llms/api/kromium-exception.md)
+
+
+
+# PART 2: COMPLETE API REFERENCE
+
+
+---
+
+# Kromium
+
+```kotlin
+object Kromium
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api`
+- **Category:** Core Engine
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+The main entry point for the Kromium library. Provides synchronized factory access to create and manage the active singleton KromiumEngine instance using a specified KromiumConfig and KromiumEngineProvider.
+
+### When to Use
+
+Call Kromium.createEngine(config, provider) during application bootstrap to create the shared uninitialized KromiumEngine instance.
+
+## Methods
+
+### `createEngine()`
+
+```kotlin
+@JvmStatic @Synchronized fun createEngine(config: KromiumConfig, provider: KromiumEngineProvider): KromiumEngine
+```
+
+Creates the Kromium engine using the provided configuration and provider. The engine is NOT automatically initialized. You must call engine.initialize() on a background thread so you can observe engine.state from the UI.
+
+- **Returns:** `KromiumEngine`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.Kromium
+import org.daviante.kromium.api.config.KromiumConfig
+import org.daviante.kromium.jcef.JcefProvider
+
+val config = KromiumConfig.builder().build()
+val engine = Kromium.createEngine(config, JcefProvider)
+engine.initialize()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.Kromium;
+import org.daviante.kromium.api.config.KromiumConfig;
+import org.daviante.kromium.api.core.KromiumEngine;
+import org.daviante.kromium.jcef.JcefProvider;
+
+KromiumConfig config = KromiumConfig.builder().build();
+KromiumEngine engine = Kromium.createEngine(config, JcefProvider.INSTANCE);
+engine.initializeAsync();
+```
+
+
+---
+
+# KromiumEngine
+
+```kotlin
+interface KromiumEngine
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.core`
+- **Category:** Core Engine
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+The core interface representing the running Kromium engine. Manages lifecycle states, native binary initialization and disposal, browser client sessions, global cookie management, scheme handler registration, and engine-wide download operations.
+
+### When to Use
+
+Obtain via Kromium.createEngine(config, provider) or provider.createEngine(config) to control the engine lifecycle, observe states via StateFlow, and spawn isolated KromiumClient sessions.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`state`** | `StateFlow<KromiumState>` | The current state of the engine (e.g. downloading, extracting, ready). |
+| **`info`** | `KromiumEngineInfo` | Gets information about the current engine installation. |
+| **`cookieManager`** | `KromiumCookieManager` | Global cookie manager for this engine. |
+
+## Methods
+
+### `initialize()`
+
+```kotlin
+suspend fun initialize()
+```
+
+Initializes the engine asynchronously, downloading/extracting binaries if necessary.
+
+- **Returns:** `Unit`
+
+### `initializeAsync()`
+
+```kotlin
+fun initializeAsync(): CompletableFuture<Void?>
+```
+
+Asynchronously initializes the engine returning a Java CompletableFuture.
+
+- **Returns:** `CompletableFuture<Void?>`
+
+### `dispose()`
+
+```kotlin
+fun dispose()
+```
+
+Disposes the engine, cleaning up native resources.
+
+- **Returns:** `Unit`
+
+### `createClient()`
+
+```kotlin
+fun createClient(config: KromiumClientConfig = KromiumClientConfig.default()): KromiumClient
+```
+
+Creates a new isolated browser client session.
+
+- **Returns:** `KromiumClient`
+
+### `registerSchemeHandler()`
+
+```kotlin
+fun registerSchemeHandler(schemeName: String, domainName: String? = null, handler: KromiumAssetHandler): Boolean
+```
+
+Registers a custom protocol scheme handler factory with the engine.
+
+- **Returns:** `Boolean`
+
+### `cancelDownload()`
+
+```kotlin
+fun cancelDownload(downloadId: Int): Boolean
+```
+
+Programmatically cancels an in-progress download identified by its download ID across any active browser session.
+
+- **Returns:** `Boolean`
+
+### `pauseDownload()`
+
+```kotlin
+fun pauseDownload(downloadId: Int): Boolean
+```
+
+Programmatically pauses an in-progress download identified by its download ID across any active browser session.
+
+- **Returns:** `Boolean`
+
+### `resumeDownload()`
+
+```kotlin
+fun resumeDownload(downloadId: Int): Boolean
+```
+
+Programmatically resumes a paused download identified by its download ID across any active browser session.
+
+- **Returns:** `Boolean`
+
+### `isDownloadPaused()`
+
+```kotlin
+fun isDownloadPaused(downloadId: Int): Boolean
+```
+
+Checks whether an in-progress download is currently paused across any active browser session.
+
+- **Returns:** `Boolean`
+
+### `clearSchemeHandlers()`
+
+```kotlin
+fun clearSchemeHandlers(): Boolean
+```
+
+Clears all registered custom scheme handler factories.
+
+- **Returns:** `Boolean`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumConfig
+import org.daviante.kromium.jcef.JcefProvider
+
+suspend fun initEngine() {
+    val engine = JcefProvider.createEngine(KromiumConfig.builder().build())
+    engine.initialize()
+    val client = engine.createClient()
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumConfig;
+import org.daviante.kromium.api.core.KromiumEngine;
+import org.daviante.kromium.jcef.JcefProvider;
+
+public class EngineInit {
+    public static void start() {
+        KromiumEngine engine = JcefProvider.INSTANCE.createEngine(KromiumConfig.builder().build());
+        engine.initializeAsync().thenRun(() -> {
+            System.out.println("Engine ready!");
+        });
+    }
+}
+```
+
+
+---
+
+# KromiumBrowser
+
+```kotlin
+interface KromiumBrowser : AutoCloseable
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.core`
+- **Category:** Browser & Client Components
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Main interface for the Kromium browser instance. Structured into multiple dedicated facades for separation of concerns: navigation, view, search, devTools, jsBridge, clipboard, downloads, automation, storage, proxyManager, security, and assets.
+
+### When to Use
+
+Obtain via client.createBrowser() to render, control, and interact with a Chromium web view instance.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`navigation`** | `KromiumNavigation` | Facade for URL loading, lifecycle waiting (DOMContentLoaded, NetworkIdle), and history traversal. |
+| **`view`** | `KromiumView` | Facade for zoom control, audio muting, viewport resizing, and rendering visibility. |
+| **`search`** | `KromiumSearch` | Facade for finding text on page, highlighting matches, and navigating find results. |
+| **`devTools`** | `KromiumDevTools` | Facade for opening and closing the native Chromium Developer Tools window. |
+| **`jsBridge`** | `KromiumJsBridge` | Facade for bidirectional JavaScript interoperability, script execution, and native object binding. |
+| **`clipboard`** | `KromiumClipboard` | Facade for clipboard operations (cut, copy, paste, select all, undo, redo). |
+| **`downloads`** | `KromiumDownloads` | Facade for managing and controlling file downloads. |
+| **`automation`** | `KromiumAutomation` | Facade for headless automation, mouse/keyboard simulation, DOM querying, and PDF export. |
+| **`storage`** | `KromiumStorage` | Facade for cache management, local storage inspection, and cookie clearing. |
+| **`proxyManager`** | `KromiumProxyManager` | Facade for runtime dynamic proxy reconfiguration. |
+| **`security`** | `KromiumSecurity` | Facade for host locking, subresource restrictions, and iframe security. |
+| **`assets`** | `KromiumAssets` | Facade for dynamic network asset filtering and content blocking. |
+
+## Methods
+
+### `close()`
+
+```kotlin
+override fun close()
+```
+
+Closes this browser instance and cleans up underlying resources.
+
+- **Returns:** `Unit`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.core.KromiumBrowser
+import org.daviante.kromium.api.core.KromiumClient
+import org.daviante.kromium.api.ui.KromiumUiFramework
+
+fun setupBrowser(client: KromiumClient): KromiumBrowser {
+    val browser = client.createBrowser("https://github.com", KromiumUiFramework.COMPOSE)
+    browser.navigation.loadUrl("https://google.com")
+    return browser
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.core.KromiumBrowser;
+import org.daviante.kromium.api.core.KromiumClient;
+import org.daviante.kromium.api.ui.KromiumUiFramework;
+
+public class BrowserCreator {
+    public static void create(KromiumClient client) {
+        try (KromiumBrowser browser = client.createBrowser("https://example.com", KromiumUiFramework.SWING)) {
+            browser.getNavigation().loadUrl("https://example.com");
+        }
+    }
+}
+```
+
+
+---
+
+# KromiumClient
+
+```kotlin
+interface KromiumClient
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.core`
+- **Category:** Browser & Client Components
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Represents a client session in the engine. A client groups multiple browsers under a shared context (such as shared cookies, cache, proxy configuration, network request interceptors, and listeners).
+
+### When to Use
+
+Obtain via engine.createClient(config) to group browser instances with custom session interceptors, listeners, proxy rules, and download configurations.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`inFlightRequestCount`** | `Int` | The number of active, in-flight network requests across all browsers in this client. |
+| **`downloadListener`** | `KromiumDownloadListener?` | Listener for tracking global download progress. |
+| **`downloadDirectory`** | `File` | The default directory where downloads should be saved. |
+| **`onBeforeDownloadListener`** | `KromiumBeforeDownloadListener?` | Optional interceptor to dynamically resolve the target path before a download begins. Return null to use default path, or return empty string "" to cancel. |
+| **`doNotTrack`** | `Boolean` | Whether to assert Do Not Track (DNT) and Global Privacy Control (Sec-GPC) headers on outbound requests. |
+| **`rememberPermissions`** | `Boolean` | Whether permission decisions (e.g. camera, microphone) should be cached for the lifetime of this client session. |
+| **`requestInterceptor`** | `KromiumRequestInterceptor?` | Request interceptor for filtering or modifying outgoing HTTP/HTTPS requests. |
+| **`navigationInterceptor`** | `KromiumNavigationInterceptor?` | Interceptor for evaluating and potentially overriding top-level navigation. |
+| **`authListener`** | `KromiumAuthListener?` | Listener for HTTP authentication challenges. |
+| **`popupListener`** | `KromiumPopupListener?` | Listener for popup window requests. |
+| **`jsDialogListener`** | `KromiumJsDialogListener?` | Listener for JavaScript dialogs (alert, confirm, prompt). |
+| **`enableContextMenus`** | `Boolean` | Globally enables or disables native right-click context menus for this client. Defaults to true. |
+| **`contextMenuListener`** | `KromiumContextMenuListener?` | Listener for context menu events and custom menu construction. |
+| **`permissionListener`** | `KromiumPermissionListener?` | Listener for media/device permission requests. |
+| **`consoleMessageListener`** | `KromiumConsoleMessageListener?` | Listener for browser console messages. |
+| **`loadErrorListener`** | `KromiumLoadErrorListener?` | Listener for page load errors. |
+| **`currentProxy`** | `KromiumProxy?` | The currently active proxy configuration for this client session, or null if no custom proxy has been set. |
+
+## Methods
+
+### `createBrowser()`
+
+```kotlin
+fun createBrowser(url: String, config: KromiumClientConfig = KromiumClientConfig.default()): KromiumBrowser
+```
+
+Creates a new browser instance managed by this client.
+
+- **Returns:** `KromiumBrowser`
+
+### `createBrowser()`
+
+```kotlin
+fun createBrowser(url: String, framework: KromiumUiFramework): KromiumBrowser
+```
+
+Creates a new browser instance managed by this client with an explicit UI framework.
+
+- **Returns:** `KromiumBrowser`
+
+### `hasPendingRequests()`
+
+```kotlin
+fun hasPendingRequests(): Boolean
+```
+
+Whether there are any pending network requests active on this client.
+
+- **Returns:** `Boolean`
+
+### `timeSinceLastRequestMs()`
+
+```kotlin
+fun timeSinceLastRequestMs(): Long
+```
+
+The number of milliseconds elapsed since the last network request completed.
+
+- **Returns:** `Long`
+
+### `setContextMenu()`
+
+```kotlin
+fun setContextMenu(block: KromiumMenuBuilder.(KromiumContextMenuContext) -> Unit)
+```
+
+Configures the right-click context menu using a declarative builder block.
+
+- **Returns:** `Unit`
+
+### `updateProxy()`
+
+```kotlin
+fun updateProxy(proxy: KromiumProxy): Boolean
+```
+
+Dynamically updates the proxy settings for this client session.
+
+- **Returns:** `Boolean`
+
+### `clearPermissionCache()`
+
+```kotlin
+fun clearPermissionCache()
+```
+
+Clears all remembered permission decisions from the in-memory session cache.
+
+- **Returns:** `Unit`
+
+### `cancelDownload()`
+
+```kotlin
+fun cancelDownload(downloadId: Int): Boolean
+```
+
+Cancels an active download by its ID.
+
+- **Returns:** `Boolean`
+
+### `pauseDownload()`
+
+```kotlin
+fun pauseDownload(downloadId: Int): Boolean
+```
+
+Pauses an active download by its ID.
+
+- **Returns:** `Boolean`
+
+### `resumeDownload()`
+
+```kotlin
+fun resumeDownload(downloadId: Int): Boolean
+```
+
+Resumes a paused download by its ID.
+
+- **Returns:** `Boolean`
+
+### `isDownloadPaused()`
+
+```kotlin
+fun isDownloadPaused(downloadId: Int): Boolean
+```
+
+Checks if a download is currently paused.
+
+- **Returns:** `Boolean`
+
+### `dispose()`
+
+```kotlin
+fun dispose()
+```
+
+Disposes the client and all associated browsers.
+
+- **Returns:** `Unit`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.core.KromiumEngine
+import org.daviante.kromium.api.core.KromiumClient
+import org.daviante.kromium.api.core.KromiumBrowser
+import org.daviante.kromium.api.ui.KromiumUiFramework
+
+fun createClientSession(engine: KromiumEngine): KromiumBrowser {
+    val client: KromiumClient = engine.createClient()
+    client.enableContextMenus = true
+    return client.createBrowser("https://github.com", KromiumUiFramework.COMPOSE)
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.core.KromiumEngine;
+import org.daviante.kromium.api.core.KromiumClient;
+import org.daviante.kromium.api.core.KromiumBrowser;
+import org.daviante.kromium.api.ui.KromiumUiFramework;
+
+public class ClientSetup {
+    public static KromiumBrowser setup(KromiumEngine engine) {
+        KromiumClient client = engine.createClient();
+        return client.createBrowser("https://example.com", KromiumUiFramework.SWING);
+    }
+}
+```
+
+
+---
+
+# KromiumState
+
+```kotlin
+sealed class KromiumState
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.core`
+- **Category:** Core Engine
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Observable lifecycle and operational states of the Kromium engine emitted by KromiumEngine.state StateFlow.
+
+### When to Use
+
+Observe engine.state in UI layers (Compose Multiplatform, JavaFX, Swing) to display progress indicators, download status, or error messages before browser creation.
+
+## States & Variants
+
+| Variant | Declaration | Description |
+| :--- | :--- | :--- |
+| **`KromiumState.Idle`** | `data object Idle : KromiumState()` | Engine has not started initialization or download. |
+| **`KromiumState.Locating`** | `data object Locating : KromiumState()` | Locating local JCEF engine binaries on the system. |
+| **`KromiumState.Downloading`** | `data class Downloading(val progress: KromiumDownloadProgress) : KromiumState()` | Downloading native JCEF bundle binaries with reactive progress metrics. |
+| **`KromiumState.Extracting`** | `data object Extracting : KromiumState()` | Extracting downloaded bundle archive to the local cache directory. |
+| **`KromiumState.Initializing`** | `data object Initializing : KromiumState()` | Bootstrapping CEF native binaries and preparing Chromium subsystems. |
+| **`KromiumState.Ready`** | `data object Ready : KromiumState()` | CEF native runtime is initialized, healthy, and ready to create browser instances. |
+| **`KromiumState.Error`** | `data class Error(val cause: Throwable) : KromiumState()` | Engine initialization or operational failure occurred; inspect cause for details. |
+| **`KromiumState.Disposed`** | `data object Disposed : KromiumState()` | Engine and all associated browser instances have been disposed and shut down. |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import androidx.compose.runtime.*
+import org.daviante.kromium.api.core.KromiumEngine
+import org.daviante.kromium.api.core.KromiumState
+
+@Composable
+fun ObserveState(engine: KromiumEngine) {
+    val state by engine.state.collectAsState()
+    when (val s = state) {
+        is KromiumState.Downloading -> println("Downloading: ${s.progress.fraction * 100}%")
+        is KromiumState.Ready -> println("Engine ready")
+        is KromiumState.Error -> println("Failed: ${s.cause.message}")
+        else -> println("State: $s")
+    }
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.core.KromiumEngine;
+import org.daviante.kromium.api.core.KromiumState;
+
+public class StateObserver {
+    public static void check(KromiumEngine engine) {
+        KromiumState state = engine.getState().getValue();
+        if (state instanceof KromiumState.Ready) {
+            System.out.println("Ready!");
+        }
+    }
+}
+```
+
+
+---
+
+# KromiumEngineInfo
+
+```kotlin
+data class KromiumEngineInfo(
+    val installDir: File,
+    val isInstalled: Boolean,
+    val engineVersion: String,
+    val browserVersion: String,
+    val providerMetadata: Map<String, String> = emptyMap()
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.core`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`installDir`** | `File` | Directory where the Kromium engine binaries are installed. |
+| **`isInstalled`** | `Boolean` | Whether the engine is currently installed. |
+| **`engineVersion`** | `String` | Version string of the engine. |
+| **`browserVersion`** | `String` | Version string of the underlying browser. |
+| **`providerMetadata`** | `Map<String, String>` | Additional metadata provided by the engine provider. |
+
+
+---
+
+# KromiumEngineProvider
+
+```kotlin
+interface KromiumEngineProvider
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.core`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `createEngine()`
+
+```kotlin
+fun createEngine(config: KromiumConfig): KromiumEngine
+```
+
+Creates and initializes a new KromiumEngine instance based on the provided configuration.
+
+
+
+---
+
+# KromiumExtensions
+
+```kotlin
+package org.daviante.kromium.api.core
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.core`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `createHeadlessBrowser()`
+
+```kotlin
+fun KromiumEngine.createHeadlessBrowser(url: String = "about:blank", width: Int = 1280, height: Int = 800): KromiumBrowser
+```
+
+Creates a new zero-dependency headless KromiumBrowser instance within a new isolated client session.
+
+
+### `createHeadlessBrowser()`
+
+```kotlin
+fun KromiumClient.createHeadlessBrowser(url: String = "about:blank", width: Int = 1280, height: Int = 800): KromiumBrowser
+```
+
+Creates a new zero-dependency headless KromiumBrowser instance on this client.
+
+
+
+---
+
+# KromiumConfig
+
+```kotlin
+@ConsistentCopyVisibility data class KromiumConfig internal constructor(val downloadConfig: KromiumEngineDownloadConfig, val browserConfig: KromiumBrowserConfig, val hardwareConfig: KromiumHardwareConfig, val securityConfig: KromiumSecurityConfig, val loggingConfig: KromiumLoggingConfig)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+The master configuration object for the Kromium engine. Composed of specialized domain sub-configurations for engine downloading, general browser parameters, hardware/GPU acceleration, enterprise security, and logging severity.
+
+### When to Use
+
+Instantiate via KromiumConfig.builder() to configure the engine prior to calling Kromium.createEngine(config, provider) or provider.createEngine(config).
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`downloadConfig`** | `KromiumEngineDownloadConfig` | Engine downloading, CDN release channels, and installation path configurations. |
+| **`browserConfig`** | `KromiumBrowserConfig` | General browser settings, cache directory, remote debugging port, proxy, and custom schemes. |
+| **`hardwareConfig`** | `KromiumHardwareConfig` | Host OS process model and GPU hardware acceleration options. |
+| **`securityConfig`** | `KromiumSecurityConfig` | Chromium sandbox controls, telemetry blockers, WebRTC IP policies, and HTTP auth allowlists. |
+| **`loggingConfig`** | `KromiumLoggingConfig` | Engine native logging severity level and log destination settings. |
+
+## Methods
+
+### `validate()`
+
+```kotlin
+fun validate()
+```
+
+Validates this configuration and throws KromiumException.InvalidConfig if any values are invalid (e.g. remoteDebuggingPort outside 0..65535 or path traversal in cachePath).
+
+- **Returns:** `Unit`
+- **Throws:** `KromiumException.InvalidConfig`
+
+### `builder()`
+
+```kotlin
+@JvmStatic fun builder(): Builder
+```
+
+Returns a new builder for KromiumConfig initialized with default values.
+
+- **Returns:** `Builder`
+
+## Exceptions
+
+| Exception | When Thrown |
+| :--- | :--- |
+| **`KromiumException.InvalidConfig`** |  |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumConfig
+import org.daviante.kromium.api.config.KromiumGpuMode
+
+val config = KromiumConfig.builder()
+    .browserConfig { it.remoteDebuggingPort(9222) }
+    .hardwareConfig { it.gpuMode(KromiumGpuMode.HARDWARE) }
+    .securityConfig { it.sandboxEnabled(true).doNotTrack(true) }
+    .build()
+
+config.validate()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumConfig;
+import org.daviante.kromium.api.config.KromiumBrowserConfig;
+
+public class ConfigFactory {
+    public static KromiumConfig create() {
+        KromiumBrowserConfig browserConfig = KromiumBrowserConfig.builder()
+            .remoteDebuggingPort(9222)
+            .build();
+
+        return KromiumConfig.builder()
+            .browserConfig(browserConfig)
+            .build();
+    }
+}
+```
+
+
+---
+
+# KromiumBrowserConfig
+
+```kotlin
+@ConsistentCopyVisibility data class KromiumBrowserConfig internal constructor(val cachePath: String?, val isHeadless: Boolean, val remoteDebuggingPort: Int, val commandLineArgs: List<String>, val customSchemes: List<KromiumCustomScheme>, val schemeRegistrations: List<KromiumSchemeRegistration> = emptyList(), val proxy: KromiumProxy? = null)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+General browser behavior and storage configuration for the Kromium engine. Controls disk cache directories, headless rendering mode, remote CDP debugging port, command-line arguments, custom URL scheme definitions, and default proxy rules.
+
+### When to Use
+
+Configure within KromiumConfig.builder().browserConfig { ... } to define engine-wide caching, debugging ports, and startup flags.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`cachePath`** | `String?` | Filesystem path where persistent cache and storage are kept, or null for in-memory incognito cache. |
+| **`isHeadless`** | `Boolean` | Whether the engine operates in headless mode without desktop window handles. |
+| **`remoteDebuggingPort`** | `Int` | Port for Chromium Remote Debugging Protocol (0 disables remote debugging). |
+| **`commandLineArgs`** | `List<String>` | Additional native Chromium command-line switches passed during process initialization. |
+| **`customSchemes`** | `List<KromiumCustomScheme>` | Custom URL schemes (e.g. app, res) registered with Chromium prior to engine startup. |
+| **`schemeRegistrations`** | `List<KromiumSchemeRegistration>` | Initial custom scheme handler registrations binding asset handlers to scheme and domain names. |
+| **`proxy`** | `KromiumProxy?` | Default proxy strategy applied to the engine and all client sessions. |
+
+## Methods
+
+### `builder()`
+
+```kotlin
+@JvmStatic fun builder(): Builder
+```
+
+Returns a new builder for KromiumBrowserConfig.
+
+- **Returns:** `Builder`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumBrowserConfig
+import org.daviante.kromium.api.proxy.KromiumProxy
+
+val browserConfig = KromiumBrowserConfig.builder()
+    .cachePath("/tmp/kromium-cache")
+    .remoteDebuggingPort(9222)
+    .proxy(KromiumProxy.system())
+    .addArgs("--disable-gpu-shader-disk-cache", "--autoplay-policy=no-user-gesture-required")
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumBrowserConfig;
+
+public class BrowserConfigSetup {
+    public static KromiumBrowserConfig create() {
+        return KromiumBrowserConfig.builder()
+            .isHeadless(false)
+            .remoteDebuggingPort(9222)
+            .build();
+    }
+}
+```
+
+
+---
+
+# KromiumClientConfig
+
+```kotlin
+data class KromiumClientConfig(val userAgent: String? = null, val emulateDesktopEnvironment: Boolean = false, val doNotTrack: Boolean = true, val isIsolated: Boolean = false, val proxy: KromiumProxy? = null, val onBeforeDownloadListener: KromiumBeforeDownloadListener? = null, val downloadListener: KromiumDownloadListener? = null, val requestInterceptor: KromiumRequestInterceptor? = null, val navigationInterceptor: KromiumNavigationInterceptor? = null, val consoleMessageListener: KromiumConsoleMessageListener? = null, val jsDialogListener: KromiumJsDialogListener? = null, val popupListener: KromiumPopupListener? = null, val authListener: KromiumAuthListener? = null, val contextMenuListener: KromiumContextMenuListener? = null, val permissionListener: KromiumPermissionListener? = null, val loadErrorListener: KromiumLoadErrorListener? = null, val isOffScreenRendered: Boolean = true, val isTransparent: Boolean = false, val framework: KromiumUiFramework? = null, val sslErrorPolicy: SslErrorPolicy = SslErrorPolicy.Strict, val initialWidth: Int = 1280, val initialHeight: Int = 800)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Configuration for a specific browser client session. Determines proxy settings, user agents, transparency, OSR canvas bindings, SSL error policies, initial dimensions, and event listeners for network, downloads, and UI interactions.
+
+### When to Use
+
+Pass into engine.createClient(config) or client.createBrowser(url, config) to configure individual browsing sessions.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`userAgent`** | `String?` | Custom HTTP User-Agent string, or null to use Chromium default. |
+| **`emulateDesktopEnvironment`** | `Boolean` | Whether to emulate a standard desktop display environment. |
+| **`doNotTrack`** | `Boolean` | Whether to send DNT: 1 and Sec-GPC: 1 privacy headers. |
+| **`isIsolated`** | `Boolean` | Whether this client operates in an isolated incognito storage partition. |
+| **`proxy`** | `KromiumProxy?` | Session-specific proxy configuration overriding the global engine proxy. |
+| **`onBeforeDownloadListener`** | `KromiumBeforeDownloadListener?` | Callback to resolve target paths or cancel file downloads before transfer begins. |
+| **`downloadListener`** | `KromiumDownloadListener?` | Callback to monitor file download progress and completion events. |
+| **`requestInterceptor`** | `KromiumRequestInterceptor?` | Interceptor for inspecting, modifying, or blocking outgoing HTTP/HTTPS web resource requests. |
+| **`navigationInterceptor`** | `KromiumNavigationInterceptor?` | Interceptor for evaluating and overriding top-level frame navigations. |
+| **`consoleMessageListener`** | `KromiumConsoleMessageListener?` | Listener for JavaScript console messages (log, info, warn, error). |
+| **`jsDialogListener`** | `KromiumJsDialogListener?` | Listener to handle or suppress JavaScript alert, confirm, and prompt dialogs. |
+| **`popupListener`** | `KromiumPopupListener?` | Listener for popup window requests (window.open). |
+| **`authListener`** | `KromiumAuthListener?` | Listener for HTTP Basic/Digest and proxy authentication challenges. |
+| **`contextMenuListener`** | `KromiumContextMenuListener?` | Listener for right-click context menu construction and customization. |
+| **`permissionListener`** | `KromiumPermissionListener?` | Listener for camera, microphone, screen share, and media device permission requests. |
+| **`loadErrorListener`** | `KromiumLoadErrorListener?` | Listener for frame load failures, DNS resolution errors, and connection dropouts. |
+| **`isOffScreenRendered`** | `Boolean` | Whether browsers in this client use off-screen rendering (OSR) into pixel buffers. |
+| **`isTransparent`** | `Boolean` | Whether the web view canvas background is transparent. |
+| **`framework`** | `KromiumUiFramework?` | Target UI framework (COMPOSE, SWING, JAVAFX, SWT, AWT) for OSR canvas factory resolution. |
+| **`sslErrorPolicy`** | `SslErrorPolicy` | SSL certificate verification policy (Strict, IgnoreAll, AllowHostList, Custom). |
+| **`initialWidth`** | `Int` | Initial viewport width in pixels. |
+| **`initialHeight`** | `Int` | Initial viewport height in pixels. |
+
+## Methods
+
+### `default()`
+
+```kotlin
+@JvmStatic fun default(): KromiumClientConfig
+```
+
+Returns the default client configuration instance.
+
+- **Returns:** `KromiumClientConfig`
+
+### `builder()`
+
+```kotlin
+@JvmStatic fun builder(): Builder
+```
+
+Returns a new builder for KromiumClientConfig.
+
+- **Returns:** `Builder`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumClientConfig
+import org.daviante.kromium.api.ui.KromiumUiFramework
+
+val clientConfig = KromiumClientConfig.builder()
+    .framework(KromiumUiFramework.COMPOSE)
+    .doNotTrack(true)
+    .initialWidth(1400)
+    .initialHeight(900)
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumClientConfig;
+import org.daviante.kromium.api.ui.KromiumUiFramework;
+
+public class ClientConfigFactory {
+    public static KromiumClientConfig create() {
+        return KromiumClientConfig.builder()
+            .framework(KromiumUiFramework.SWING)
+            .doNotTrack(true)
+            .build();
+    }
+}
+```
+
+
+---
+
+# KromiumHardwareConfig
+
+```kotlin
+@ConsistentCopyVisibility data class KromiumHardwareConfig internal constructor(val processModel: KromiumProcessModel, val gpuMode: KromiumGpuMode)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Controls how the engine interacts with the host OS and GPU. Configures Chromium process isolation architecture and graphics rendering acceleration mode.
+
+### When to Use
+
+Configure within KromiumConfig.builder().hardwareConfig { ... } to enable full GPU acceleration, disable GPU compositing, or activate software fallbacks in virtual machines.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`processModel`** | `KromiumProcessModel` | The process isolation architecture: AUTO (multi-process helper), OUT_OF_PROCESS (external RPC daemon), or IN_PROCESS (embedded). |
+| **`gpuMode`** | `KromiumGpuMode` | Graphics rendering strategy: HARDWARE (full GPU), SOFTWARE (SwiftShader), COMPOSITING_DISABLED (CPU compositing), or ANGLE_WARP (Direct3D 11 WARP). |
+
+## Methods
+
+### `builder()`
+
+```kotlin
+@JvmStatic fun builder(): Builder
+```
+
+Returns a new builder for KromiumHardwareConfig.
+
+- **Returns:** `Builder`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumHardwareConfig
+import org.daviante.kromium.api.config.KromiumProcessModel
+import org.daviante.kromium.api.config.KromiumGpuMode
+
+val hardwareConfig = KromiumHardwareConfig.builder()
+    .processModel(KromiumProcessModel.AUTO)
+    .gpuMode(KromiumGpuMode.HARDWARE)
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumHardwareConfig;
+import org.daviante.kromium.api.config.KromiumProcessModel;
+import org.daviante.kromium.api.config.KromiumGpuMode;
+
+public class HardwareSetup {
+    public static KromiumHardwareConfig create() {
+        return KromiumHardwareConfig.builder()
+            .processModel(KromiumProcessModel.AUTO)
+            .gpuMode(KromiumGpuMode.HARDWARE)
+            .build();
+    }
+}
+```
+
+
+---
+
+# KromiumLoggingConfig
+
+```kotlin
+@ConsistentCopyVisibility data class KromiumLoggingConfig internal constructor(val logSeverity: KromiumLogSeverity)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Logging configuration for the Kromium engine. Controls the verbosity of Chromium's internal native logging subsystem.
+
+### When to Use
+
+Configure within KromiumConfig.builder().loggingConfig { ... } to adjust native console logging or completely silence CEF diagnostic messages.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`logSeverity`** | `KromiumLogSeverity` | Log severity level: DEFAULT, VERBOSE, INFO, WARNING, ERROR, FATAL, or DISABLE. |
+
+## Methods
+
+### `builder()`
+
+```kotlin
+@JvmStatic fun builder(): Builder
+```
+
+Returns a new builder for KromiumLoggingConfig.
+
+- **Returns:** `Builder`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumLoggingConfig
+import org.daviante.kromium.api.config.KromiumLogSeverity
+
+val loggingConfig = KromiumLoggingConfig.builder()
+    .logSeverity(KromiumLogSeverity.WARNING)
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumLoggingConfig;
+import org.daviante.kromium.api.config.KromiumLogSeverity;
+
+public class LoggingSetup {
+    public static KromiumLoggingConfig create() {
+        return KromiumLoggingConfig.builder()
+            .logSeverity(KromiumLogSeverity.DISABLE)
+            .build();
+    }
+}
+```
+
+
+---
+
+# KromiumSecurityConfig
+
+```kotlin
+@ConsistentCopyVisibility data class KromiumSecurityConfig internal constructor(val sandboxEnabled: Boolean, val blockRegistryAndTelemetry: Boolean, val doNotTrack: Boolean, val webrtcIpHandlingPolicy: String?, val authServerAllowlist: List<String>, val authNegotiateDelegateAllowlist: List<String>)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Handles security boundaries, privacy headers, WebRTC IP leak prevention, enterprise NTLM/Kerberos authentication allowlists, and background telemetry blocking.
+
+### When to Use
+
+Configure within KromiumConfig.builder().securityConfig { ... } to lock down browser security, protect user privacy, or configure corporate SSO authentication.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`sandboxEnabled`** | `Boolean` | Whether native Chromium sandboxing is enforced. |
+| **`blockRegistryAndTelemetry`** | `Boolean` | Whether to block Windows registry touchpoints and outgoing background telemetry (metrics, crash reports). |
+| **`doNotTrack`** | `Boolean` | Whether DNT: 1 and Sec-GPC: 1 privacy headers are asserted. |
+| **`webrtcIpHandlingPolicy`** | `String?` | WebRTC IP handling policy to prevent local/private IP address leaks (e.g. disable_non_proxied_udp). |
+| **`authServerAllowlist`** | `List<String>` | Allowlist of servers permitted for integrated HTTP Windows authentication (NTLM/Kerberos). |
+| **`authNegotiateDelegateAllowlist`** | `List<String>` | Allowlist of servers to which Kerberos credentials can be delegated. |
+
+## Methods
+
+### `builder()`
+
+```kotlin
+@JvmStatic fun builder(): Builder
+```
+
+Returns a new builder for KromiumSecurityConfig.
+
+- **Returns:** `Builder`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumSecurityConfig
+
+val securityConfig = KromiumSecurityConfig.builder()
+    .sandboxEnabled(true)
+    .blockRegistryAndTelemetry(true)
+    .doNotTrack(true)
+    .webrtcIpHandlingPolicy("disable_non_proxied_udp")
+    .authServerAllowlist(listOf("*.corp.internal"))
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumSecurityConfig;
+import java.util.List;
+
+public class SecuritySetup {
+    public static KromiumSecurityConfig create() {
+        return KromiumSecurityConfig.builder()
+            .sandboxEnabled(true)
+            .doNotTrack(true)
+            .authServerAllowlist(List.of("*.corp.internal"))
+            .build();
+    }
+}
+```
+
+
+---
+
+# KromiumGpuMode
+
+```kotlin
+enum class KromiumGpuMode
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Controls GPU hardware acceleration and graphics rendering strategy. Determines how the Chromium engine interacts with host GPU drivers, which is critical for VM environments, CI pipelines, and machines with unstable or overclocked graphics hardware.
+
+### When to Use
+
+Set via KromiumHardwareConfig when running in virtual machines, Docker containers, or CI environments where GPU drivers may not be available. Use SOFTWARE for bulletproof CPU rendering, or ANGLE_WARP on Windows to avoid D3D device removal errors.
+
+## States & Variants
+
+| Variant | Declaration | Description |
+| :--- | :--- | :--- |
+| **`HARDWARE`** | `HARDWARE` | Full hardware acceleration using native OS graphics APIs (DirectX/Direct3D on Windows, Metal on macOS, Vulkan/OpenGL on Linux). |
+| **`SOFTWARE`** | `SOFTWARE` | Pure software rendering (CPU-based). Forces --disable-gpu, --use-gl=angle, and --use-angle=swiftshader. Completely eliminates any direct interaction with GPU drivers or hardware Direct3D devices. Recommended as a bulletproof fallback when running in virtual machines or on machines with unstable/overclocked graphics drivers. |
+| **`COMPOSITING_DISABLED`** | `COMPOSITING_DISABLED` | Hardware-accelerated GPU rasterization with CPU compositing. Applies --disable-gpu-compositing. |
+| **`ANGLE_WARP`** | `ANGLE_WARP` | Direct3D 11 WARP (Windows Advanced Rasterization Platform). Uses Microsoft's high-speed software Direct3D rasterizer. Bypasses vendor hardware drivers and avoids physical GPU device reset/removal errors (0x887a0005) while maintaining DirectX pipeline compatibility on Windows. |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumConfig
+import org.daviante.kromium.api.config.KromiumGpuMode
+
+val config = KromiumConfig.builder()
+    .hardwareConfig { hw ->
+        hw.gpuMode(KromiumGpuMode.SOFTWARE) // CPU-only rendering for CI
+    }
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumConfig;
+import org.daviante.kromium.api.config.KromiumGpuMode;
+
+KromiumConfig config = KromiumConfig.builder()
+    .hardwareConfig(hw -> hw.gpuMode(KromiumGpuMode.ANGLE_WARP))
+    .build();
+```
+
+
+---
+
+# KromiumProcessModel
+
+```kotlin
+enum class KromiumProcessModel
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Defines the process isolation model used by Kromium and Chromium Embedded Framework. Controls whether the browser engine runs in-process within the host JVM, in a dedicated multi-process architecture via jcef_helper subprocesses, or as an external RPC server daemon.
+
+### When to Use
+
+Configure via KromiumConfig.builder().browserConfig { b -> b.processModel(...) }. Use AUTO (default) for desktop UI applications. Use IN_PROCESS when explicit single-process control is needed. Avoid OUT_OF_PROCESS for standard desktop apps as it requires custom CefNativeRenderHandler.
+
+## States & Variants
+
+| Variant | Declaration | Description |
+| :--- | :--- | :--- |
+| **`AUTO`** | `AUTO` | Automatically chooses the best process model for the platform. Uses multi-process Chromium architecture where the browser host runs embedded in the host JVM while GPU acceleration, WebGL rasterization, and web renderers run in dedicated jcef_helper subprocesses with their own OS Process IDs (PIDs) via --browser-subprocess-path. Provides 100% compatibility with Compose Desktop (SwingPanel), Swing, JavaFX, and SWT in both Windowed and Off-Screen Rendering (OSR) modes. |
+| **`OUT_OF_PROCESS`** | `OUT_OF_PROCESS` | Executes the Chromium browser engine in an external RPC server daemon (cef_server). In JetBrains JCEF, cef_server RPC mode requires a custom CefNativeRenderHandler (shared memory rasterization) and does not support standard Windowed (CefRendering.DEFAULT) or standard OSR rendering. Use AUTO or IN_PROCESS for desktop UI applications. |
+| **`IN_PROCESS`** | `IN_PROCESS` | Executes the Chromium browser engine directly inside the host JVM process. When running in this mode, Kromium applies defensive GPU flags (such as --disable-direct-composition and --disable-gpu-watchdog on Windows) to prevent swapchain hijacking and Direct3D collisions with the host UI toolkit. |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumConfig
+import org.daviante.kromium.api.config.KromiumProcessModel
+
+val config = KromiumConfig.builder()
+    .browserConfig { b ->
+        b.processModel(KromiumProcessModel.AUTO)
+    }
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumConfig;
+import org.daviante.kromium.api.config.KromiumProcessModel;
+
+KromiumConfig config = KromiumConfig.builder()
+    .browserConfig(b -> b.processModel(KromiumProcessModel.IN_PROCESS))
+    .build();
+```
+
+
+---
+
+# KromiumLogSeverity
+
+```kotlin
+enum class KromiumLogSeverity
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.config`
+- **Category:** Configuration
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Log severity levels for the Chromium engine. Controls the verbosity of native CEF log output written to the Kromium log file.
+
+### When to Use
+
+Set via KromiumLoggingConfig when building KromiumConfig to control native log verbosity. Use DISABLE in production to suppress all native logging, or VERBOSE during debugging to capture full Chromium internals.
+
+## States & Variants
+
+| Variant | Declaration | Description |
+| :--- | :--- | :--- |
+| **`DEFAULT`** | `DEFAULT` | Default Chromium log severity. Equivalent to INFO in most configurations. |
+| **`VERBOSE`** | `VERBOSE` | Most verbose logging level. Captures all internal Chromium diagnostic output. |
+| **`INFO`** | `INFO` | Informational messages about normal engine operation. |
+| **`WARNING`** | `WARNING` | Warnings about potential issues that do not prevent operation. |
+| **`ERROR`** | `ERROR` | Error conditions that may affect engine functionality. |
+| **`FATAL`** | `FATAL` | Fatal errors that cause immediate engine termination. |
+| **`DISABLE`** | `DISABLE` | Disables all native Chromium log output. Recommended for production deployments. |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.config.KromiumConfig
+import org.daviante.kromium.api.config.KromiumLogSeverity
+
+val config = KromiumConfig.builder()
+    .loggingConfig { log ->
+        log.severity(KromiumLogSeverity.DISABLE)
+    }
+    .build()
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.config.KromiumConfig;
+import org.daviante.kromium.api.config.KromiumLogSeverity;
+
+KromiumConfig config = KromiumConfig.builder()
+    .loggingConfig(log -> log.severity(KromiumLogSeverity.WARNING))
+    .build();
+```
+
+
+---
+
+# KromiumNavigation
+
+```kotlin
+interface KromiumNavigation
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.navigation`
+- **Category:** Navigation & Lifecycle
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Facade for browser navigation operations. Provides URL loading with lifecycle stage awaiting, history traversal, HTML injection, network idle detection, and reload/stop controls.
+
+### When to Use
+
+Access via browser.navigation to load URLs, navigate history, wait for page lifecycle stages, or detect network idle state.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`navigationState`** | `StateFlow<KromiumNavigationState>` | Observable state stream of the browser's navigation and loading status. |
+
+## Methods
+
+### `loadUrl()`
+
+```kotlin
+suspend fun loadUrl(url: String, waitUntil: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): Boolean
+```
+
+Loads a specific URL in the browser and suspends until the navigation reaches the requested stage.
+
+
+### `loadUrl()`
+
+```kotlin
+fun loadUrl(url: String)
+```
+
+Loads a specific URL in the browser without suspending.
+
+
+### `loadUrlAsync()`
+
+```kotlin
+fun loadUrlAsync(url: String, waitUntil: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>
+```
+
+Loads a specific URL and returns a CompletableFuture that completes when the requested stage is reached.
+
+
+### `waitForNavigation()`
+
+```kotlin
+suspend fun waitForNavigation(stage: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): Boolean
+```
+
+Waits for the page navigation lifecycle to reach the specified stage.
+
+
+### `waitForNavigationAsync()`
+
+```kotlin
+fun waitForNavigationAsync(stage: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>
+```
+
+Waits for the page navigation lifecycle to reach the specified stage and returns a CompletableFuture.
+
+
+### `waitForNetworkIdle()`
+
+```kotlin
+suspend fun waitForNetworkIdle(idleTimeMs: Long = 500L, maxTimeoutMs: Long = 10_000L, pollIntervalMs: Long = 50L): Boolean
+```
+
+Waits until there are no active in-flight network requests for a specific duration.
+
+
+### `waitForNetworkIdleAsync()`
+
+```kotlin
+fun waitForNetworkIdleAsync(idleTimeMs: Long = 500L, maxTimeoutMs: Long = 10_000L, pollIntervalMs: Long = 50L): CompletableFuture<Boolean>
+```
+
+Waits until there are no active in-flight network requests and returns a CompletableFuture.
+
+
+### `loadHtml()`
+
+```kotlin
+fun loadHtml(html: String, url: String = "http://kromium.local/")
+```
+
+Loads raw HTML content directly into the browser.
+
+
+### `goBack()`
+
+```kotlin
+fun goBack()
+```
+
+Navigates backwards in the history, if possible.
+
+
+### `goForward()`
+
+```kotlin
+fun goForward()
+```
+
+Navigates forwards in the history, if possible.
+
+
+### `canGoBack()`
+
+```kotlin
+fun canGoBack(): Boolean
+```
+
+Returns true if the browser can navigate backwards.
+
+
+### `canGoForward()`
+
+```kotlin
+fun canGoForward(): Boolean
+```
+
+Returns true if the browser can navigate forwards.
+
+
+### `reload()`
+
+```kotlin
+fun reload(ignoreCache: Boolean = false)
+```
+
+Reloads the current page.
+
+
+### `stopLoad()`
+
+```kotlin
+fun stopLoad()
+```
+
+Stops any pending or current load operation.
+
+
+
+---
+
+# KromiumNavigationState
+
+```kotlin
+data class KromiumNavigationState(
+    val isLoading: Boolean = false,
+    val canGoBack: Boolean = false,
+    val canGoForward: Boolean = false,
+    val url: String = "",
+    val title: String = ""
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.navigation`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`isLoading`** | `Boolean` | Whether the browser is currently loading a resource. |
+| **`canGoBack`** | `Boolean` | Whether backward navigation is available in session history. |
+| **`canGoForward`** | `Boolean` | Whether forward navigation is available in session history. |
+| **`url`** | `String` | The currently loaded URL. |
+| **`title`** | `String` | The title of the currently loaded page. |
+
+
+---
+
+# NavigationStage
+
+```kotlin
+enum class NavigationStage
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.navigation`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumLoadError
+
+```kotlin
+data class KromiumLoadError(
+    val errorCode: Int,
+    val errorText: String,
+    val failedUrl: String
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.navigation`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`errorCode`** | `Int` | Numeric error code indicating the cause of the failure. |
+| **`errorText`** | `String` | Human-readable description of the error. |
+| **`failedUrl`** | `String` | The URL that failed to load. |
+
+
+---
+
+# KromiumLoadErrorListener
+
+```kotlin
+fun interface KromiumLoadErrorListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.navigation`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onLoadError()`
+
+```kotlin
+fun onLoadError(error: KromiumLoadError)
+```
+
+Callback triggered when a navigation or page load failure occurs.
+
+
+
+---
+
+# KromiumView
+
+```kotlin
+interface KromiumView
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`surface`** | `KromiumRenderSurface` | The native rendering surface associated with this browser. |
+| **`zoomLevel`** | `Double` | Gets or sets the current zoom level. (0.0 is 100%, 1.0 is ~120%, -1.0 is ~80%). |
+| **`scaleFactor`** | `Double` | Gets or sets the manual UI scaling factor (e.g. 1.0 = 100%, 2.0 = 200%). |
+| **`isAutoDetectScaleFactor`** | `Boolean` | Whether OSR automatically detects display DPI scaling. |
+| **`scrollMultiplier`** | `Double` | Scroll sensitivity multiplier for OSR mode (default: 1.0). |
+
+## Methods
+
+### `setZoom()`
+
+```kotlin
+fun setZoom(level: Double)
+```
+
+Sets the zoom level for this browser.
+
+
+### `getZoom()`
+
+```kotlin
+fun getZoom(): Double
+```
+
+Gets the current zoom level.
+
+
+### `takeScreenshot()`
+
+```kotlin
+fun takeScreenshot(): BufferedImage?
+```
+
+Captures a screenshot of the current page rendering synchronously.
+
+
+### `takeScreenshotAsync()`
+
+```kotlin
+fun takeScreenshotAsync(): CompletableFuture<BufferedImage?>
+```
+
+Asynchronously captures a screenshot of the current page using native capabilities.
+
+
+### `setAntialiasing()`
+
+```kotlin
+fun setAntialiasing(enabled: Boolean)
+```
+
+Toggles graphics antialiasing on the underlying rendering component.
+
+
+### `setInterpolation()`
+
+```kotlin
+fun setInterpolation(quality: String)
+```
+
+Sets the rendering interpolation quality.
+
+
+### `resetScaleFactorToAuto()`
+
+```kotlin
+fun resetScaleFactorToAuto()
+```
+
+Resets the UI scaling factor to automatically match system DPI.
+
+
+### `print()`
+
+```kotlin
+fun print()
+```
+
+Triggers the operating system's native interactive print dialog for the current page.
+
+
+### `printToPdf()`
+
+```kotlin
+fun printToPdf(path: String): CompletableFuture<Boolean>
+```
+
+Generates a PDF of the current page and saves it to the specified path using default settings.
+
+
+### `printToPdf()`
+
+```kotlin
+fun printToPdf(path: String, settings: KromiumPdfSettings): CompletableFuture<Boolean>
+```
+
+Generates a vector PDF of the current page and saves it with custom settings.
+
+
+### `sendKeyEvent()`
+
+```kotlin
+fun sendKeyEvent(event: KromiumKeyEvent)
+```
+
+Dispatches a standardized cross-platform keyboard event into the browser viewport.
+
+
+### `setFocus()`
+
+```kotlin
+fun setFocus(focused: Boolean = true)
+```
+
+Explicitly notifies the underlying browser rendering engine whether this view has active focus.
+
+
+### `resize()`
+
+```kotlin
+fun resize(width: Int, height: Int)
+```
+
+Resizes the underlying browser rendering surface to the specified dimensions.
+
+
+
+---
+
+# KromiumUiFramework
+
+```kotlin
+enum class KromiumUiFramework
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumRenderSurface
+
+```kotlin
+interface KromiumRenderSurface
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `unwrap()`
+
+```kotlin
+fun <T : Any> unwrap(clazz: KClass<T>): T?
+```
+
+Attempts to unwrap this generic surface into a platform-specific UI component (e.g. java.awt.Component for Swing/Compose Desktop).
+
+
+
+---
+
+# KromiumMenuBuilder
+
+```kotlin
+interface KromiumMenuBuilder
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`context`** | `KromiumContextMenuContext` | Contextual parameters and action helpers for the current right-click event. |
+| **`count`** | `Int` | Number of items currently present in the menu. |
+
+## Methods
+
+### `clear()`
+
+```kotlin
+fun clear(): KromiumMenuBuilder
+```
+
+Clears all existing default menu items from the context menu.
+
+
+### `clearDefaults()`
+
+```kotlin
+fun clearDefaults(): KromiumMenuBuilder
+```
+
+Clears all existing default menu items (alias for Java / fluent style).
+
+
+### `removeDefault()`
+
+```kotlin
+fun removeDefault(menuId: Int): KromiumMenuBuilder
+```
+
+Removes a specific menu item by its integer command ID.
+
+
+### `addItem()`
+
+```kotlin
+fun addItem(label: String, enabled: Boolean = true, action: (KromiumContextMenuContext) -> Unit): KromiumMenuBuilder
+```
+
+Adds a standard clickable context menu item with an action callback.
+
+
+### `item()`
+
+```kotlin
+fun item(label: String, enabled: Boolean = true, action: (KromiumContextMenuContext) -> Unit): KromiumMenuBuilder
+```
+
+Kotlin DSL alias for addItem.
+
+
+### `addCheckItem()`
+
+```kotlin
+fun addCheckItem(label: String, checked: Boolean, enabled: Boolean = true, onToggle: (Boolean) -> Unit): KromiumMenuBuilder
+```
+
+Adds a checkable (checkbox) menu item.
+
+
+### `checkItem()`
+
+```kotlin
+fun checkItem(label: String, checked: Boolean, enabled: Boolean = true, onToggle: (Boolean) -> Unit): KromiumMenuBuilder
+```
+
+Kotlin DSL alias for addCheckItem.
+
+
+### `addRadioItem()`
+
+```kotlin
+fun addRadioItem(label: String, checked: Boolean, groupId: Int, enabled: Boolean = true, onSelect: () -> Unit): KromiumMenuBuilder
+```
+
+Adds a radio menu item belonging to a mutual-exclusion group.
+
+
+### `radioItem()`
+
+```kotlin
+fun radioItem(label: String, checked: Boolean, groupId: Int, enabled: Boolean = true, onSelect: () -> Unit): KromiumMenuBuilder
+```
+
+Kotlin DSL alias for addRadioItem.
+
+
+### `addSeparator()`
+
+```kotlin
+fun addSeparator(): KromiumMenuBuilder
+```
+
+Adds a visual separator line between menu items.
+
+
+### `separator()`
+
+```kotlin
+fun separator(): KromiumMenuBuilder
+```
+
+Kotlin DSL alias for addSeparator.
+
+
+### `addSubMenu()`
+
+```kotlin
+fun addSubMenu(label: String, block: (KromiumMenuBuilder) -> Unit): KromiumMenuBuilder
+```
+
+Adds a nested submenu with its own child builder.
+
+
+### `subMenu()`
+
+```kotlin
+fun subMenu(label: String, block: KromiumMenuBuilder.() -> Unit): KromiumMenuBuilder
+```
+
+Kotlin DSL alias for addSubMenu.
+
+
+### `back()`
+
+```kotlin
+fun back(label: String = "Back"): KromiumMenuBuilder
+```
+
+Adds the native Back command.
+
+
+### `forward()`
+
+```kotlin
+fun forward(label: String = "Forward"): KromiumMenuBuilder
+```
+
+Adds the native Forward command.
+
+
+### `reload()`
+
+```kotlin
+fun reload(label: String = "Reload"): KromiumMenuBuilder
+```
+
+Adds the native Reload command.
+
+
+### `print()`
+
+```kotlin
+fun print(label: String = "Print..."): KromiumMenuBuilder
+```
+
+Adds the native Print command.
+
+
+### `viewSource()`
+
+```kotlin
+fun viewSource(label: String = "View Page Source"): KromiumMenuBuilder
+```
+
+Adds the native View Page Source command.
+
+
+### `copy()`
+
+```kotlin
+fun copy(label: String = "Copy"): KromiumMenuBuilder
+```
+
+Adds the native Copy command.
+
+
+### `cut()`
+
+```kotlin
+fun cut(label: String = "Cut"): KromiumMenuBuilder
+```
+
+Adds the native Cut command.
+
+
+### `paste()`
+
+```kotlin
+fun paste(label: String = "Paste"): KromiumMenuBuilder
+```
+
+Adds the native Paste command.
+
+
+### `selectAll()`
+
+```kotlin
+fun selectAll(label: String = "Select All"): KromiumMenuBuilder
+```
+
+Adds the native Select All command.
+
+
+### `inspectElement()`
+
+```kotlin
+fun inspectElement(label: String = "Inspect Element"): KromiumMenuBuilder
+```
+
+Turnkey action: Opens DevTools targeting clicked element coordinates.
+
+
+### `copyLink()`
+
+```kotlin
+fun copyLink(label: String = "Copy Link Address"): KromiumMenuBuilder
+```
+
+Turnkey action: Copies target link URL to clipboard if on hyperlink.
+
+
+### `saveImageAs()`
+
+```kotlin
+fun saveImageAs(label: String = "Save Image As..."): KromiumMenuBuilder
+```
+
+Turnkey action: Triggers download for image/media under cursor.
+
+
+### `copyImageUrl()`
+
+```kotlin
+fun copyImageUrl(label: String = "Copy Image Address"): KromiumMenuBuilder
+```
+
+Turnkey action: Copies media/image source URL to clipboard.
+
+
+### `searchWeb()`
+
+```kotlin
+fun searchWeb(labelFormat: String = "Search Google for \"%s\"", engineUrl: String = "https://www.google.com/search?q=%s", openInSystemBrowser: Boolean = true): KromiumMenuBuilder
+```
+
+Turnkey action: Searches web for selected text.
+
+
+
+---
+
+# KromiumContextMenuListener
+
+```kotlin
+fun interface KromiumContextMenuListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onBuildContextMenu()`
+
+```kotlin
+fun onBuildContextMenu(builder: KromiumMenuBuilder, context: KromiumContextMenuContext)
+```
+
+Called when a context menu is about to be displayed.
+
+
+
+---
+
+# KromiumContextMenuContext
+
+```kotlin
+class KromiumContextMenuContext(
+    val browser: KromiumBrowser?,
+    val params: KromiumContextMenuParams
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`browser`** | `KromiumBrowser?` | High-level KromiumBrowser instance, if resolved. |
+| **`params`** | `KromiumContextMenuParams` | Contextual parameters of the right-click event. |
+
+## Methods
+
+### `copyToClipboard()`
+
+```kotlin
+fun copyToClipboard(text: String)
+```
+
+Copies the given text to the system clipboard.
+
+
+### `inspectElement()`
+
+```kotlin
+fun inspectElement()
+```
+
+Opens Chromium DevTools targeting the clicked element coordinates.
+
+
+### `startDownload()`
+
+```kotlin
+fun startDownload(url: String)
+```
+
+Initiates a download for the given URL using Chromium's download pipeline.
+
+
+### `searchWeb()`
+
+```kotlin
+fun searchWeb(query: String = params.selectionText ?: "", engineUrl: String = "https://www.google.com/search?q=%s", openInSystemBrowser: Boolean = true)
+```
+
+Performs a web search using the provided query and template.
+
+
+
+---
+
+# KromiumContextMenuParams
+
+```kotlin
+data class KromiumContextMenuParams(
+    val x: Int,
+    val y: Int,
+    val linkUrl: String? = null,
+    val unfilteredLinkUrl: String? = null,
+    val sourceUrl: String? = null,
+    val hasImage: Boolean = false,
+    val pageUrl: String? = null,
+    val frameUrl: String? = null,
+    val selectionText: String? = null,
+    val misspelledWord: String? = null,
+    val isEditable: Boolean = false,
+    val isSpellCheckEnabled: Boolean = false
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`x`** | `Int` | Horizontal coordinate relative to the browser viewport. |
+| **`y`** | `Int` | Vertical coordinate relative to the browser viewport. |
+| **`linkUrl`** | `String?` | The target URL if right-click occurred on a hyperlink. |
+| **`unfilteredLinkUrl`** | `String?` | The unfiltered target URL if on a hyperlink. |
+| **`sourceUrl`** | `String?` | The source URL if right-click occurred on media. |
+| **`hasImage`** | `Boolean` | True if the clicked element has image contents. |
+| **`pageUrl`** | `String?` | URL of the top-level page. |
+| **`frameUrl`** | `String?` | URL of the specific subframe. |
+| **`selectionText`** | `String?` | Any text currently highlighted/selected. |
+| **`misspelledWord`** | `String?` | The misspelled word under cursor if spellcheck is active. |
+| **`isEditable`** | `Boolean` | True if triggered inside an editable field. |
+| **`isSpellCheckEnabled`** | `Boolean` | True if spell checking is enabled. |
+
+## Methods
+
+### `hasSelection()`
+
+```kotlin
+fun hasSelection(): Boolean
+```
+
+True if text is currently highlighted or selected.
+
+
+### `isLink()`
+
+```kotlin
+fun isLink(): Boolean
+```
+
+True if the click was on a hyperlink.
+
+
+### `hasMedia()`
+
+```kotlin
+fun hasMedia(): Boolean
+```
+
+True if the click was on media or an image element.
+
+
+
+---
+
+# KromiumJsDialog
+
+```kotlin
+class KromiumJsDialog(
+    val message: String,
+    val defaultPromptText: String,
+    val type: KromiumJsDialogType,
+    val originUrl: String = "",
+    private val onConfirm: (promptResult: String) -> Unit,
+    private val onCancel: () -> Unit
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`message`** | `String` | The text message displayed by the dialog. |
+| **`defaultPromptText`** | `String` | The default input text if type is PROMPT. |
+| **`type`** | `KromiumJsDialogType` | The dialog classification (ALERT, CONFIRM, PROMPT). |
+| **`originUrl`** | `String` | The URL of the web page that initiated the dialog. |
+| **`isHandled`** | `Boolean` | Indicates whether this dialog has already been confirmed or cancelled. |
+
+## Methods
+
+### `confirm()`
+
+```kotlin
+fun confirm(promptResult: String = defaultPromptText)
+```
+
+Confirms or accepts the dialog. For prompts, passes promptResult back to the JavaScript engine.
+
+
+### `cancel()`
+
+```kotlin
+fun cancel()
+```
+
+Cancels or dismisses the dialog.
+
+
+
+---
+
+# KromiumJsDialogType
+
+```kotlin
+enum class KromiumJsDialogType
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumJsDialogListener
+
+```kotlin
+fun interface KromiumJsDialogListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onDialog()`
+
+```kotlin
+fun onDialog(dialog: KromiumJsDialog): Boolean
+```
+
+Called when a webpage triggers an alert, confirm, or prompt dialog.
+
+
+
+---
+
+# KromiumPopupListener
+
+```kotlin
+fun interface KromiumPopupListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onBeforePopup()`
+
+```kotlin
+fun onBeforePopup(targetUrl: String): Boolean
+```
+
+Called before a popup window is opened. Returns true to cancel/block the popup, or false to allow the popup to open.
+
+
+
+---
+
+# KromiumKeyEvent
+
+```kotlin
+data class KromiumKeyEvent(
+    val type: KromiumKeyEventType,
+    val keyCode: Int = 0,
+    val keyChar: Char = CHAR_UNDEFINED,
+    val modifiers: Int = 0
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`type`** | `KromiumKeyEventType` | Whether this is a key down, key character typed, or key up. |
+| **`keyCode`** | `Int` | Standard virtual key code (see KromiumKeyCodes). |
+| **`keyChar`** | `Char` | Character value for printable input and text composition. |
+| **`modifiers`** | `Int` | Bitmask of active modifier keys. |
+| **`isShiftDown`** | `Boolean` | True if Shift key is depressed. |
+| **`isControlDown`** | `Boolean` | True if Control key is depressed. |
+| **`isAltDown`** | `Boolean` | True if Alt key is depressed. |
+| **`isMetaDown`** | `Boolean` | True if Meta/Windows/Command key is depressed. |
+| **`isAltGraphDown`** | `Boolean` | True if AltGraph key is depressed. |
+
+
+---
+
+# KromiumKeyEventType
+
+```kotlin
+enum class KromiumKeyEventType
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumKeyCodes
+
+```kotlin
+object KromiumKeyCodes
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.ui`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`VK_ENTER`** | `Int` | Virtual key code for Enter (10). |
+| **`VK_BACK_SPACE`** | `Int` | Virtual key code for Backspace (8). |
+| **`VK_TAB`** | `Int` | Virtual key code for Tab (9). |
+| **`VK_ESCAPE`** | `Int` | Virtual key code for Escape (27). |
+| **`VK_SPACE`** | `Int` | Virtual key code for Space (32). |
+| **`VK_SHIFT`** | `Int` | Virtual key code for Shift (16). |
+| **`VK_CONTROL`** | `Int` | Virtual key code for Control (17). |
+| **`VK_ALT`** | `Int` | Virtual key code for Alt (18). |
+| **`VK_META`** | `Int` | Virtual key code for Meta/Windows/Command (157). |
+| **`VK_DELETE`** | `Int` | Virtual key code for Delete (127). |
+| **`VK_LEFT`** | `Int` | Virtual key code for Left Arrow (37). |
+| **`VK_UP`** | `Int` | Virtual key code for Up Arrow (38). |
+| **`VK_RIGHT`** | `Int` | Virtual key code for Right Arrow (39). |
+| **`VK_DOWN`** | `Int` | Virtual key code for Down Arrow (40). |
+
+
+---
+
+# KromiumAutomation
+
+```kotlin
+interface KromiumAutomation
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.automation`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `emulateDesktopEnvironment()`
+
+```kotlin
+fun emulateDesktopEnvironment()
+```
+
+Injects JavaScript into the active page to normalize the headless environment and emulate a standard interactive desktop session.
+
+
+### `simulateClick()`
+
+```kotlin
+fun simulateClick(x: Int, y: Int)
+```
+
+Simulates a click event at the specified viewport coordinates.
+
+
+### `waitForSelector()`
+
+```kotlin
+suspend fun waitForSelector(selector: String, timeoutMs: Long = 10_000L): Boolean
+```
+
+Suspends until an element matching the CSS selector is attached to the DOM.
+
+
+### `waitForSelectorAsync()`
+
+```kotlin
+fun waitForSelectorAsync(selector: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>
+```
+
+Asynchronously awaits an element matching the CSS selector.
+
+
+### `waitForUrl()`
+
+```kotlin
+suspend fun waitForUrl(pattern: String, isRegex: Boolean = false, timeoutMs: Long = 15_000L): Boolean
+```
+
+Suspends until current URL matches target pattern.
+
+
+### `waitForUrlAsync()`
+
+```kotlin
+fun waitForUrlAsync(pattern: String, isRegex: Boolean = false, timeoutMs: Long = 15_000L): CompletableFuture<Boolean>
+```
+
+Asynchronously awaits matching URL.
+
+
+### `click()`
+
+```kotlin
+suspend fun click(selector: String, timeoutMs: Long = 10_000L): Boolean
+```
+
+Clicks an element matching the CSS selector.
+
+
+### `clickAsync()`
+
+```kotlin
+fun clickAsync(selector: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>
+```
+
+Asynchronously clicks an element matching the CSS selector.
+
+
+### `fill()`
+
+```kotlin
+suspend fun fill(selector: String, value: String, timeoutMs: Long = 10_000L): Boolean
+```
+
+Sets the value of an input element matching the selector.
+
+
+### `fillAsync()`
+
+```kotlin
+fun fillAsync(selector: String, value: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>
+```
+
+Asynchronously sets the value of an input element.
+
+
+### `type()`
+
+```kotlin
+suspend fun type(selector: String, text: String, delayMs: Long = 20L, timeoutMs: Long = 10_000L): Boolean
+```
+
+Types text into an element character by character with keystroke delay.
+
+
+### `typeAsync()`
+
+```kotlin
+fun typeAsync(selector: String, text: String, delayMs: Long = 20L, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>
+```
+
+Asynchronously types text into an element.
+
+
+### `selectOption()`
+
+```kotlin
+suspend fun selectOption(selector: String, value: String, timeoutMs: Long = 10_000L): Boolean
+```
+
+Selects an option in a dropdown select element.
+
+
+### `selectOptionAsync()`
+
+```kotlin
+fun selectOptionAsync(selector: String, value: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>
+```
+
+Asynchronously selects an option in a dropdown select element.
+
+
+### `getTextContent()`
+
+```kotlin
+suspend fun getTextContent(selector: String, timeoutMs: Long = 10_000L): String?
+```
+
+Retrieves the inner text content of an element.
+
+
+### `getTextContentAsync()`
+
+```kotlin
+fun getTextContentAsync(selector: String, timeoutMs: Long = 10_000L): CompletableFuture<String?>
+```
+
+Asynchronously retrieves the inner text content of an element.
+
+
+### `getAttribute()`
+
+```kotlin
+suspend fun getAttribute(selector: String, attribute: String, timeoutMs: Long = 10_000L): String?
+```
+
+Retrieves an attribute value of an element.
+
+
+### `getAttributeAsync()`
+
+```kotlin
+fun getAttributeAsync(selector: String, attribute: String, timeoutMs: Long = 10_000L): CompletableFuture<String?>
+```
+
+Asynchronously retrieves an attribute value of an element.
+
+
+### `isVisible()`
+
+```kotlin
+suspend fun isVisible(selector: String): Boolean
+```
+
+Checks if an element matching selector is visible.
+
+
+### `isVisibleAsync()`
+
+```kotlin
+fun isVisibleAsync(selector: String): CompletableFuture<Boolean>
+```
+
+Asynchronously checks if an element is visible.
+
+
+### `isChecked()`
+
+```kotlin
+suspend fun isChecked(selector: String): Boolean
+```
+
+Checks if a checkbox or radio button is checked.
+
+
+### `isCheckedAsync()`
+
+```kotlin
+fun isCheckedAsync(selector: String): CompletableFuture<Boolean>
+```
+
+Asynchronously checks if a checkbox or radio button is checked.
+
+
+### `count()`
+
+```kotlin
+suspend fun count(selector: String): Int
+```
+
+Returns the number of elements matching the selector.
+
+
+### `countAsync()`
+
+```kotlin
+fun countAsync(selector: String): CompletableFuture<Int>
+```
+
+Asynchronously returns the number of elements matching the selector.
+
+
+
+---
+
+# KromiumJsBridge
+
+```kotlin
+interface KromiumJsBridge
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.automation`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `executeJavaScript()`
+
+```kotlin
+fun executeJavaScript(code: String)
+```
+
+Executes arbitrary JavaScript in the context of the current page.
+
+
+### `evaluateJavaScript()`
+
+```kotlin
+suspend fun evaluateJavaScript(expression: String, timeoutMs: Long? = null, bindingTimeoutMs: Long? = null, bindingIntervalMs: Long? = null): String?
+```
+
+Executes arbitrary JavaScript asynchronously and returns the stringified response.
+
+
+### `getHtml()`
+
+```kotlin
+suspend fun getHtml(): String
+```
+
+Convenience function to fetch the complete HTML of the current document (document.documentElement.outerHTML).
+
+
+### `getHtmlAsync()`
+
+```kotlin
+fun getHtmlAsync(): CompletableFuture<String>
+```
+
+Asynchronously fetches the complete HTML of the current document.
+
+
+### `getText()`
+
+```kotlin
+suspend fun getText(): String
+```
+
+Convenience function to fetch the visible text content of the current document (document.body.innerText).
+
+
+### `getTextAsync()`
+
+```kotlin
+fun getTextAsync(): CompletableFuture<String>
+```
+
+Asynchronously fetches the visible text content of the current document.
+
+
+### `getFaviconUrl()`
+
+```kotlin
+suspend fun getFaviconUrl(): String?
+```
+
+Attempts to resolve the URL of the page's favicon using DOM inspection.
+
+
+### `getFaviconUrlAsync()`
+
+```kotlin
+fun getFaviconUrlAsync(): CompletableFuture<String?>
+```
+
+Asynchronously resolves the favicon URL.
+
+
+
+---
+
+# KromiumClipboard
+
+```kotlin
+interface KromiumClipboard
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.automation`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `copy()`
+
+```kotlin
+fun copy()
+```
+
+Copies the current selection to the clipboard.
+
+
+### `paste()`
+
+```kotlin
+fun paste()
+```
+
+Pastes the clipboard content into the current focused element.
+
+
+### `cut()`
+
+```kotlin
+fun cut()
+```
+
+Cuts the current selection to the clipboard.
+
+
+### `selectAll()`
+
+```kotlin
+fun selectAll()
+```
+
+Selects all text/content in the current focused element.
+
+
+### `undo()`
+
+```kotlin
+fun undo()
+```
+
+Undoes the last editing action.
+
+
+### `redo()`
+
+```kotlin
+fun redo()
+```
+
+Redoes the last undone editing action.
+
+
+
+---
+
+# KromiumSecurity
+
+```kotlin
+interface KromiumSecurity
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`hostLock`** | `Set<String>?` | Whitelist of allowed hostnames/domains. Navigations outside these domains will be rejected. |
+| **`hostLockSubresources`** | `Boolean` | When true, host lock also restricts subresource network requests (scripts, xhr, fetch). |
+| **`hostLockSubframes`** | `Boolean` | When true, host lock also restricts navigations in subframes (iframes). Defaults to false, allowing embedded verification widgets to navigate within iframes without violating host locking. |
+
+
+---
+
+# SslErrorPolicy
+
+```kotlin
+sealed class SslErrorPolicy
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumAssets
+
+```kotlin
+interface KromiumAssets
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`filter`** | `KromiumAssetFilter?` | The active asset filter configuration, or null if filtering is disabled. |
+
+
+---
+
+# KromiumAssetFilter
+
+```kotlin
+data class KromiumAssetFilter(
+    val blockedExtensions: Set<String> = emptySet(),
+    val blockedUrlPatterns: Set<String> = emptySet(),
+    val blockedResourceTypes: Set<KromiumResourceType> = emptySet(),
+    val blockFilter: ((request: KromiumWebResourceRequest) -> Boolean)? = null,
+    val allowedExtensions: Set<String> = emptySet(),
+    val allowedUrlPatterns: Set<String> = emptySet(),
+    val allowedResourceTypes: Set<KromiumResourceType> = emptySet(),
+    val allowFilter: ((request: KromiumWebResourceRequest) -> Boolean)? = null,
+    val allowMainFrame: Boolean = true,
+    val mode: AssetFilterMode = AssetFilterMode.BLOCKLIST
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`blockedExtensions`** | `Set<String>` | File extensions to block. |
+| **`blockedUrlPatterns`** | `Set<String>` | Substrings or URL patterns to block. |
+| **`blockedResourceTypes`** | `Set<KromiumResourceType>` | Resource types to block. |
+| **`blockFilter`** | `((request: KromiumWebResourceRequest) -> Boolean)?` | Custom functional predicate to determine if a request should be blocked. |
+| **`allowedExtensions`** | `Set<String>` | File extensions to explicitly allow/whitelist. |
+| **`allowedUrlPatterns`** | `Set<String>` | Substrings or URL patterns to explicitly allow. |
+| **`allowedResourceTypes`** | `Set<KromiumResourceType>` | Resource types to explicitly allow. |
+| **`allowFilter`** | `((request: KromiumWebResourceRequest) -> Boolean)?` | Custom functional predicate to determine if a request should be allowed. |
+| **`allowMainFrame`** | `Boolean` | Whether to exempt the top-level main frame navigation from filtering. |
+| **`mode`** | `AssetFilterMode` | Operating mode (BLOCKLIST or ALLOWLIST). |
+| **`isEnabled`** | `Boolean` | Whether any filtering rules or allowlist mode are active. |
+
+## Methods
+
+### `shouldBlock()`
+
+```kotlin
+fun shouldBlock(request: KromiumWebResourceRequest): Boolean
+```
+
+Determines whether a given request should be blocked based on configured filter rules and mode.
+
+
+
+---
+
+# AssetFilterMode
+
+```kotlin
+enum class AssetFilterMode
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumResourceType
+
+```kotlin
+enum class KromiumResourceType
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumWebResourceRequest
+
+```kotlin
+data class KromiumWebResourceRequest(
+    val url: String,
+    val method: String,
+    val headers: MutableMap<String, String>,
+    val isNavigation: Boolean,
+    val isDownload: Boolean,
+    val resourceType: KromiumResourceType = KromiumResourceType.UNKNOWN,
+    val requestInitiator: String? = null
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`url`** | `String` | The destination URL of the request. |
+| **`method`** | `String` | HTTP method (GET, POST, etc.). |
+| **`headers`** | `MutableMap<String, String>` | Mutable map of request headers. |
+| **`isNavigation`** | `Boolean` | Whether this request represents a top-level or frame navigation. |
+| **`isDownload`** | `Boolean` | Whether this request initiates a file download. |
+| **`resourceType`** | `KromiumResourceType` | The resource type (e.g., SCRIPT, IMAGE, XHR). |
+| **`requestInitiator`** | `String?` | The origin URL that initiated this request, or null. |
+
+
+---
+
+# KromiumRequestInterceptor
+
+```kotlin
+fun interface KromiumRequestInterceptor
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `intercept()`
+
+```kotlin
+fun intercept(request: KromiumWebResourceRequest): Boolean
+```
+
+Intercepts an outgoing request. Developers can mutate request.headers or return true to cancel/block the request.
+
+
+
+---
+
+# KromiumNavigationInterceptor
+
+```kotlin
+fun interface KromiumNavigationInterceptor
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `shouldOverrideUrlLoading()`
+
+```kotlin
+fun shouldOverrideUrlLoading(url: String, isRedirect: Boolean): Boolean
+```
+
+Called before browser navigation occurs. Returns true to cancel the navigation, false to allow it.
+
+
+
+---
+
+# KromiumAuthListener
+
+```kotlin
+fun interface KromiumAuthListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onAuthRequired()`
+
+```kotlin
+fun onAuthRequired(request: KromiumAuthRequest): KromiumAuthResponse
+```
+
+Called when an authentication challenge is received.
+
+
+
+---
+
+# KromiumAuthRequest
+
+```kotlin
+data class KromiumAuthRequest(
+    val isProxy: Boolean,
+    val host: String,
+    val port: Int,
+    val realm: String,
+    val scheme: String
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`isProxy`** | `Boolean` | Whether the challenge was issued by an HTTP/HTTPS proxy. |
+| **`host`** | `String` | Hostname requiring authentication. |
+| **`port`** | `Int` | Port number requiring authentication. |
+| **`realm`** | `String` | Authentication realm specified by the challenge. |
+| **`scheme`** | `String` | Authentication scheme (e.g., Basic, Digest, NTLM). |
+
+
+---
+
+# KromiumAuthResponse
+
+```kotlin
+sealed class KromiumAuthResponse
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.network`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumProxy
+
+```kotlin
+sealed class KromiumProxy
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.proxy`
+- **Category:** Network & Security
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Defines the proxy strategy for the Kromium browser engine and client sessions. Supports Operating System Default, Direct bypass, WPAD Auto-Discovery, PAC script URLs, HTTP/HTTPS secure tunnels, SOCKS5 (with remote DNS resolution), and Multi-Protocol routing.
+
+### When to Use
+
+Configure in KromiumBrowserConfig, KromiumClientConfig, or dynamically at runtime via client.updateProxy(proxy) or browser.proxyManager.updateProxy(proxy).
+
+## States & Variants
+
+| Variant | Declaration | Description |
+| :--- | :--- | :--- |
+| **`KromiumProxy.System`** | `data object System : KromiumProxy()` | Uses operating system default proxy configuration. |
+| **`KromiumProxy.Direct`** | `data object Direct : KromiumProxy()` | Bypasses all proxies and connects directly to destination hosts. |
+| **`KromiumProxy.AutoDetect`** | `data object AutoDetect : KromiumProxy()` | Automatically discovers proxy settings using Web Proxy Auto-Discovery (WPAD) via DHCP/DNS queries. |
+| **`KromiumProxy.Pac`** | `data class Pac(val pacUrl: String) : KromiumProxy()` | Connects using a Proxy Auto-Configuration (PAC) script URL (e.g. http://pac.corp.internal/wpad.dat). |
+| **`KromiumProxy.Http`** | `data class Http @JvmOverloads constructor(val host: String, val port: Int, val username: String? = null, val password: String? = null, val isSecure: Boolean = false, val bypassList: List<String> = emptyList()) : KromiumProxy()` | Connects via an HTTP or HTTPS forward proxy with optional credentials and bypass list. |
+| **`KromiumProxy.Socks5`** | `data class Socks5 @JvmOverloads constructor(val host: String, val port: Int, val username: String? = null, val password: String? = null, val remoteDns: Boolean = true, val bypassList: List<String> = emptyList()) : KromiumProxy()` | Connects via a SOCKS5 (or SOCKS4) proxy with remote DNS resolution to prevent DNS leaks. |
+| **`KromiumProxy.MultiProtocol`** | `data class MultiProtocol @JvmOverloads constructor(val http: String? = null, val https: String? = null, val ftp: String? = null, val socks: String? = null, val bypassList: List<String> = emptyList()) : KromiumProxy()` | Connects using separate, dedicated proxies for different network protocols (HTTP vs HTTPS vs SOCKS). |
+
+## Methods
+
+### `toCommandLineArgs()`
+
+```kotlin
+abstract fun toCommandLineArgs(): List<String>
+```
+
+Generates Chromium command-line switches (e.g. --proxy-server, --proxy-bypass-list) for process initialization.
+
+- **Returns:** `List<String>`
+
+### `toPreferenceMap()`
+
+```kotlin
+abstract fun toPreferenceMap(): Map<String, Any>
+```
+
+Generates the CEF preference dictionary required for dynamic runtime proxy reconfiguration.
+
+- **Returns:** `Map<String, Any>`
+
+### `validate()`
+
+```kotlin
+open fun validate()
+```
+
+Validates proxy parameters and throws KromiumException.InvalidConfig if blank or out of range.
+
+- **Returns:** `Unit`
+- **Throws:** `KromiumException.InvalidConfig`
+
+### `getCredentials()`
+
+```kotlin
+open fun getCredentials(host: String?, port: Int? = null): Pair<String, String>?
+```
+
+Returns authentication credentials (username to password) configured for this proxy if the requested target matches.
+
+- **Returns:** `Pair<String, String>?`
+
+### `system()`
+
+```kotlin
+@JvmStatic fun system(): KromiumProxy
+```
+
+Factory method returning the System singleton proxy.
+
+- **Returns:** `KromiumProxy`
+
+### `direct()`
+
+```kotlin
+@JvmStatic fun direct(): KromiumProxy
+```
+
+Factory method returning the Direct singleton proxy.
+
+- **Returns:** `KromiumProxy`
+
+### `autoDetect()`
+
+```kotlin
+@JvmStatic fun autoDetect(): KromiumProxy
+```
+
+Factory method returning the AutoDetect WPAD singleton proxy.
+
+- **Returns:** `KromiumProxy`
+
+### `pac()`
+
+```kotlin
+@JvmStatic fun pac(pacUrl: String): KromiumProxy
+```
+
+Factory method creating a PAC script proxy.
+
+- **Returns:** `KromiumProxy`
+
+### `http()`
+
+```kotlin
+@JvmStatic @JvmOverloads fun http(host: String, port: Int, username: String? = null, password: String? = null, isSecure: Boolean = false, bypassList: List<String> = emptyList()): KromiumProxy
+```
+
+Factory method creating an authenticated or unauthenticated HTTP forward proxy.
+
+- **Returns:** `KromiumProxy`
+
+### `https()`
+
+```kotlin
+@JvmStatic @JvmOverloads fun https(host: String, port: Int, username: String? = null, password: String? = null, bypassList: List<String> = emptyList()): KromiumProxy
+```
+
+Factory method creating an authenticated secure HTTPS tunnel forward proxy.
+
+- **Returns:** `KromiumProxy`
+
+### `socks5()`
+
+```kotlin
+@JvmStatic @JvmOverloads fun socks5(host: String, port: Int, username: String? = null, password: String? = null, remoteDns: Boolean = true, bypassList: List<String> = emptyList()): KromiumProxy
+```
+
+Factory method creating a SOCKS5 proxy with remote DNS leak prevention.
+
+- **Returns:** `KromiumProxy`
+
+### `multiProtocol()`
+
+```kotlin
+@JvmStatic @JvmOverloads fun multiProtocol(http: String? = null, https: String? = null, ftp: String? = null, socks: String? = null, bypassList: List<String> = emptyList()): KromiumProxy
+```
+
+Factory method creating a MultiProtocol proxy router.
+
+- **Returns:** `KromiumProxy`
+
+## Exceptions
+
+| Exception | When Thrown |
+| :--- | :--- |
+| **`KromiumException.InvalidConfig`** |  |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.proxy.KromiumProxy
+import org.daviante.kromium.api.core.KromiumBrowser
+
+fun applyProxy(browser: KromiumBrowser) {
+    val proxy = KromiumProxy.http("127.0.0.1", 8080)
+    browser.proxyManager.updateProxy(proxy)
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.proxy.KromiumProxy;
+import org.daviante.kromium.api.core.KromiumBrowser;
+
+public class ProxySetup {
+    public static void configure(KromiumBrowser browser) {
+        KromiumProxy proxy = KromiumProxy.socks5("127.0.0.1", 1080);
+        browser.getProxyManager().updateProxy(proxy);
+    }
+}
+```
+
+
+---
+
+# KromiumProxyManager
+
+```kotlin
+interface KromiumProxyManager
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.proxy`
+- **Category:** Network & Security
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Facade for managing the proxy settings of the browser at runtime without restarting the browser engine or recreating the browser instance.
+
+### When to Use
+
+Access via browser.proxyManager to dynamically update proxy routing for an active browser instance.
+
+## Methods
+
+### `updateProxy()`
+
+```kotlin
+fun updateProxy(proxy: KromiumProxy): Boolean
+```
+
+Dynamically updates the proxy for this browser session.
+
+- **Returns:** `Boolean`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.core.KromiumBrowser
+import org.daviante.kromium.api.proxy.KromiumProxy
+
+fun switchProxy(browser: KromiumBrowser, proxyHost: String, proxyPort: Int) {
+    val proxy = KromiumProxy.http(proxyHost, proxyPort)
+    val success = browser.proxyManager.updateProxy(proxy)
+    println("Proxy switch success: $success")
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.core.KromiumBrowser;
+import org.daviante.kromium.api.proxy.KromiumProxy;
+
+public class ProxySwitcher {
+    public static void setDirect(KromiumBrowser browser) {
+        browser.getProxyManager().updateProxy(KromiumProxy.direct());
+    }
+}
+```
+
+
+---
+
+# KromiumCookie
+
+```kotlin
+data class KromiumCookie(val name: String, val value: String, val domain: String?, val path: String, val isSecure: Boolean, val isHttpOnly: Boolean, val hasExpires: Boolean, val expires: Date?)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.cookie`
+- **Category:** Storage & Cookies
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Represents a single HTTP cookie in the Kromium engine, capturing name, value, domain, path, security flags (isSecure, isHttpOnly), and expiration date.
+
+### When to Use
+
+Used with KromiumCookieManager to inspect, set, or delete individual HTTP cookies across browser sessions.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`name`** | `String` | The cookie name identifier. |
+| **`value`** | `String` | The cookie value string. |
+| **`domain`** | `String?` | The domain scope of the cookie (e.g. ".example.com"), or null for origin-only. |
+| **`path`** | `String` | The URL path scope of the cookie (e.g. "/"). |
+| **`isSecure`** | `Boolean` | Whether the cookie is restricted to secure HTTPS connections. |
+| **`isHttpOnly`** | `Boolean` | Whether the cookie is hidden from document.cookie JavaScript access. |
+| **`hasExpires`** | `Boolean` | Whether the cookie specifies a fixed expiration date. |
+| **`expires`** | `Date?` | The expiration timestamp, or null for session cookies. |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.cookie.KromiumCookie
+import java.util.Date
+
+val cookie = KromiumCookie(
+    name = "session_id",
+    value = "xyz123",
+    domain = ".example.com",
+    path = "/",
+    isSecure = true,
+    isHttpOnly = true,
+    hasExpires = true,
+    expires = Date(System.currentTimeMillis() + 86400000L)
+)
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.cookie.KromiumCookie;
+import java.util.Date;
+
+public class CookieFactory {
+    public static KromiumCookie createSessionCookie(String name, String value) {
+        return new KromiumCookie(
+            name,
+            value,
+            "example.com",
+            "/",
+            true,
+            true,
+            false,
+            null
+        );
+    }
+}
+```
+
+
+---
+
+# KromiumCookieManager
+
+```kotlin
+interface KromiumCookieManager
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.cookie`
+- **Category:** Storage & Cookies
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Interface for managing cookies across the browser engine. Provides suspending Kotlin coroutine and Java CompletableFuture APIs to query, set, delete, clear, and flush HTTP cookies to disk.
+
+### When to Use
+
+Obtain via engine.cookieManager to manipulate cookies globally across all browser sessions.
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`timeoutMs`** | `Long` | Timeout for cookie retrieval operations in milliseconds. |
+
+## Methods
+
+### `getCookies()`
+
+```kotlin
+suspend fun getCookies(url: String, includeHttpOnly: Boolean = true): Map<String, String>
+```
+
+Retrieves all cookies for the specified url as a key-value map.
+
+- **Returns:** `Map<String, String>`
+
+### `getCookiesAsync()`
+
+```kotlin
+fun getCookiesAsync(url: String, includeHttpOnly: Boolean = true): CompletableFuture<Map<String, String>>
+```
+
+Asynchronously retrieves all cookies for url returning a Java CompletableFuture.
+
+- **Returns:** `CompletableFuture<Map<String, String>>`
+
+### `getCookie()`
+
+```kotlin
+suspend fun getCookie(url: String, name: String): String?
+```
+
+Retrieves the value of a specific cookie by name for url.
+
+- **Returns:** `String?`
+
+### `getCookieAsync()`
+
+```kotlin
+fun getCookieAsync(url: String, name: String): CompletableFuture<String?>
+```
+
+Asynchronously retrieves a specific cookie by name for url returning a Java CompletableFuture.
+
+- **Returns:** `CompletableFuture<String?>`
+
+### `getAllCookies()`
+
+```kotlin
+suspend fun getAllCookies(): List<KromiumCookie>
+```
+
+Retrieves all cookies across all domains stored in the engine's global cookie store.
+
+- **Returns:** `List<KromiumCookie>`
+
+### `getAllCookiesAsync()`
+
+```kotlin
+fun getAllCookiesAsync(): CompletableFuture<List<KromiumCookie>>
+```
+
+Asynchronously retrieves all cookies across all domains stored in the global cookie store returning a Java CompletableFuture.
+
+- **Returns:** `CompletableFuture<List<KromiumCookie>>`
+
+### `setCookie()`
+
+```kotlin
+fun setCookie(url: String, name: String, value: String, domain: String? = null, path: String = "/", isSecure: Boolean = false, isHttpOnly: Boolean = false, expires: Date? = null): Boolean
+```
+
+Sets a cookie for the specified url.
+
+- **Returns:** `Boolean`
+
+### `deleteCookie()`
+
+```kotlin
+fun deleteCookie(url: String, name: String): Boolean
+```
+
+Deletes a specific cookie for the specified url.
+
+- **Returns:** `Boolean`
+
+### `clearCookies()`
+
+```kotlin
+fun clearCookies(): Boolean
+```
+
+Deletes all cookies from the cookie store.
+
+- **Returns:** `Boolean`
+
+### `flush()`
+
+```kotlin
+fun flush(): Boolean
+```
+
+Flushes the cookie store to disk to ensure session persistence.
+
+- **Returns:** `Boolean`
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.core.KromiumEngine
+
+suspend fun manageCookies(engine: KromiumEngine) {
+    val cookieManager = engine.cookieManager
+    cookieManager.setCookie(
+        url = "https://example.com",
+        name = "auth_token",
+        value = "secret-token-123",
+        isSecure = true,
+        isHttpOnly = true
+    )
+    val token = cookieManager.getCookie("https://example.com", "auth_token")
+    cookieManager.flush()
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.core.KromiumEngine;
+import org.daviante.kromium.api.cookie.KromiumCookieManager;
+
+public class CookieHandler {
+    public static void clearAll(KromiumEngine engine) {
+        KromiumCookieManager cm = engine.getCookieManager();
+        cm.clearCookies();
+        cm.flush();
+    }
+}
+```
+
+
+---
+
+# KromiumStorage
+
+```kotlin
+interface KromiumStorage
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.storage`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `getCookiesAsync()`
+
+```kotlin
+fun getCookiesAsync(): CompletableFuture<Map<String, String>>
+```
+
+Retrieves all cookies available to the current page.
+
+
+### `getCookieAsync()`
+
+```kotlin
+fun getCookieAsync(name: String): CompletableFuture<String?>
+```
+
+Retrieves a specific cookie by name.
+
+
+### `setCookie()`
+
+```kotlin
+fun setCookie(name: String, value: String, domain: String? = null, path: String = "/", isSecure: Boolean = false, isHttpOnly: Boolean = false, expires: Date? = null): Boolean
+```
+
+Sets a cookie on the global cookie manager.
+
+
+### `clearCookies()`
+
+```kotlin
+fun clearCookies(): Boolean
+```
+
+Clears all cookies from the global manager.
+
+
+### `clearWebStorageAsync()`
+
+```kotlin
+fun clearWebStorageAsync(): CompletableFuture<Boolean>
+```
+
+Clears Local Storage and Session Storage for the current origin.
+
+
+### `clearBrowsingDataAsync()`
+
+```kotlin
+fun clearBrowsingDataAsync(clearCookies: Boolean = true, clearStorage: Boolean = true): CompletableFuture<Boolean>
+```
+
+Aggregates cookie and storage clearing.
+
+
+
+---
+
+# KromiumDownloads
+
+```kotlin
+interface KromiumDownloads
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.download`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `startDownload()`
+
+```kotlin
+fun startDownload(url: String)
+```
+
+Starts a download of the given URL.
+
+
+### `cancelDownload()`
+
+```kotlin
+fun cancelDownload(downloadId: Int): Boolean
+```
+
+Cancels an active download by its ID.
+
+
+### `pauseDownload()`
+
+```kotlin
+fun pauseDownload(downloadId: Int): Boolean
+```
+
+Pauses an active download by its ID.
+
+
+### `resumeDownload()`
+
+```kotlin
+fun resumeDownload(downloadId: Int): Boolean
+```
+
+Resumes a paused download by its ID.
+
+
+### `isDownloadPaused()`
+
+```kotlin
+fun isDownloadPaused(downloadId: Int): Boolean
+```
+
+Checks if a download is currently paused.
+
+
+
+---
+
+# KromiumDownloadItem
+
+```kotlin
+data class KromiumDownloadItem(
+    val id: Int,
+    val url: String,
+    val suggestedFileName: String,
+    val totalBytes: Long,
+    val receivedBytes: Long,
+    val percentComplete: Int,
+    val speed: Long,
+    val isInProgress: Boolean,
+    val isComplete: Boolean,
+    val isCanceled: Boolean,
+    val isPaused: Boolean = false,
+    val fullPath: String = ""
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.download`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`id`** | `Int` | Unique identifier of the download. |
+| **`url`** | `String` | Source URL of the download. |
+| **`suggestedFileName`** | `String` | Suggested filename for the download item. |
+| **`totalBytes`** | `Long` | Total size of the file in bytes, or -1 if unknown. |
+| **`receivedBytes`** | `Long` | Number of bytes received so far. |
+| **`percentComplete`** | `Int` | Download completion percentage (0-100), or -1 if indeterminate. |
+| **`speed`** | `Long` | Estimated transfer speed in bytes per second. |
+| **`isInProgress`** | `Boolean` | Whether the download is currently in progress. |
+| **`isComplete`** | `Boolean` | Whether the download has finished successfully. |
+| **`isCanceled`** | `Boolean` | Whether the download was canceled. |
+| **`isPaused`** | `Boolean` | Whether the download is paused. |
+| **`fullPath`** | `String` | Destination file path on disk. |
+
+
+---
+
+# KromiumBeforeDownloadListener
+
+```kotlin
+fun interface KromiumBeforeDownloadListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.download`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onBeforeDownload()`
+
+```kotlin
+fun onBeforeDownload(item: KromiumDownloadItem, suggestedFileName: String): String?
+```
+
+Intercepts a download request before it starts. Returns the absolute path where the file should be saved, null to use the default path, or an empty string "" to cancel the download.
+
+
+
+---
+
+# KromiumDownloadListener
+
+```kotlin
+fun interface KromiumDownloadListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.download`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onDownloadUpdated()`
+
+```kotlin
+fun onDownloadUpdated(item: KromiumDownloadItem)
+```
+
+Callback triggered when progress or state of a download item changes.
+
+
+
+---
+
+# KromiumDownloadProgress
+
+```kotlin
+data class KromiumDownloadProgress(
+    val bytesRead: Long,
+    val totalBytes: Long?,
+    val fraction: Float
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.download`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`bytesRead`** | `Long` | Number of bytes downloaded so far. |
+| **`totalBytes`** | `Long?` | Expected total file size in bytes, or null if unknown. |
+| **`fraction`** | `Float` | Fraction of download completed from 0.0f to 1.0f. |
+| **`percentage`** | `Int` | Calculated percentage (0 to 100). |
+
+
+---
+
+# KromiumPermissionRequest
+
+```kotlin
+data class KromiumPermissionRequest(
+    val url: String,
+    val origin: String,
+    val requestedTypes: Set<KromiumPermissionType>,
+    val rawFlags: Int
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.permission`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`url`** | `String` | Full URL of the frame initiating the permission request. |
+| **`origin`** | `String` | Extracted web origin. |
+| **`requestedTypes`** | `Set<KromiumPermissionType>` | The set of permission types being requested. |
+| **`rawFlags`** | `Int` | The raw Chromium media permission bitmask. |
+
+## Methods
+
+### `hasAudio()`
+
+```kotlin
+fun hasAudio(): Boolean
+```
+
+True if the request seeks microphone access.
+
+
+### `hasVideo()`
+
+```kotlin
+fun hasVideo(): Boolean
+```
+
+True if the request seeks camera / webcam video capture access.
+
+
+### `hasScreenShare()`
+
+```kotlin
+fun hasScreenShare(): Boolean
+```
+
+True if the request seeks screen sharing / desktop video capture access.
+
+
+### `hasDesktopAudio()`
+
+```kotlin
+fun hasDesktopAudio(): Boolean
+```
+
+True if the request seeks system audio capture access.
+
+
+### `contains()`
+
+```kotlin
+fun contains(type: KromiumPermissionType): Boolean
+```
+
+True if the request includes the specified permission type.
+
+
+
+---
+
+# KromiumPermissionDecision
+
+```kotlin
+sealed class KromiumPermissionDecision
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.permission`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumPermissionListener
+
+```kotlin
+fun interface KromiumPermissionListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.permission`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onRequestPermission()`
+
+```kotlin
+fun onRequestPermission(request: KromiumPermissionRequest): KromiumPermissionDecision
+```
+
+Evaluates an incoming KromiumPermissionRequest and returns a KromiumPermissionDecision.
+
+
+
+---
+
+# KromiumPermissionType
+
+```kotlin
+enum class KromiumPermissionType(val flag: Int)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.permission`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`flag`** | `Int` | Bitmask value corresponding to Chromium's native media permission flags. |
+
+
+---
+
+# KromiumPdfSettings
+
+```kotlin
+data class KromiumPdfSettings @JvmOverloads constructor(
+    val landscape: Boolean = false,
+    val printBackground: Boolean = false,
+    val scale: Double = 1.0,
+    val paperSize: KromiumPaperSize = KromiumPaperSize.A4,
+    val preferCssPageSize: Boolean = false,
+    val margins: KromiumPdfMargins = KromiumPdfMargins.Default,
+    val pageRanges: String = "",
+    val displayHeaderFooter: Boolean = false,
+    val headerTemplate: String = "",
+    val footerTemplate: String = "",
+    val createDirectories: Boolean = false,
+    val generateTaggedPdf: Boolean = false,
+    val generateDocumentOutline: Boolean = false
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.print`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`landscape`** | `Boolean` | True for landscape orientation, false for portrait. |
+| **`printBackground`** | `Boolean` | True to print CSS background graphics, gradients, and colors. |
+| **`scale`** | `Double` | Scaling of webpage rendering (1.0 = 100%). |
+| **`paperSize`** | `KromiumPaperSize` | Dimensions of output paper. |
+| **`preferCssPageSize`** | `Boolean` | True to prefer page size defined by CSS @page rule. |
+| **`margins`** | `KromiumPdfMargins` | Margin specifications for the page. |
+| **`pageRanges`** | `String` | Page ranges to print (e.g. '1-5, 8, 11-13'). Empty prints all pages. |
+| **`displayHeaderFooter`** | `Boolean` | True to display HTML header and footer. |
+| **`headerTemplate`** | `String` | HTML template for print header. |
+| **`footerTemplate`** | `String` | HTML template for print footer. |
+| **`createDirectories`** | `Boolean` | True to automatically create missing parent directories for target file. |
+| **`generateTaggedPdf`** | `Boolean` | True to generate tagged (accessible) PDF. |
+| **`generateDocumentOutline`** | `Boolean` | True to generate document outline (bookmarks) from headers. |
+
+
+---
+
+# KromiumPaperSize
+
+```kotlin
+data class KromiumPaperSize(
+    val widthInches: Double,
+    val heightInches: Double
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.print`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`widthInches`** | `Double` | Width of the page in inches. |
+| **`heightInches`** | `Double` | Height of the page in inches. |
+
+
+---
+
+# KromiumPdfMargins
+
+```kotlin
+sealed class KromiumPdfMargins
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.print`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumCustomScheme
+
+```kotlin
+data class KromiumCustomScheme @JvmOverloads constructor(
+    val schemeName: String,
+    val isStandard: Boolean = true,
+    val isLocal: Boolean = true,
+    val isDisplayIsolated: Boolean = false,
+    val isSecure: Boolean = true,
+    val isCorsEnabled: Boolean = true,
+    val isCspBypassing: Boolean = false,
+    val isFetchEnabled: Boolean = true
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.scheme`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`schemeName`** | `String` | The name of the custom protocol scheme. |
+| **`isStandard`** | `Boolean` | If true, treated as a standard scheme with authority/host component. |
+| **`isLocal`** | `Boolean` | If true, treated as local, similar to file://. |
+| **`isDisplayIsolated`** | `Boolean` | If true, can only be displayed from other origins with the same scheme. |
+| **`isSecure`** | `Boolean` | If true, treated as secure (HTTPS-equivalent). |
+| **`isCorsEnabled`** | `Boolean` | If true, CORS from/to this scheme are permitted. |
+| **`isCspBypassing`** | `Boolean` | If true, CSP enforcements are bypassed. |
+| **`isFetchEnabled`** | `Boolean` | If true, Fetch API is allowed for this scheme. |
+
+
+---
+
+# KromiumSchemeRegistration
+
+```kotlin
+data class KromiumSchemeRegistration(
+    val schemeName: String,
+    val domainName: String?,
+    val handler: KromiumAssetHandler
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.scheme`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`schemeName`** | `String` | The scheme protocol (e.g. 'app', 'https'). |
+| **`domainName`** | `String?` | Optional domain/authority (e.g. 'myapp' or null for all domains). |
+| **`handler`** | `KromiumAssetHandler` | The KromiumAssetHandler serving virtual responses for this scheme and domain. |
+
+
+---
+
+# KromiumAssetHandler
+
+```kotlin
+fun interface KromiumAssetHandler
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.scheme`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `handle()`
+
+```kotlin
+fun handle(request: KromiumAssetRequest): KromiumAssetResponse?
+```
+
+Handles an incoming KromiumAssetRequest and returns a KromiumAssetResponse, or null to produce a 404 response.
+
+
+
+---
+
+# KromiumAssetRequest
+
+```kotlin
+data class KromiumAssetRequest @JvmOverloads constructor(
+    val url: String,
+    val method: String = "GET",
+    val scheme: String = "",
+    val domain: String = "",
+    val path: String = "/",
+    val queryString: String? = null,
+    val queryParameters: Map<String, String> = emptyMap(),
+    val headers: Map<String, String> = emptyMap()
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.scheme`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`url`** | `String` | The full URL string of the intercepted request. |
+| **`method`** | `String` | The HTTP method (e.g. 'GET', 'POST'). |
+| **`scheme`** | `String` | The protocol scheme. |
+| **`domain`** | `String` | The host or authority domain component. |
+| **`path`** | `String` | The absolute request path without query strings. |
+| **`queryString`** | `String?` | The raw URL query string, or null. |
+| **`queryParameters`** | `Map<String, String>` | Parsed query parameters map. |
+| **`headers`** | `Map<String, String>` | Request headers map. |
+
+## Methods
+
+### `getHeader()`
+
+```kotlin
+fun getHeader(name: String): String?
+```
+
+Retrieves the value of a specific HTTP header in a case-insensitive manner.
+
+
+### `getQueryParam()`
+
+```kotlin
+fun getQueryParam(key: String): String?
+```
+
+Retrieves a query parameter by key.
+
+
+
+---
+
+# KromiumAssetResponse
+
+```kotlin
+class KromiumAssetResponse @JvmOverloads constructor(
+    val statusCode: Int = 200,
+    val statusText: String = "OK",
+    val mimeType: String = "application/octet-stream",
+    val contentLength: Long? = null,
+    val headers: Map<String, String> = emptyMap(),
+    val openStream: () -> InputStream
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.scheme`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`statusCode`** | `Int` | HTTP response status code. |
+| **`statusText`** | `String` | HTTP status line description. |
+| **`mimeType`** | `String` | MIME Content-Type of payload. |
+| **`contentLength`** | `Long?` | Total content length in bytes if known. |
+| **`headers`** | `Map<String, String>` | HTTP response headers. |
+| **`openStream`** | `() -> InputStream` | Lambda returning an InputStream to stream response data. |
+
+## Methods
+
+### `withHeader()`
+
+```kotlin
+fun withHeader(name: String, value: String): KromiumAssetResponse
+```
+
+Returns a new copy with the specified header added or replaced.
+
+
+### `withHeaders()`
+
+```kotlin
+fun withHeaders(newHeaders: Map<String, String>): KromiumAssetResponse
+```
+
+Returns a new copy with multiple headers appended.
+
+
+### `withCors()`
+
+```kotlin
+fun withCors(allowedOrigins: String = "*"): KromiumAssetResponse
+```
+
+Appends permissive CORS headers.
+
+
+### `withCacheControl()`
+
+```kotlin
+fun withCacheControl(maxAgeSeconds: Int): KromiumAssetResponse
+```
+
+Sets standard Cache-Control header with max-age in seconds.
+
+
+### `withNoCache()`
+
+```kotlin
+fun withNoCache(): KromiumAssetResponse
+```
+
+Sets Cache-Control: no-cache, no-store, must-revalidate.
+
+
+
+---
+
+# KromiumSchemeHandler
+
+```kotlin
+object KromiumSchemeHandler
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.scheme`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `fromClasspath()`
+
+```kotlin
+fun fromClasspath(resourcePath: String = "", classLoader: ClassLoader = KromiumSchemeHandler::class.java.classLoader, spaFallback: String? = null, defaultHeaders: Map<String, String> = emptyMap()): KromiumAssetHandler
+```
+
+Creates an asset handler that streams resources bundled inside the application JAR or classpath.
+
+
+### `fromDirectory()`
+
+```kotlin
+fun fromDirectory(directory: File, spaFallback: String? = null, defaultHeaders: Map<String, String> = emptyMap()): KromiumAssetHandler
+```
+
+Creates an asset handler that serves files from a local directory on disk with directory traversal protection.
+
+
+### `create()`
+
+```kotlin
+fun create(handler: KromiumAssetHandler): KromiumAssetHandler
+```
+
+Creates a custom KromiumAssetHandler from a functional lambda.
+
+
+### `sanitizePath()`
+
+```kotlin
+fun sanitizePath(rawPath: String): String?
+```
+
+Sanitizes a requested URL path against directory traversal attempts. Returns null if path is malicious.
+
+
+
+---
+
+# KromiumDevTools
+
+```kotlin
+interface KromiumDevTools
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.devtools`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `openDevTools()`
+
+```kotlin
+fun openDevTools(inspectPoint: Point? = null)
+```
+
+Opens the native Developer Tools for this browser.
+
+
+### `closeDevTools()`
+
+```kotlin
+fun closeDevTools()
+```
+
+Closes the Developer Tools if they are open.
+
+
+
+---
+
+# KromiumConsoleMessage
+
+```kotlin
+data class KromiumConsoleMessage(
+    val level: KromiumConsoleMessageLevel,
+    val message: String,
+    val source: String = "",
+    val line: Int = 0
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.devtools`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`level`** | `KromiumConsoleMessageLevel` | The severity level of the console message. |
+| **`message`** | `String` | The text content of the message. |
+| **`source`** | `String` | The URL or script origin that emitted the message. |
+| **`line`** | `Int` | The line number in the source file where the message was emitted (1-based), or 0 if unknown. |
+
+
+---
+
+# KromiumConsoleMessageLevel
+
+```kotlin
+enum class KromiumConsoleMessageLevel
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.devtools`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumConsoleMessageListener
+
+```kotlin
+fun interface KromiumConsoleMessageListener
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.devtools`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `onConsoleMessage()`
+
+```kotlin
+fun onConsoleMessage(message: KromiumConsoleMessage): Boolean
+```
+
+Invoked when a console message is logged. Returns true to indicate the message was handled and suppress default logging, or false to allow standard output.
+
+
+
+---
+
+# KromiumSearch
+
+```kotlin
+interface KromiumSearch
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.search`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `find()`
+
+```kotlin
+fun find(searchText: String, forward: Boolean = true, matchCase: Boolean = false, findNext: Boolean = false)
+```
+
+Searches for searchText within the currently loaded web page.
+
+
+### `stopFinding()`
+
+```kotlin
+fun stopFinding(clearSelection: Boolean = true)
+```
+
+Stops the current search operation and optionally clears search highlighting.
+
+
+
+---
+
+# KromiumEngineDownloadConfig
+
+```kotlin
+data class KromiumEngineDownloadConfig internal constructor(
+    val installDir: File?,
+    val source: KromiumEngineDownloadSource
+)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.bootstrap`
+- **Since Version:** v1.0.0.150-b11
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`installDir`** | `File?` | Custom directory to install the downloaded engine binaries. |
+| **`source`** | `KromiumEngineDownloadSource` | Download source strategy for acquiring binaries. |
+
+
+---
+
+# KromiumEngineDownloadSource
+
+```kotlin
+sealed interface KromiumEngineDownloadSource
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.bootstrap`
+- **Since Version:** v1.0.0.150-b11
+
+
+---
+
+# KromiumPlatformUrlResolver
+
+```kotlin
+fun interface KromiumPlatformUrlResolver
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.bootstrap`
+- **Since Version:** v1.0.0.150-b11
+
+## Methods
+
+### `resolveUrl()`
+
+```kotlin
+fun resolveUrl(platform: KromiumPlatformInfo): String?
+```
+
+Resolves the download URL for a specific platform dynamically.
+
+
+
+---
+
+# KromiumException
+
+```kotlin
+sealed class KromiumException(@JvmField val errorCode: KromiumErrorCode, @JvmField val isRecoverable: Boolean, override val message: String, override val cause: Throwable? = null) : RuntimeException(message, cause)
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.error`
+- **Category:** Error Handling
+- **Since Version:** v1.0.0.150-b11
+
+## Description
+
+Sealed exception hierarchy for all Kromium-specific errors. Provides an errorCode and isRecoverable flag for robust programmatic error handling and recovery.
+
+### When to Use
+
+Catch KromiumException or its typed subclasses when initializing the engine, configuring proxies, running JavaScript evaluations, exporting PDFs, or creating OSR browser canvases.
+
+## States & Variants
+
+| Variant | Declaration | Description |
+| :--- | :--- | :--- |
+| **`KromiumException.NotInitialized`** | `class NotInitialized : KromiumException(KromiumErrorCode.INITIALIZATION_ERROR, false, "Kromium is not initialized. Call Kromium.initialize() first.")` | Kromium is not initialized. Call Kromium.initialize() first. |
+| **`KromiumException.Disposed`** | `class Disposed : KromiumException(KromiumErrorCode.INITIALIZATION_ERROR, false, "Kromium has been disposed and cannot accept new operations.")` | Kromium has been disposed and cannot accept new operations. |
+| **`KromiumException.UnsupportedPlatform`** | `class UnsupportedPlatform(@JvmField val os: String?, @JvmField val arch: String?) : KromiumException(KromiumErrorCode.UNSUPPORTED_PLATFORM, false, ...)` | Unsupported platform: os=$os, arch=$arch |
+| **`KromiumException.InstallationFailed`** | `class InstallationFailed(@JvmField val directory: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.INSTALLATION_FAILED, true, ...)` | Failed to prepare installation directory: $directory |
+| **`KromiumException.AutoDownloadDisabled`** | `class AutoDownloadDisabled(@JvmField val directory: String) : KromiumException(KromiumErrorCode.DOWNLOAD_DISABLED, false, ...)` | Auto-download is disabled (autoDownload = false), and no valid JCEF engine binaries were found at: $directory |
+| **`KromiumException.NoBundleAvailable`** | `class NoBundleAvailable(@JvmField val platform: String, @JvmField val releaseTag: String?) : KromiumException(KromiumErrorCode.NO_BUNDLE_AVAILABLE, false, ...)` | No compatible JCEF bundle found for $platform in release ${releaseTag ?: "latest"} |
+| **`KromiumException.DownloadFailed`** | `class DownloadFailed(@JvmField val url: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.DOWNLOAD_FAILED, true, ...)` | Failed to download engine bundle from: $url |
+| **`KromiumException.ChecksumMismatch`** | `class ChecksumMismatch(@JvmField val expected: String, @JvmField val actual: String) : KromiumException(KromiumErrorCode.CHECKSUM_MISMATCH, true, ...)` | Archive checksum mismatch — expected: $expected, actual: $actual. The download may be corrupted or tampered with. |
+| **`KromiumException.ExtractionFailed`** | `class ExtractionFailed(@JvmField val archivePath: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.EXTRACTION_FAILED, true, ...)` | Failed to extract engine bundle from: $archivePath |
+| **`KromiumException.MaliciousArchiveEntry`** | `class MaliciousArchiveEntry(@JvmField val entryName: String) : KromiumException(KromiumErrorCode.MALICIOUS_ARCHIVE, false, ...)` | Malicious archive entry detected (directory traversal): $entryName |
+| **`KromiumException.BootstrapFailed`** | `class BootstrapFailed(cause: Throwable? = null) : KromiumException(KromiumErrorCode.BOOTSTRAP_FAILED, false, ...)` | CEF native bootstrap failed. |
+| **`KromiumException.InstallationCorrupted`** | `class InstallationCorrupted(@JvmField val directory: String) : KromiumException(KromiumErrorCode.INSTALLATION_CORRUPTED, true, ...)` | JCEF installation at $directory appears corrupted — re-download required. |
+| **`KromiumException.JsEvaluationTimeout`** | `class JsEvaluationTimeout(@JvmField val timeoutMs: Long) : KromiumException(KromiumErrorCode.JS_TIMEOUT, true, ...)` | JavaScript evaluation timed out after ${timeoutMs}ms |
+| **`KromiumException.InvalidConfig`** | `class InvalidConfig(@JvmField val detail: String) : KromiumException(KromiumErrorCode.INVALID_CONFIG, false, ...)` | Invalid Kromium configuration: $detail |
+| **`KromiumException.ProxyError`** | `class ProxyError(@JvmField val detail: String) : KromiumException(KromiumErrorCode.PROXY_ERROR, true, ...)` | Proxy error: $detail |
+| **`KromiumException.PdfPrintFailed`** | `class PdfPrintFailed(@JvmField val path: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.PDF_PRINT_FAILED, true, ...)` | Failed to print web page to PDF: $path |
+| **`KromiumException.FrameworkRequired`** | `class FrameworkRequired @JvmOverloads constructor(message: String = "UI framework is mandatory for OSR browser creation. No default OSR framework is permitted.") : KromiumException(KromiumErrorCode.FRAMEWORK_REQUIRED, false, message)` | UI framework is mandatory for OSR browser creation. No default OSR framework is permitted. |
+| **`KromiumException.CanvasNotAvailable`** | `class CanvasNotAvailable @JvmOverloads constructor(@JvmField val framework: KromiumUiFramework, message: String = ...) : KromiumException(KromiumErrorCode.CANVAS_NOT_AVAILABLE, false, message)` | No OSR canvas factory registered for framework: $framework. Please ensure kromium-${framework.name.lowercase()} is on the classpath. |
+
+## Properties
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **`errorCode`** | `KromiumErrorCode` | Standardized error code classification for programmatic handling and telemetry. |
+| **`isRecoverable`** | `Boolean` | Indicates whether the operation can be retried (true) or is a fatal state (false). |
+| **`message`** | `String` | Human-readable diagnostic message explaining the cause of the failure. |
+| **`cause`** | `Throwable?` | Underlying causal exception if wrapped. |
+
+## Code Examples
+
+### Compose Multiplatform (kotlin)
+
+```kotlin
+import org.daviante.kromium.api.error.KromiumException
+import org.daviante.kromium.api.error.KromiumErrorCode
+
+try {
+    // engine operations
+} catch (e: KromiumException) {
+    if (e.isRecoverable) {
+        println("Recoverable error [${e.errorCode}]: ${e.message}")
+    } else {
+        System.err.println("Fatal error [${e.errorCode}]: ${e.message}")
+    }
+}
+```
+
+### Pure Java (java)
+
+```java
+import org.daviante.kromium.api.error.KromiumException;
+
+try {
+    // engine operations
+} catch (KromiumException e) {
+    System.err.println("Error code: " + e.errorCode + ", recoverable: " + e.isRecoverable);
+}
+```
+
+
+---
+
+# KromiumErrorCode
+
+```kotlin
+enum class KromiumErrorCode
+```
+
+- **Module:** `kromium-api`
+- **Package:** `org.daviante.kromium.api.error`
+- **Since Version:** v1.0.0.150-b11
+

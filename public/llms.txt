@@ -1,0 +1,150 @@
+# Kromium Documentation
+
+> Kromium is an ultra-performant, multiplatform Chromium Embedded Framework (CEF) desktop browser integration for Jetpack Compose, Java Swing, JavaFX, Eclipse SWT, and Pure AWT.
+
+- **Engine:** Chromium Embedded Framework (CEF) + JetBrains JCEF
+- **Rendering:** Decoupled Off-Screen Rendering (OSR) with direct BGRA pixel buffer streaming
+- **Desktop UI Frameworks:** Jetpack Compose Multiplatform, Java Swing, OpenJFX / JavaFX, Eclipse SWT, Pure Java AWT
+- **Supported Platforms:** Windows (x64, ARM64), macOS (Intel x64, Apple Silicon ARM64), Linux (x64, ARM64)
+- **Version:** v1.0.0.150-b11
+- **Maven Group:** `org.daviante.kromium`
+- **GitHub:** https://github.com/daviante-org/kromium
+- **Documentation Portal:** https://kromium.daviante.org
+
+## Consolidated Documentation for LLMs
+- [Complete Consolidated Documentation (Single Prompt Ingestion)](/llms-full.txt): Complete manual containing all guides, classes, methods, and code examples in a single markdown file for direct LLM context injection.
+
+## Guides
+- [5-Minute Quickstart Guide](/llms/guides/quickstart.md): Add Kromium to your Gradle project, bootstrap the Chromium engine, and create your first browser instance.
+- [Multi-Framework UI Integration Guide](/llms/guides/ui-frameworks.md): Learn how to embed Kromium's off-screen rendering (OSR) surface in Jetpack Compose, Swing, JavaFX, SWT, and AWT.
+- [Cloudflare R2 Maven Repository Guide](/llms/guides/r2-maven-repository.md): How Kromium packages are published to Cloudflare R2 and how downstream projects configure their Maven / Gradle builds.
+- [Web Automation & DOM Interaction API](/llms/guides/automation.md): Playwright-inspired automation engine for SPAs, MutationObserver-backed waiting, form filling, and keystroke dispatch.
+- [Enterprise Networking & Proxies API](/llms/guides/proxy-configuration.md): Configure HTTP, HTTPS, SOCKS5, and PAC proxies, remote DNS leak protection, and dynamic proxy switching.
+- [Downloads, Permissions & SSL Security API](/llms/guides/security-sandboxing.md): Intercept downloads, handle camera/microphone permissions, and enforce SSL certificate policies and domain whitelists.
+- [Cookie & Storage Management](/llms/guides/cookie-storage.md): Read, set, and delete cookies, clear browser cache, and manage Local Storage via KromiumCookieManager and KromiumStorage facades.
+- [Custom Protocol Scheme Handlers](/llms/guides/custom-schemes.md): Register custom protocols (app://, kromium://) to serve web assets from the classpath, local directories, or dynamic handlers.
+- [PDF Export & Print API](/llms/guides/pdf-export.md): Export web pages to vector PDF documents with configurable paper size, margins, headers/footers, accessible tagging, and page ranges.
+- [Context Menu Customization](/llms/guides/context-menus.md): Suppress, customize, or build rich right-click context menus using KromiumMenuBuilder's declarative DSL with built-in browser action shortcuts.
+- [Error Handling & Debugging](/llms/guides/error-handling.md): Handle Kromium's sealed exception hierarchy, recover from download failures, diagnose GPU errors, and monitor console messages for debugging.
+- [DevTools, Text Search & JavaScript Bridge](/llms/guides/devtools-search.md): Open Chromium DevTools, find text on pages, execute JavaScript, extract HTML/text content, and resolve favicons.
+- [Sample Applications & Reference Code](/llms/guides/sample-applications.md): Explore the 5 official Kromium desktop sample applications covering Compose Multiplatform, Swing, JavaFX, SWT, and AWT.
+- [Troubleshooting & FAQ](/llms/guides/troubleshooting-faq.md): Solutions for JVM module access errors, GPU rasterization failures, VM/Docker environments, and platform-specific native dependencies.
+
+## API Reference by Package
+
+### Core Architecture
+- [Kromium](/llms/api/kromium.md): The main entry point for the Kromium library.
+- [KromiumEngine](/llms/api/kromium-engine.md): The core interface representing the running Kromium engine.
+- [KromiumBrowser](/llms/api/kromium-browser.md): Main interface for the Kromium browser instance.
+- [KromiumClient](/llms/api/kromium-client.md): Represents a client session in the engine.
+- [KromiumState](/llms/api/kromium-state.md): Observable lifecycle and operational states of the Kromium engine emitted by KromiumEngine.
+- [KromiumEngineInfo](/llms/api/kromium-engine-info.md): Provides information about the installed Kromium Engine.
+- [KromiumEngineProvider](/llms/api/kromium-engine-provider.md): Service Provider Interface (SPI) for instantiating the Kromium engine.
+- [KromiumExtensions](/llms/api/kromium-extensions.md): Extension functions for streamlined creation of headless browser instances on KromiumEngine and KromiumClient.
+
+### Configuration
+- [KromiumConfig](/llms/api/kromium-config.md): The master configuration object for the Kromium engine.
+- [KromiumBrowserConfig](/llms/api/kromium-browser-config.md): General browser behavior and storage configuration for the Kromium engine.
+- [KromiumClientConfig](/llms/api/kromium-client-config.md): Configuration for a specific browser client session.
+- [KromiumHardwareConfig](/llms/api/kromium-hardware-config.md): Controls how the engine interacts with the host OS and GPU.
+- [KromiumLoggingConfig](/llms/api/kromium-logging-config.md): Logging configuration for the Kromium engine.
+- [KromiumSecurityConfig](/llms/api/kromium-security-config.md): Handles security boundaries, privacy headers, WebRTC IP leak prevention, enterprise NTLM/Kerberos authentication allowlists, and background telemetry blocking.
+- [KromiumGpuMode](/llms/api/kromium-gpu-mode.md): Controls GPU hardware acceleration and graphics rendering strategy.
+- [KromiumProcessModel](/llms/api/kromium-process-model.md): Defines the process isolation model used by Kromium and Chromium Embedded Framework.
+- [KromiumLogSeverity](/llms/api/kromium-log-severity.md): Log severity levels for the Chromium engine.
+
+### Navigation & Lifecycle
+- [KromiumNavigation](/llms/api/kromium-navigation.md): Facade for browser navigation operations.
+- [KromiumNavigationState](/llms/api/kromium-navigation-state.md): Represents the current navigation and loading state of the browser.
+- [NavigationStage](/llms/api/navigation-stage.md): Defines the navigation lifecycle stage to await during page navigation.
+- [KromiumLoadError](/llms/api/kromium-load-error.md): Represents a failure that occurred during page navigation or loading.
+- [KromiumLoadErrorListener](/llms/api/kromium-load-error-listener.md): Listener invoked when a page load error occurs.
+
+### UI & Rendering
+- [KromiumView](/llms/api/kromium-view.md): Facade for rendering, zooming, and visual operations.
+- [KromiumUiFramework](/llms/api/kromium-ui-framework.md): UI framework targets supported by Kromium for hosting OSR surfaces.
+- [KromiumRenderSurface](/llms/api/kromium-render-surface.md): Represents an opaque rendering surface provided by native engine, following the Adapter pattern to keep the core API agnostic of UI toolkits.
+- [KromiumMenuBuilder](/llms/api/kromium-menu-builder.md): Declarative builder for configuring browser right-click context menus.
+- [KromiumContextMenuListener](/llms/api/kromium-context-menu-listener.md): Functional interface for intercepting, suppressing, or customizing right-click context menus.
+- [KromiumContextMenuContext](/llms/api/kromium-context-menu-context.md): Context passed to context menu action callbacks when an item is triggered by the user.
+- [KromiumContextMenuParams](/llms/api/kromium-context-menu-params.md): Encapsulates the contextual parameters of the user's right-click or context menu gesture.
+- [KromiumJsDialog](/llms/api/kromium-js-dialog.md): Encapsulates a JavaScript alert, confirm, or prompt dialog with thread-safe continuation.
+- [KromiumJsDialogType](/llms/api/kromium-js-dialog-type.md): Types of JavaScript dialogs emitted by web pages.
+- [KromiumJsDialogListener](/llms/api/kromium-js-dialog-listener.md): Listener for handling JavaScript dialogs (alert, confirm, prompt).
+- [KromiumPopupListener](/llms/api/kromium-popup-listener.md): Listener for intercepting popup window creation events.
+- [KromiumKeyEvent](/llms/api/kromium-key-event.md): Framework-independent model representing a keyboard event in Kromium.
+- [KromiumKeyEventType](/llms/api/kromium-key-event-type.md): Standard event types for keyboard input across all UI toolkits.
+- [KromiumKeyCodes](/llms/api/kromium-key-codes.md): Standard Virtual Key Codes matching universal USB HID / Windows / AWT VK specifications.
+
+### Automation & DOM
+- [KromiumAutomation](/llms/api/kromium-automation.md): Facade for DOM automation and browser interaction testing.
+- [KromiumJsBridge](/llms/api/kromium-js-bridge.md): Facade for JavaScript execution, DOM evaluation, and text extraction.
+- [KromiumClipboard](/llms/api/kromium-clipboard.md): Facade for clipboard and editing operations.
+
+### Network & Security
+- [KromiumSecurity](/llms/api/kromium-security.md): Facade for managing browser security rules such as host locking.
+- [SslErrorPolicy](/llms/api/ssl-error-policy.md): SSL error handling policy for clients.
+- [KromiumAssets](/llms/api/kromium-assets.md): Facade for managing network asset blocking (e.
+- [KromiumAssetFilter](/llms/api/kromium-asset-filter.md): Pure configuration for blocking or allowlisting network assets.
+- [AssetFilterMode](/llms/api/asset-filter-mode.md): Operating mode for KromiumAssetFilter.
+- [KromiumResourceType](/llms/api/kromium-resource-type.md): Platform-agnostic representation of web resource types for network interception and asset filtering.
+- [KromiumWebResourceRequest](/llms/api/kromium-web-resource-request.md): Represents an outgoing web resource request that can be inspected and modified by a KromiumRequestInterceptor.
+- [KromiumRequestInterceptor](/llms/api/kromium-request-interceptor.md): Functional interface to intercept and modify HTTP/HTTPS requests or block unwanted domains.
+- [KromiumNavigationInterceptor](/llms/api/kromium-navigation-interceptor.md): Functional interface to intercept and override browser navigation.
+- [KromiumAuthListener](/llms/api/kromium-auth-listener.md): Listener for handling HTTP Basic, Digest, or Proxy authentication challenges.
+- [KromiumAuthRequest](/llms/api/kromium-auth-request.md): Details of an authentication challenge requested by a web server or proxy.
+- [KromiumAuthResponse](/llms/api/kromium-auth-response.md): The response decision for an authentication challenge.
+
+### Proxy Management
+- [KromiumProxy](/llms/api/kromium-proxy.md): Defines the proxy strategy for the Kromium browser engine and client sessions.
+- [KromiumProxyManager](/llms/api/kromium-proxy-manager.md): Facade for managing the proxy settings of the browser at runtime without restarting the browser engine or recreating the browser instance.
+
+### Cookie & Storage
+- [KromiumCookie](/llms/api/kromium-cookie.md): Represents a single HTTP cookie in the Kromium engine, capturing name, value, domain, path, security flags (isSecure, isHttpOnly), and expiration date.
+- [KromiumCookieManager](/llms/api/kromium-cookie-manager.md): Interface for managing cookies across the browser engine.
+- [KromiumStorage](/llms/api/kromium-storage.md): Facade for Cookie and Storage Management.
+
+### Downloads
+- [KromiumDownloads](/llms/api/kromium-downloads.md): Facade for download management operations.
+- [KromiumDownloadItem](/llms/api/kromium-download-item.md): Metadata representing a file download event from the browser engine.
+- [KromiumBeforeDownloadListener](/llms/api/kromium-before-download-listener.md): Functional interface to dynamically resolve the target path before a download begins.
+- [KromiumDownloadListener](/llms/api/kromium-download-listener.md): Callback for listening to and customizing file downloads.
+- [KromiumDownloadProgress](/llms/api/kromium-download-progress.md): Detailed download progress state.
+
+### Permissions & Devices
+- [KromiumPermissionRequest](/llms/api/kromium-permission-request.md): Encapsulates an incoming media or device permission request from a web page.
+- [KromiumPermissionDecision](/llms/api/kromium-permission-decision.md): Outcome decision returned by a KromiumPermissionListener in response to a web permission request.
+- [KromiumPermissionListener](/llms/api/kromium-permission-listener.md): Functional interface for intercepting and deciding on media/hardware permission requests.
+- [KromiumPermissionType](/llms/api/kromium-permission-type.md): Types of media and hardware device permissions requested by web applications.
+
+### PDF & Printing
+- [KromiumPdfSettings](/llms/api/kromium-pdf-settings.md): Comprehensive configuration settings for exporting web pages to vector PDF documents.
+- [KromiumPaperSize](/llms/api/kromium-paper-size.md): Standard paper dimension definitions for PDF printing.
+- [KromiumPdfMargins](/llms/api/kromium-pdf-margins.md): Page margin configuration for PDF printing.
+
+### Custom Schemes
+- [KromiumCustomScheme](/llms/api/kromium-custom-scheme.md): Configuration for registering a custom protocol scheme with the underlying Chromium engine.
+- [KromiumSchemeRegistration](/llms/api/kromium-scheme-registration.md): Registration entry pairing a scheme and domain name with a KromiumAssetHandler.
+- [KromiumAssetHandler](/llms/api/kromium-asset-handler.md): Functional interface for handling intercepted virtual asset requests.
+- [KromiumAssetRequest](/llms/api/kromium-asset-request.md): Represents an incoming virtual HTTP request intercepted by a KromiumAssetHandler.
+- [KromiumAssetResponse](/llms/api/kromium-asset-response.md): Represents a virtual HTTP response returned by a KromiumAssetHandler to fulfill a custom scheme request.
+- [KromiumSchemeHandler](/llms/api/kromium-scheme-handler.md): Factory utilities for creating turnkey KromiumAssetHandler instances to serve web assets from JVM classpath or local directories via custom protocols.
+
+### DevTools & Logging
+- [KromiumDevTools](/llms/api/kromium-dev-tools.md): Facade for developer tools operations.
+- [KromiumConsoleMessage](/llms/api/kromium-console-message.md): A message logged to the browser's JavaScript developer console.
+- [KromiumConsoleMessageLevel](/llms/api/kromium-console-message-level.md): Represents the severity level of a browser console message.
+- [KromiumConsoleMessageListener](/llms/api/kromium-console-message-listener.md): Listener for JavaScript console messages emitted by the browser.
+
+### Search
+- [KromiumSearch](/llms/api/kromium-search.md): Facade for managing in-page text search operations within a browser instance.
+
+### Bootstrap & Runtime
+- [KromiumEngineDownloadConfig](/llms/api/kromium-engine-download-config.md): Configuration for downloading and installing the JCEF engine binaries.
+- [KromiumEngineDownloadSource](/llms/api/kromium-engine-download-source.md): Defines the strategy for acquiring the JCEF engine binaries.
+- [KromiumPlatformUrlResolver](/llms/api/kromium-platform-url-resolver.md): Resolves the download URL for a specific platform dynamically.
+
+### Error Handling
+- [KromiumException](/llms/api/kromium-exception.md): Sealed exception hierarchy for all Kromium-specific errors.
+- [KromiumErrorCode](/llms/api/kromium-error-code.md): Standardized error codes for programmatic recovery and telemetry.
+

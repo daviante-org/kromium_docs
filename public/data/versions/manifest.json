@@ -1,0 +1,12 @@
+{
+  "latestVersion": "v1.0.0.150-b11",
+  "versions": [
+    {
+      "version": "v1.0.0.150-b11",
+      "name": "Stable",
+      "isLatest": true,
+      "releaseDate": "2026-09-26",
+      "notes": "Published to Cloudflare R2 Maven repository at https://repo.daviante.org/artifacts"
+    }
+  ]
+}

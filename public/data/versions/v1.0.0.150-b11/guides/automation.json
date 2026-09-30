@@ -1,0 +1,50 @@
+{
+  "id": "automation",
+  "title": "Web Automation & DOM Interaction API",
+  "summary": "Playwright-inspired automation engine for SPAs, MutationObserver-backed waiting, form filling, and keystroke dispatch.",
+  "category": "Core API",
+  "readTime": "7 min",
+  "lastUpdated": "2026-09-27",
+  "sections": [
+    {
+      "id": "waiting",
+      "title": "Waiting for Elements & URLs",
+      "content": "Kromium's waitForSelector injects an in-V8 MutationObserver to avoid IPC polling overhead, resuming your coroutine the millisecond the element appears.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Suspends until element matching CSS selector appears\nval found = browser.automation.waitForSelector(\n    selector = \"#login-form\",\n    timeoutMs = 10_000L\n)\n\n// Wait for redirect to dashboard\nval redirected = browser.automation.waitForUrl(\n    pattern = \"https://app.example.com/dashboard\",\n    timeoutMs = 15_000L\n)"
+      }
+    },
+    {
+      "id": "form-interaction",
+      "title": "Form Inputs & Keystroke Simulation",
+      "content": "Automate forms using fill, type, selectOption, and click.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Instant fill (dispatches input and change events)\nbrowser.automation.fill(\"input#username\", \"admin@company.com\")\n\n// Human-like keystroke typing with delay\nbrowser.automation.type(\"input#password\", \"secret\", delayMs = 50L)\n\n// Select option\nbrowser.automation.selectOption(\"select#country\", \"US\")\n\n// Click button\nbrowser.automation.click(\"button[type='submit']\")"
+      }
+    },
+    {
+      "id": "dom-extraction",
+      "title": "DOM Extraction & State Querying",
+      "content": "Inspect DOM properties and content directly without writing raw JavaScript strings.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val text = browser.automation.getTextContent(\"h1.title\")\nval href = browser.automation.getAttribute(\"a#download-link\", \"href\")\nval isVisible = browser.automation.isVisible(\".modal-dialog\")\nval totalItems = browser.automation.count(\".item-row\")"
+      }
+    },
+    {
+      "id": "js-bridge",
+      "title": "JavaScript Bridge & Async Evaluation",
+      "content": "Execute arbitrary JavaScript and await results via browser.jsBridge.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val result = browser.jsBridge.evaluateJavaScript(\"window.innerWidth * window.devicePixelRatio\")\nval html = browser.jsBridge.getHtml()"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumAutomation", "path": "/api/kromium-automation" },
+    { "name": "KromiumJsBridge", "path": "/api/kromium-js-bridge" }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "id": "kromium-pdf-settings",
+  "name": "KromiumPdfSettings",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.print",
+  "summary": "Comprehensive configuration settings for exporting web pages to vector PDF documents.",
+  "declaration": "data class KromiumPdfSettings @JvmOverloads constructor(\n    val landscape: Boolean = false,\n    val printBackground: Boolean = false,\n    val scale: Double = 1.0,\n    val paperSize: KromiumPaperSize = KromiumPaperSize.A4,\n    val preferCssPageSize: Boolean = false,\n    val margins: KromiumPdfMargins = KromiumPdfMargins.Default,\n    val pageRanges: String = \"\",\n    val displayHeaderFooter: Boolean = false,\n    val headerTemplate: String = \"\",\n    val footerTemplate: String = \"\",\n    val createDirectories: Boolean = false,\n    val generateTaggedPdf: Boolean = false,\n    val generateDocumentOutline: Boolean = false\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumPdfSettings(landscape: Boolean = false, printBackground: Boolean = false, scale: Double = 1.0, paperSize: KromiumPaperSize = KromiumPaperSize.A4, preferCssPageSize: Boolean = false, margins: KromiumPdfMargins = KromiumPdfMargins.Default, pageRanges: String = \"\", displayHeaderFooter: Boolean = false, headerTemplate: String = \"\", footerTemplate: String = \"\", createDirectories: Boolean = false, generateTaggedPdf: Boolean = false, generateDocumentOutline: Boolean = false)",
+      "description": "Constructs PDF export settings.",
+      "parameters": [
+        { "name": "landscape", "type": "Boolean", "description": "True for landscape orientation, false for portrait.", "optional": true, "defaultValue": "false" },
+        { "name": "printBackground", "type": "Boolean", "description": "True to print CSS background graphics, gradients, and colors.", "optional": true, "defaultValue": "false" },
+        { "name": "scale", "type": "Double", "description": "Scaling of webpage rendering (1.0 = 100%).", "optional": true, "defaultValue": "1.0" },
+        { "name": "paperSize", "type": "KromiumPaperSize", "description": "Dimensions of output paper.", "optional": true, "defaultValue": "KromiumPaperSize.A4" },
+        { "name": "preferCssPageSize", "type": "Boolean", "description": "True to prefer page size defined by CSS @page rule.", "optional": true, "defaultValue": "false" },
+        { "name": "margins", "type": "KromiumPdfMargins", "description": "Margin specifications for the page.", "optional": true, "defaultValue": "KromiumPdfMargins.Default" },
+        { "name": "pageRanges", "type": "String", "description": "Page ranges to print (e.g. '1-5, 8, 11-13'). Empty prints all pages.", "optional": true, "defaultValue": "\"\"" },
+        { "name": "displayHeaderFooter", "type": "Boolean", "description": "True to display HTML header and footer.", "optional": true, "defaultValue": "false" },
+        { "name": "headerTemplate", "type": "String", "description": "HTML template for print header.", "optional": true, "defaultValue": "\"\"" },
+        { "name": "footerTemplate", "type": "String", "description": "HTML template for print footer.", "optional": true, "defaultValue": "\"\"" },
+        { "name": "createDirectories", "type": "Boolean", "description": "True to automatically create missing parent directories for target file.", "optional": true, "defaultValue": "false" },
+        { "name": "generateTaggedPdf", "type": "Boolean", "description": "True to generate tagged (accessible) PDF.", "optional": true, "defaultValue": "false" },
+        { "name": "generateDocumentOutline", "type": "Boolean", "description": "True to generate document outline (bookmarks) from headers.", "optional": true, "defaultValue": "false" }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "landscape", "type": "Boolean", "description": "True for landscape orientation, false for portrait." },
+    { "name": "printBackground", "type": "Boolean", "description": "True to print CSS background graphics, gradients, and colors." },
+    { "name": "scale", "type": "Double", "description": "Scaling of webpage rendering (1.0 = 100%)." },
+    { "name": "paperSize", "type": "KromiumPaperSize", "description": "Dimensions of output paper." },
+    { "name": "preferCssPageSize", "type": "Boolean", "description": "True to prefer page size defined by CSS @page rule." },
+    { "name": "margins", "type": "KromiumPdfMargins", "description": "Margin specifications for the page." },
+    { "name": "pageRanges", "type": "String", "description": "Page ranges to print (e.g. '1-5, 8, 11-13'). Empty prints all pages." },
+    { "name": "displayHeaderFooter", "type": "Boolean", "description": "True to display HTML header and footer." },
+    { "name": "headerTemplate", "type": "String", "description": "HTML template for print header." },
+    { "name": "footerTemplate", "type": "String", "description": "HTML template for print footer." },
+    { "name": "createDirectories", "type": "Boolean", "description": "True to automatically create missing parent directories for target file." },
+    { "name": "generateTaggedPdf", "type": "Boolean", "description": "True to generate tagged (accessible) PDF." },
+    { "name": "generateDocumentOutline", "type": "Boolean", "description": "True to generate document outline (bookmarks) from headers." }
+  ],
+  "companionProperties": [
+    { "name": "Default", "type": "KromiumPdfSettings", "description": "Default PDF print settings." }
+  ],
+  "companionMethods": [
+    {
+      "name": "builder",
+      "signature": "fun builder(): Builder",
+      "returnType": "Builder",
+      "description": "Creates a new fluent Builder."
+    }
+  ]
+}

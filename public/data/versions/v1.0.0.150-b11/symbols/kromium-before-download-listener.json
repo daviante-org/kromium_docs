@@ -1,0 +1,29 @@
+{
+  "id": "kromium-before-download-listener",
+  "name": "KromiumBeforeDownloadListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.download",
+  "summary": "Functional interface to dynamically resolve the target path before a download begins.",
+  "declaration": "fun interface KromiumBeforeDownloadListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onBeforeDownload",
+      "signature": "fun onBeforeDownload(item: KromiumDownloadItem, suggestedFileName: String): String?",
+      "returnType": "String?",
+      "description": "Intercepts a download request before it starts. Returns the absolute path where the file should be saved, null to use the default path, or an empty string \"\" to cancel the download.",
+      "parameters": [
+        {
+          "name": "item",
+          "type": "KromiumDownloadItem",
+          "description": "The download item information."
+        },
+        {
+          "name": "suggestedFileName",
+          "type": "String",
+          "description": "The file name suggested by the server."
+        }
+      ]
+    }
+  ]
+}

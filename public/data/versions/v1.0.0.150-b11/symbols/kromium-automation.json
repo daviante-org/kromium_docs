@@ -1,0 +1,253 @@
+{
+  "id": "kromium-automation",
+  "name": "KromiumAutomation",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.automation",
+  "summary": "Facade for DOM automation and browser interaction testing. Provides Playwright-style methods for automating interactions with the loaded page.",
+  "declaration": "interface KromiumAutomation",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "emulateDesktopEnvironment",
+      "signature": "fun emulateDesktopEnvironment()",
+      "returnType": "Unit",
+      "description": "Injects JavaScript into the active page to normalize the headless environment and emulate a standard interactive desktop session."
+    },
+    {
+      "name": "simulateClick",
+      "signature": "fun simulateClick(x: Int, y: Int)",
+      "returnType": "Unit",
+      "description": "Simulates a click event at the specified viewport coordinates.",
+      "parameters": [
+        { "name": "x", "type": "Int", "description": "Horizontal pixel coordinate." },
+        { "name": "y", "type": "Int", "description": "Vertical pixel coordinate." }
+      ]
+    },
+    {
+      "name": "waitForSelector",
+      "signature": "suspend fun waitForSelector(selector: String, timeoutMs: Long = 10_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Suspends until an element matching the CSS selector is attached to the DOM.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "waitForSelectorAsync",
+      "signature": "fun waitForSelectorAsync(selector: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously awaits an element matching the CSS selector.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "waitForUrl",
+      "signature": "suspend fun waitForUrl(pattern: String, isRegex: Boolean = false, timeoutMs: Long = 15_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Suspends until current URL matches target pattern.",
+      "parameters": [
+        { "name": "pattern", "type": "String", "description": "URL substring or regex pattern." },
+        { "name": "isRegex", "type": "Boolean", "description": "Whether pattern is regex.", "optional": true, "defaultValue": "false" },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "15000L" }
+      ]
+    },
+    {
+      "name": "waitForUrlAsync",
+      "signature": "fun waitForUrlAsync(pattern: String, isRegex: Boolean = false, timeoutMs: Long = 15_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously awaits matching URL.",
+      "parameters": [
+        { "name": "pattern", "type": "String", "description": "URL substring or regex pattern." },
+        { "name": "isRegex", "type": "Boolean", "description": "Whether pattern is regex.", "optional": true, "defaultValue": "false" },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "15000L" }
+      ]
+    },
+    {
+      "name": "click",
+      "signature": "suspend fun click(selector: String, timeoutMs: Long = 10_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Clicks an element matching the CSS selector.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "clickAsync",
+      "signature": "fun clickAsync(selector: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously clicks an element matching the CSS selector.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "fill",
+      "signature": "suspend fun fill(selector: String, value: String, timeoutMs: Long = 10_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Sets the value of an input element matching the selector.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "value", "type": "String", "description": "Input value to set." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "fillAsync",
+      "signature": "fun fillAsync(selector: String, value: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously sets the value of an input element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "value", "type": "String", "description": "Input value to set." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "type",
+      "signature": "suspend fun type(selector: String, text: String, delayMs: Long = 20L, timeoutMs: Long = 10_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Types text into an element character by character with keystroke delay.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "text", "type": "String", "description": "Text to type." },
+        { "name": "delayMs", "type": "Long", "description": "Delay between keystrokes in ms.", "optional": true, "defaultValue": "20L" },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "typeAsync",
+      "signature": "fun typeAsync(selector: String, text: String, delayMs: Long = 20L, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously types text into an element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "text", "type": "String", "description": "Text to type." },
+        { "name": "delayMs", "type": "Long", "description": "Delay between keystrokes in ms.", "optional": true, "defaultValue": "20L" },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "selectOption",
+      "signature": "suspend fun selectOption(selector: String, value: String, timeoutMs: Long = 10_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Selects an option in a dropdown select element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector for select element." },
+        { "name": "value", "type": "String", "description": "Option value to select." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "selectOptionAsync",
+      "signature": "fun selectOptionAsync(selector: String, value: String, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously selects an option in a dropdown select element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector for select element." },
+        { "name": "value", "type": "String", "description": "Option value to select." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "getTextContent",
+      "signature": "suspend fun getTextContent(selector: String, timeoutMs: Long = 10_000L): String?",
+      "returnType": "String?",
+      "description": "Retrieves the inner text content of an element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "getTextContentAsync",
+      "signature": "fun getTextContentAsync(selector: String, timeoutMs: Long = 10_000L): CompletableFuture<String?>",
+      "returnType": "CompletableFuture<String?>",
+      "description": "Asynchronously retrieves the inner text content of an element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "getAttribute",
+      "signature": "suspend fun getAttribute(selector: String, attribute: String, timeoutMs: Long = 10_000L): String?",
+      "returnType": "String?",
+      "description": "Retrieves an attribute value of an element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "attribute", "type": "String", "description": "Attribute name." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "getAttributeAsync",
+      "signature": "fun getAttributeAsync(selector: String, attribute: String, timeoutMs: Long = 10_000L): CompletableFuture<String?>",
+      "returnType": "CompletableFuture<String?>",
+      "description": "Asynchronously retrieves an attribute value of an element.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." },
+        { "name": "attribute", "type": "String", "description": "Attribute name." },
+        { "name": "timeoutMs", "type": "Long", "description": "Timeout in milliseconds.", "optional": true, "defaultValue": "10000L" }
+      ]
+    },
+    {
+      "name": "isVisible",
+      "signature": "suspend fun isVisible(selector: String): Boolean",
+      "returnType": "Boolean",
+      "description": "Checks if an element matching selector is visible.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." }
+      ]
+    },
+    {
+      "name": "isVisibleAsync",
+      "signature": "fun isVisibleAsync(selector: String): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously checks if an element is visible.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." }
+      ]
+    },
+    {
+      "name": "isChecked",
+      "signature": "suspend fun isChecked(selector: String): Boolean",
+      "returnType": "Boolean",
+      "description": "Checks if a checkbox or radio button is checked.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." }
+      ]
+    },
+    {
+      "name": "isCheckedAsync",
+      "signature": "fun isCheckedAsync(selector: String): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Asynchronously checks if a checkbox or radio button is checked.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." }
+      ]
+    },
+    {
+      "name": "count",
+      "signature": "suspend fun count(selector: String): Int",
+      "returnType": "Int",
+      "description": "Returns the number of elements matching the selector.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." }
+      ]
+    },
+    {
+      "name": "countAsync",
+      "signature": "fun countAsync(selector: String): CompletableFuture<Int>",
+      "returnType": "CompletableFuture<Int>",
+      "description": "Asynchronously returns the number of elements matching the selector.",
+      "parameters": [
+        { "name": "selector", "type": "String", "description": "CSS selector." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "id": "kromium-client-config",
+  "name": "KromiumClientConfig",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "data class KromiumClientConfig(val userAgent: String? = null, val emulateDesktopEnvironment: Boolean = false, val doNotTrack: Boolean = true, val isIsolated: Boolean = false, val proxy: KromiumProxy? = null, val onBeforeDownloadListener: KromiumBeforeDownloadListener? = null, val downloadListener: KromiumDownloadListener? = null, val requestInterceptor: KromiumRequestInterceptor? = null, val navigationInterceptor: KromiumNavigationInterceptor? = null, val consoleMessageListener: KromiumConsoleMessageListener? = null, val jsDialogListener: KromiumJsDialogListener? = null, val popupListener: KromiumPopupListener? = null, val authListener: KromiumAuthListener? = null, val contextMenuListener: KromiumContextMenuListener? = null, val permissionListener: KromiumPermissionListener? = null, val loadErrorListener: KromiumLoadErrorListener? = null, val isOffScreenRendered: Boolean = true, val isTransparent: Boolean = false, val framework: KromiumUiFramework? = null, val sslErrorPolicy: SslErrorPolicy = SslErrorPolicy.Strict, val initialWidth: Int = 1280, val initialHeight: Int = 800)",
+  "description": "Configuration for a specific browser client session. Determines proxy settings, user agents, transparency, OSR canvas bindings, SSL error policies, initial dimensions, and event listeners for network, downloads, and UI interactions.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Pass into engine.createClient(config) or client.createBrowser(url, config) to configure individual browsing sessions.",
+  "options": [],
+  "properties": [
+    {
+      "name": "userAgent",
+      "signature": "val userAgent: String? = null",
+      "description": "Custom HTTP User-Agent string, or null to use Chromium default.",
+      "type": "String?",
+      "default": "null"
+    },
+    {
+      "name": "emulateDesktopEnvironment",
+      "signature": "val emulateDesktopEnvironment: Boolean = false",
+      "description": "Whether to emulate a standard desktop display environment.",
+      "type": "Boolean",
+      "default": "false"
+    },
+    {
+      "name": "doNotTrack",
+      "signature": "val doNotTrack: Boolean = true",
+      "description": "Whether to send DNT: 1 and Sec-GPC: 1 privacy headers.",
+      "type": "Boolean",
+      "default": "true"
+    },
+    {
+      "name": "isIsolated",
+      "signature": "val isIsolated: Boolean = false",
+      "description": "Whether this client operates in an isolated incognito storage partition.",
+      "type": "Boolean",
+      "default": "false"
+    },
+    {
+      "name": "proxy",
+      "signature": "val proxy: KromiumProxy? = null",
+      "description": "Session-specific proxy configuration overriding the global engine proxy.",
+      "type": "KromiumProxy?",
+      "default": "null"
+    },
+    {
+      "name": "onBeforeDownloadListener",
+      "signature": "val onBeforeDownloadListener: KromiumBeforeDownloadListener? = null",
+      "description": "Callback to resolve target paths or cancel file downloads before transfer begins.",
+      "type": "KromiumBeforeDownloadListener?",
+      "default": "null"
+    },
+    {
+      "name": "downloadListener",
+      "signature": "val downloadListener: KromiumDownloadListener? = null",
+      "description": "Callback to monitor file download progress and completion events.",
+      "type": "KromiumDownloadListener?",
+      "default": "null"
+    },
+    {
+      "name": "requestInterceptor",
+      "signature": "val requestInterceptor: KromiumRequestInterceptor? = null",
+      "description": "Interceptor for inspecting, modifying, or blocking outgoing HTTP/HTTPS web resource requests.",
+      "type": "KromiumRequestInterceptor?",
+      "default": "null"
+    },
+    {
+      "name": "navigationInterceptor",
+      "signature": "val navigationInterceptor: KromiumNavigationInterceptor? = null",
+      "description": "Interceptor for evaluating and overriding top-level frame navigations.",
+      "type": "KromiumNavigationInterceptor?",
+      "default": "null"
+    },
+    {
+      "name": "consoleMessageListener",
+      "signature": "val consoleMessageListener: KromiumConsoleMessageListener? = null",
+      "description": "Listener for JavaScript console messages (log, info, warn, error).",
+      "type": "KromiumConsoleMessageListener?",
+      "default": "null"
+    },
+    {
+      "name": "jsDialogListener",
+      "signature": "val jsDialogListener: KromiumJsDialogListener? = null",
+      "description": "Listener to handle or suppress JavaScript alert, confirm, and prompt dialogs.",
+      "type": "KromiumJsDialogListener?",
+      "default": "null"
+    },
+    {
+      "name": "popupListener",
+      "signature": "val popupListener: KromiumPopupListener? = null",
+      "description": "Listener for popup window requests (window.open).",
+      "type": "KromiumPopupListener?",
+      "default": "null"
+    },
+    {
+      "name": "authListener",
+      "signature": "val authListener: KromiumAuthListener? = null",
+      "description": "Listener for HTTP Basic/Digest and proxy authentication challenges.",
+      "type": "KromiumAuthListener?",
+      "default": "null"
+    },
+    {
+      "name": "contextMenuListener",
+      "signature": "val contextMenuListener: KromiumContextMenuListener? = null",
+      "description": "Listener for right-click context menu construction and customization.",
+      "type": "KromiumContextMenuListener?",
+      "default": "null"
+    },
+    {
+      "name": "permissionListener",
+      "signature": "val permissionListener: KromiumPermissionListener? = null",
+      "description": "Listener for camera, microphone, screen share, and media device permission requests.",
+      "type": "KromiumPermissionListener?",
+      "default": "null"
+    },
+    {
+      "name": "loadErrorListener",
+      "signature": "val loadErrorListener: KromiumLoadErrorListener? = null",
+      "description": "Listener for frame load failures, DNS resolution errors, and connection dropouts.",
+      "type": "KromiumLoadErrorListener?",
+      "default": "null"
+    },
+    {
+      "name": "isOffScreenRendered",
+      "signature": "val isOffScreenRendered: Boolean = true",
+      "description": "Whether browsers in this client use off-screen rendering (OSR) into pixel buffers.",
+      "type": "Boolean",
+      "default": "true"
+    },
+    {
+      "name": "isTransparent",
+      "signature": "val isTransparent: Boolean = false",
+      "description": "Whether the web view canvas background is transparent.",
+      "type": "Boolean",
+      "default": "false"
+    },
+    {
+      "name": "framework",
+      "signature": "val framework: KromiumUiFramework? = null",
+      "description": "Target UI framework (COMPOSE, SWING, JAVAFX, SWT, AWT) for OSR canvas factory resolution.",
+      "type": "KromiumUiFramework?",
+      "default": "null"
+    },
+    {
+      "name": "sslErrorPolicy",
+      "signature": "val sslErrorPolicy: SslErrorPolicy = SslErrorPolicy.Strict",
+      "description": "SSL certificate verification policy (Strict, IgnoreAll, AllowHostList, Custom).",
+      "type": "SslErrorPolicy",
+      "default": "SslErrorPolicy.Strict"
+    },
+    {
+      "name": "initialWidth",
+      "signature": "val initialWidth: Int = 1280",
+      "description": "Initial viewport width in pixels.",
+      "type": "Int",
+      "default": "1280"
+    },
+    {
+      "name": "initialHeight",
+      "signature": "val initialHeight: Int = 800",
+      "description": "Initial viewport height in pixels.",
+      "type": "Int",
+      "default": "800"
+    }
+  ],
+  "methods": [
+    {
+      "name": "default",
+      "signature": "@JvmStatic fun default(): KromiumClientConfig",
+      "description": "Returns the default client configuration instance.",
+      "returns": "KromiumClientConfig",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "builder",
+      "signature": "@JvmStatic fun builder(): Builder",
+      "description": "Returns a new builder for KromiumClientConfig.",
+      "returns": "Builder",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumClientConfig\nimport org.daviante.kromium.api.ui.KromiumUiFramework\n\nval clientConfig = KromiumClientConfig.builder()\n    .framework(KromiumUiFramework.COMPOSE)\n    .doNotTrack(true)\n    .initialWidth(1400)\n    .initialHeight(900)\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumClientConfig;\nimport org.daviante.kromium.api.ui.KromiumUiFramework;\n\npublic class ClientConfigFactory {\n    public static KromiumClientConfig create() {\n        return KromiumClientConfig.builder()\n            .framework(KromiumUiFramework.SWING)\n            .doNotTrack(true)\n            .build();\n    }\n}"
+    }
+  ]
+}

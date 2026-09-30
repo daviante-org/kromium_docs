@@ -1,0 +1,64 @@
+{
+  "id": "kromium-permission-listener",
+  "name": "KromiumPermissionListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.permission",
+  "summary": "Functional interface for intercepting and deciding on media/hardware permission requests.",
+  "declaration": "fun interface KromiumPermissionListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onRequestPermission",
+      "signature": "fun onRequestPermission(request: KromiumPermissionRequest): KromiumPermissionDecision",
+      "returnType": "KromiumPermissionDecision",
+      "description": "Evaluates an incoming KromiumPermissionRequest and returns a KromiumPermissionDecision.",
+      "parameters": [
+        {
+          "name": "request",
+          "type": "KromiumPermissionRequest",
+          "description": "Details of the requesting web frame, origin, and requested permission types."
+        }
+      ]
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "grantAll",
+      "signature": "fun grantAll(): KromiumPermissionListener",
+      "returnType": "KromiumPermissionListener",
+      "description": "Creates a listener that automatically grants all media and device permission requests."
+    },
+    {
+      "name": "denyAll",
+      "signature": "fun denyAll(): KromiumPermissionListener",
+      "returnType": "KromiumPermissionListener",
+      "description": "Creates a listener that automatically denies all media and device permission requests."
+    },
+    {
+      "name": "forOrigins",
+      "signature": "fun forOrigins(allowedOrigins: Set<String>): KromiumPermissionListener",
+      "returnType": "KromiumPermissionListener",
+      "description": "Creates a listener that grants permissions only if the origin is explicitly allowed.",
+      "parameters": [
+        {
+          "name": "allowedOrigins",
+          "type": "Set<String>",
+          "description": "Set of allowed origin URLs or hostnames."
+        }
+      ]
+    },
+    {
+      "name": "forOrigins",
+      "signature": "fun forOrigins(vararg allowedOrigins: String): KromiumPermissionListener",
+      "returnType": "KromiumPermissionListener",
+      "description": "Creates a listener that grants permissions only if the origin is explicitly allowed.",
+      "parameters": [
+        {
+          "name": "allowedOrigins",
+          "type": "vararg String",
+          "description": "Allowed origin URLs or hostnames."
+        }
+      ]
+    }
+  ]
+}

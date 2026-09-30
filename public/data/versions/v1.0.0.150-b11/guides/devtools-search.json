@@ -1,0 +1,52 @@
+{
+  "id": "devtools-search",
+  "title": "DevTools, Text Search & JavaScript Bridge",
+  "summary": "Open Chromium DevTools, find text on pages, execute JavaScript, extract HTML/text content, and resolve favicons.",
+  "category": "Core API",
+  "readTime": "5 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "devtools",
+      "title": "Opening Developer Tools",
+      "content": "The `browser.devTools` facade provides direct control over the native Chromium Developer Tools window.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Open DevTools (docked or undocked based on Chromium default)\nbrowser.devTools.openDevTools()\n\n// Open DevTools targeting a specific element at coordinates\nbrowser.devTools.openDevTools(inspectPoint = Point(300, 200))\n\n// Close DevTools\nbrowser.devTools.closeDevTools()"
+      }
+    },
+    {
+      "id": "text-search",
+      "title": "Find Text on Page",
+      "content": "The `browser.search` facade provides in-page text search with highlighting, case sensitivity, and directional navigation — similar to Ctrl+F in a browser.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Start a case-insensitive forward search\nbrowser.search.find(\n    searchText = \"Kromium\",\n    forward = true,\n    matchCase = false,\n    findNext = false\n)\n\n// Navigate to the next match\nbrowser.search.find(\n    searchText = \"Kromium\",\n    forward = true,\n    findNext = true\n)\n\n// Navigate to the previous match\nbrowser.search.find(\n    searchText = \"Kromium\",\n    forward = false,\n    findNext = true\n)\n\n// Stop searching and clear highlights\nbrowser.search.stopFinding(clearSelection = true)"
+      }
+    },
+    {
+      "id": "js-bridge",
+      "title": "JavaScript Execution & Bridge",
+      "content": "The `browser.jsBridge` facade provides bidirectional JavaScript interoperability with both fire-and-forget execution and async evaluated results.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Fire-and-forget JavaScript execution\nbrowser.jsBridge.executeJavaScript(\"document.title = 'Hello from Kotlin'\")\n\n// Evaluate and await a result (suspend)\nval width = browser.jsBridge.evaluateJavaScript(\n    \"window.innerWidth * window.devicePixelRatio\"\n)\nprintln(\"Viewport width: $width\")\n\n// Get full page HTML\nval html = browser.jsBridge.getHtml()\n\n// Get visible text content\nval text = browser.jsBridge.getText()\n\n// Resolve the page's favicon URL\nval favicon = browser.jsBridge.getFaviconUrl()"
+      }
+    },
+    {
+      "id": "js-java-interop",
+      "title": "Java CompletableFuture Interop",
+      "content": "All suspend JS bridge methods have `*Async` counterparts for Java interop.",
+      "codeSnippet": {
+        "language": "java",
+        "code": "// Java: Get HTML asynchronously\nbrowser.getJsBridge().getHtmlAsync()\n    .thenAccept(html -> System.out.println(\"Page HTML length: \" + html.length()));\n\n// Java: Get text content\nbrowser.getJsBridge().getTextAsync()\n    .thenAccept(text -> System.out.println(\"Visible text: \" + text));\n\n// Java: Resolve favicon\nbrowser.getJsBridge().getFaviconUrlAsync()\n    .thenAccept(url -> System.out.println(\"Favicon: \" + url));"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumDevTools", "path": "/api/kromium-dev-tools" },
+    { "name": "KromiumSearch", "path": "/api/kromium-search" },
+    { "name": "KromiumJsBridge", "path": "/api/kromium-js-bridge" },
+    { "name": "KromiumConsoleMessage", "path": "/api/kromium-console-message" }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "id": "kromium-engine",
+  "name": "KromiumEngine",
+  "module": "kromium-api",
+  "category": "Core Engine",
+  "package": "org.daviante.kromium.api.core",
+  "declaration": "interface KromiumEngine",
+  "description": "The core interface representing the running Kromium engine. Manages lifecycle states, native binary initialization and disposal, browser client sessions, global cookie management, scheme handler registration, and engine-wide download operations.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Obtain via Kromium.createEngine(config, provider) or provider.createEngine(config) to control the engine lifecycle, observe states via StateFlow, and spawn isolated KromiumClient sessions.",
+  "options": [],
+  "properties": [
+    {
+      "name": "state",
+      "signature": "val state: StateFlow<KromiumState>",
+      "description": "The current state of the engine (e.g. downloading, extracting, ready).",
+      "type": "StateFlow<KromiumState>",
+      "default": "none"
+    },
+    {
+      "name": "info",
+      "signature": "val info: KromiumEngineInfo",
+      "description": "Gets information about the current engine installation.",
+      "type": "KromiumEngineInfo",
+      "default": "none"
+    },
+    {
+      "name": "cookieManager",
+      "signature": "val cookieManager: KromiumCookieManager",
+      "description": "Global cookie manager for this engine.",
+      "type": "KromiumCookieManager",
+      "default": "none"
+    }
+  ],
+  "methods": [
+    {
+      "name": "initialize",
+      "signature": "suspend fun initialize()",
+      "description": "Initializes the engine asynchronously, downloading/extracting binaries if necessary.",
+      "returns": "Unit",
+      "isSuspend": true,
+      "throws": []
+    },
+    {
+      "name": "initializeAsync",
+      "signature": "fun initializeAsync(): CompletableFuture<Void?>",
+      "description": "Asynchronously initializes the engine returning a Java CompletableFuture.",
+      "returns": "CompletableFuture<Void?>",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "dispose",
+      "signature": "fun dispose()",
+      "description": "Disposes the engine, cleaning up native resources.",
+      "returns": "Unit",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "createClient",
+      "signature": "fun createClient(config: KromiumClientConfig = KromiumClientConfig.default()): KromiumClient",
+      "description": "Creates a new isolated browser client session.",
+      "returns": "KromiumClient",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "registerSchemeHandler",
+      "signature": "fun registerSchemeHandler(schemeName: String, domainName: String? = null, handler: KromiumAssetHandler): Boolean",
+      "description": "Registers a custom protocol scheme handler factory with the engine.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "cancelDownload",
+      "signature": "fun cancelDownload(downloadId: Int): Boolean",
+      "description": "Programmatically cancels an in-progress download identified by its download ID across any active browser session.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "pauseDownload",
+      "signature": "fun pauseDownload(downloadId: Int): Boolean",
+      "description": "Programmatically pauses an in-progress download identified by its download ID across any active browser session.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "resumeDownload",
+      "signature": "fun resumeDownload(downloadId: Int): Boolean",
+      "description": "Programmatically resumes a paused download identified by its download ID across any active browser session.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "isDownloadPaused",
+      "signature": "fun isDownloadPaused(downloadId: Int): Boolean",
+      "description": "Checks whether an in-progress download is currently paused across any active browser session.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "clearSchemeHandlers",
+      "signature": "fun clearSchemeHandlers(): Boolean",
+      "description": "Clears all registered custom scheme handler factories.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig\nimport org.daviante.kromium.jcef.JcefProvider\n\nsuspend fun initEngine() {\n    val engine = JcefProvider.createEngine(KromiumConfig.builder().build())\n    engine.initialize()\n    val client = engine.createClient()\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig;\nimport org.daviante.kromium.api.core.KromiumEngine;\nimport org.daviante.kromium.jcef.JcefProvider;\n\npublic class EngineInit {\n    public static void start() {\n        KromiumEngine engine = JcefProvider.INSTANCE.createEngine(KromiumConfig.builder().build());\n        engine.initializeAsync().thenRun(() -> {\n            System.out.println(\"Engine ready!\");\n        });\n    }\n}"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "kromium-key-event-type",
+  "name": "KromiumKeyEventType",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Standard event types for keyboard input across all UI toolkits.",
+  "declaration": "enum class KromiumKeyEventType",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    { "name": "PRESSED", "description": "Key press event (KeyDown)." },
+    { "name": "TYPED", "description": "Character typed event (KeyChar)." },
+    { "name": "RELEASED", "description": "Key release event (KeyUp)." }
+  ]
+}

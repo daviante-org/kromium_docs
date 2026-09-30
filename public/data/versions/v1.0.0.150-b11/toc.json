@@ -1,0 +1,338 @@
+{
+  "version": "v1.0.0.150-b11",
+  "items": [
+    {
+      "id": "guides-group",
+      "title": "Guides",
+      "path": "/guides/quickstart",
+      "type": "group",
+      "children": [
+        {
+          "id": "quickstart",
+          "title": "5-Minute Quickstart",
+          "path": "/guides/quickstart",
+          "type": "guide",
+          "description": "Add Kromium to your Gradle project and create your first browser."
+        },
+        {
+          "id": "ui-frameworks",
+          "title": "Desktop UI Integrations",
+          "path": "/guides/ui-frameworks",
+          "type": "guide",
+          "description": "Embed Kromium in Jetpack Compose, Swing, JavaFX, SWT, and AWT."
+        },
+        {
+          "id": "r2-maven-repository",
+          "title": "Cloudflare R2 Repository",
+          "path": "/guides/r2-maven-repository",
+          "type": "guide",
+          "description": "How Kromium packages are hosted and configured from Cloudflare R2."
+        },
+        {
+          "id": "automation",
+          "title": "Web Automation & DOM API",
+          "path": "/guides/automation",
+          "type": "guide",
+          "description": "Playwright-inspired automation, waiting, form filling, and keystroke dispatch."
+        },
+        {
+          "id": "proxy-configuration",
+          "title": "Enterprise Networking & Proxies",
+          "path": "/guides/proxy-configuration",
+          "type": "guide",
+          "description": "Configure HTTP, SOCKS5, and PAC proxies with remote DNS leak protection."
+        },
+        {
+          "id": "security-sandboxing",
+          "title": "Downloads & Security API",
+          "path": "/guides/security-sandboxing",
+          "type": "guide",
+          "description": "Intercept downloads, handle media permissions, and enforce SSL policies."
+        },
+        {
+          "id": "cookie-storage",
+          "title": "Cookie & Storage Management",
+          "path": "/guides/cookie-storage",
+          "type": "guide",
+          "description": "Read, set, and delete cookies, clear browser cache, and manage Local Storage."
+        },
+        {
+          "id": "custom-schemes",
+          "title": "Custom Protocol Schemes",
+          "path": "/guides/custom-schemes",
+          "type": "guide",
+          "description": "Register custom protocols to serve web assets from the classpath, local directories, or dynamic handlers."
+        },
+        {
+          "id": "pdf-export",
+          "title": "PDF Export & Print API",
+          "path": "/guides/pdf-export",
+          "type": "guide",
+          "description": "Export web pages to vector PDF documents with configurable paper size, margins, and accessibility."
+        },
+        {
+          "id": "context-menus",
+          "title": "Context Menu Customization",
+          "path": "/guides/context-menus",
+          "type": "guide",
+          "description": "Suppress, customize, or build rich right-click context menus using KromiumMenuBuilder DSL."
+        },
+        {
+          "id": "error-handling",
+          "title": "Error Handling & Debugging",
+          "path": "/guides/error-handling",
+          "type": "guide",
+          "description": "Handle KromiumException sealed hierarchy, monitor console messages, and diagnose load errors."
+        },
+        {
+          "id": "devtools-search",
+          "title": "DevTools, Search & JS Bridge",
+          "path": "/guides/devtools-search",
+          "type": "guide",
+          "description": "Open DevTools, find text on pages, execute JavaScript, and extract HTML/text content."
+        },
+        {
+          "id": "sample-applications",
+          "title": "Sample Applications & Reference Code",
+          "path": "/guides/sample-applications",
+          "type": "guide",
+          "description": "Explore the 5 official desktop sample applications covering Compose, Swing, JavaFX, SWT, and AWT."
+        },
+        {
+          "id": "troubleshooting-faq",
+          "title": "Troubleshooting & FAQ",
+          "path": "/guides/troubleshooting-faq",
+          "type": "guide",
+          "description": "Solutions for JVM module access errors, GPU rasterization failures, VM/Docker environments, and native dependencies."
+        }
+      ]
+    },
+    {
+      "id": "api-reference-group",
+      "title": "API Reference",
+      "path": "/api/overview",
+      "type": "group",
+      "children": [
+        {
+          "id": "all-apis-overview",
+          "title": "API Overview",
+          "path": "/api/overview",
+          "type": "guide",
+          "description": "High-level overview of Kromium API modules and facades."
+        },
+        {
+          "id": "pkg-core",
+          "title": "Core Architecture",
+          "path": "/api/kromium",
+          "type": "package",
+          "children": [
+            { "id": "kromium", "title": "Kromium", "path": "/api/kromium", "type": "entity", "entityKind": "object" },
+            { "id": "kromium-engine", "title": "KromiumEngine", "path": "/api/kromium-engine", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-browser", "title": "KromiumBrowser", "path": "/api/kromium-browser", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-client", "title": "KromiumClient", "path": "/api/kromium-client", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-state", "title": "KromiumState", "path": "/api/kromium-state", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-engine-info", "title": "KromiumEngineInfo", "path": "/api/kromium-engine-info", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-engine-provider", "title": "KromiumEngineProvider", "path": "/api/kromium-engine-provider", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-extensions", "title": "KromiumExtensions", "path": "/api/kromium-extensions", "type": "entity", "entityKind": "class" }
+          ]
+        },
+        {
+          "id": "pkg-config",
+          "title": "Configuration",
+          "path": "/api/kromium-config",
+          "type": "package",
+          "children": [
+            { "id": "kromium-config", "title": "KromiumConfig", "path": "/api/kromium-config", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-browser-config", "title": "KromiumBrowserConfig", "path": "/api/kromium-browser-config", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-client-config", "title": "KromiumClientConfig", "path": "/api/kromium-client-config", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-hardware-config", "title": "KromiumHardwareConfig", "path": "/api/kromium-hardware-config", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-logging-config", "title": "KromiumLoggingConfig", "path": "/api/kromium-logging-config", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-security-config", "title": "KromiumSecurityConfig", "path": "/api/kromium-security-config", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-gpu-mode", "title": "KromiumGpuMode", "path": "/api/kromium-gpu-mode", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-process-model", "title": "KromiumProcessModel", "path": "/api/kromium-process-model", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-log-severity", "title": "KromiumLogSeverity", "path": "/api/kromium-log-severity", "type": "entity", "entityKind": "enum" }
+          ]
+        },
+        {
+          "id": "pkg-navigation",
+          "title": "Navigation & Lifecycle",
+          "path": "/api/kromium-navigation",
+          "type": "package",
+          "children": [
+            { "id": "kromium-navigation", "title": "KromiumNavigation", "path": "/api/kromium-navigation", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-navigation-state", "title": "KromiumNavigationState", "path": "/api/kromium-navigation-state", "type": "entity", "entityKind": "class" },
+            { "id": "navigation-stage", "title": "NavigationStage", "path": "/api/navigation-stage", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-load-error", "title": "KromiumLoadError", "path": "/api/kromium-load-error", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-load-error-listener", "title": "KromiumLoadErrorListener", "path": "/api/kromium-load-error-listener", "type": "entity", "entityKind": "interface" }
+          ]
+        },
+        {
+          "id": "pkg-ui",
+          "title": "UI & Rendering",
+          "path": "/api/kromium-view",
+          "type": "package",
+          "children": [
+            { "id": "kromium-view", "title": "KromiumView", "path": "/api/kromium-view", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-ui-framework", "title": "KromiumUiFramework", "path": "/api/kromium-ui-framework", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-render-surface", "title": "KromiumRenderSurface", "path": "/api/kromium-render-surface", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-menu-builder", "title": "KromiumMenuBuilder", "path": "/api/kromium-menu-builder", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-context-menu-listener", "title": "KromiumContextMenuListener", "path": "/api/kromium-context-menu-listener", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-context-menu-context", "title": "KromiumContextMenuContext", "path": "/api/kromium-context-menu-context", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-context-menu-params", "title": "KromiumContextMenuParams", "path": "/api/kromium-context-menu-params", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-js-dialog", "title": "KromiumJsDialog", "path": "/api/kromium-js-dialog", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-js-dialog-type", "title": "KromiumJsDialogType", "path": "/api/kromium-js-dialog-type", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-js-dialog-listener", "title": "KromiumJsDialogListener", "path": "/api/kromium-js-dialog-listener", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-popup-listener", "title": "KromiumPopupListener", "path": "/api/kromium-popup-listener", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-key-event", "title": "KromiumKeyEvent", "path": "/api/kromium-key-event", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-key-event-type", "title": "KromiumKeyEventType", "path": "/api/kromium-key-event-type", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-key-codes", "title": "KromiumKeyCodes", "path": "/api/kromium-key-codes", "type": "entity", "entityKind": "object" }
+          ]
+        },
+        {
+          "id": "pkg-automation",
+          "title": "Automation & DOM",
+          "path": "/api/kromium-automation",
+          "type": "package",
+          "children": [
+            { "id": "kromium-automation", "title": "KromiumAutomation", "path": "/api/kromium-automation", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-js-bridge", "title": "KromiumJsBridge", "path": "/api/kromium-js-bridge", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-clipboard", "title": "KromiumClipboard", "path": "/api/kromium-clipboard", "type": "entity", "entityKind": "interface" }
+          ]
+        },
+        {
+          "id": "pkg-network",
+          "title": "Network & Security",
+          "path": "/api/kromium-security",
+          "type": "package",
+          "children": [
+            { "id": "kromium-security", "title": "KromiumSecurity", "path": "/api/kromium-security", "type": "entity", "entityKind": "interface" },
+            { "id": "ssl-error-policy", "title": "SslErrorPolicy", "path": "/api/ssl-error-policy", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-assets", "title": "KromiumAssets", "path": "/api/kromium-assets", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-asset-filter", "title": "KromiumAssetFilter", "path": "/api/kromium-asset-filter", "type": "entity", "entityKind": "class" },
+            { "id": "asset-filter-mode", "title": "AssetFilterMode", "path": "/api/asset-filter-mode", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-resource-type", "title": "KromiumResourceType", "path": "/api/kromium-resource-type", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-web-resource-request", "title": "KromiumWebResourceRequest", "path": "/api/kromium-web-resource-request", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-request-interceptor", "title": "KromiumRequestInterceptor", "path": "/api/kromium-request-interceptor", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-navigation-interceptor", "title": "KromiumNavigationInterceptor", "path": "/api/kromium-navigation-interceptor", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-auth-listener", "title": "KromiumAuthListener", "path": "/api/kromium-auth-listener", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-auth-request", "title": "KromiumAuthRequest", "path": "/api/kromium-auth-request", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-auth-response", "title": "KromiumAuthResponse", "path": "/api/kromium-auth-response", "type": "entity", "entityKind": "class" }
+          ]
+        },
+        {
+          "id": "pkg-proxy",
+          "title": "Proxy Management",
+          "path": "/api/kromium-proxy",
+          "type": "package",
+          "children": [
+            { "id": "kromium-proxy", "title": "KromiumProxy", "path": "/api/kromium-proxy", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-proxy-manager", "title": "KromiumProxyManager", "path": "/api/kromium-proxy-manager", "type": "entity", "entityKind": "interface" }
+          ]
+        },
+        {
+          "id": "pkg-storage",
+          "title": "Cookie & Storage",
+          "path": "/api/kromium-cookie",
+          "type": "package",
+          "children": [
+            { "id": "kromium-cookie", "title": "KromiumCookie", "path": "/api/kromium-cookie", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-cookie-manager", "title": "KromiumCookieManager", "path": "/api/kromium-cookie-manager", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-storage", "title": "KromiumStorage", "path": "/api/kromium-storage", "type": "entity", "entityKind": "interface" }
+          ]
+        },
+        {
+          "id": "pkg-download",
+          "title": "Downloads",
+          "path": "/api/kromium-downloads",
+          "type": "package",
+          "children": [
+            { "id": "kromium-downloads", "title": "KromiumDownloads", "path": "/api/kromium-downloads", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-download-item", "title": "KromiumDownloadItem", "path": "/api/kromium-download-item", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-before-download-listener", "title": "KromiumBeforeDownloadListener", "path": "/api/kromium-before-download-listener", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-download-listener", "title": "KromiumDownloadListener", "path": "/api/kromium-download-listener", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-download-progress", "title": "KromiumDownloadProgress", "path": "/api/kromium-download-progress", "type": "entity", "entityKind": "class" }
+          ]
+        },
+        {
+          "id": "pkg-permission",
+          "title": "Permissions & Devices",
+          "path": "/api/kromium-permission-request",
+          "type": "package",
+          "children": [
+            { "id": "kromium-permission-request", "title": "KromiumPermissionRequest", "path": "/api/kromium-permission-request", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-permission-decision", "title": "KromiumPermissionDecision", "path": "/api/kromium-permission-decision", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-permission-listener", "title": "KromiumPermissionListener", "path": "/api/kromium-permission-listener", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-permission-type", "title": "KromiumPermissionType", "path": "/api/kromium-permission-type", "type": "entity", "entityKind": "enum" }
+          ]
+        },
+        {
+          "id": "pkg-print",
+          "title": "PDF & Printing",
+          "path": "/api/kromium-pdf-settings",
+          "type": "package",
+          "children": [
+            { "id": "kromium-pdf-settings", "title": "KromiumPdfSettings", "path": "/api/kromium-pdf-settings", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-paper-size", "title": "KromiumPaperSize", "path": "/api/kromium-paper-size", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-pdf-margins", "title": "KromiumPdfMargins", "path": "/api/kromium-pdf-margins", "type": "entity", "entityKind": "class" }
+          ]
+        },
+        {
+          "id": "pkg-scheme",
+          "title": "Custom Schemes",
+          "path": "/api/kromium-custom-scheme",
+          "type": "package",
+          "children": [
+            { "id": "kromium-custom-scheme", "title": "KromiumCustomScheme", "path": "/api/kromium-custom-scheme", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-scheme-registration", "title": "KromiumSchemeRegistration", "path": "/api/kromium-scheme-registration", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-asset-handler", "title": "KromiumAssetHandler", "path": "/api/kromium-asset-handler", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-asset-request", "title": "KromiumAssetRequest", "path": "/api/kromium-asset-request", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-asset-response", "title": "KromiumAssetResponse", "path": "/api/kromium-asset-response", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-scheme-handler", "title": "KromiumSchemeHandler", "path": "/api/kromium-scheme-handler", "type": "entity", "entityKind": "object" }
+          ]
+        },
+        {
+          "id": "pkg-devtools",
+          "title": "DevTools & Logging",
+          "path": "/api/kromium-dev-tools",
+          "type": "package",
+          "children": [
+            { "id": "kromium-dev-tools", "title": "KromiumDevTools", "path": "/api/kromium-dev-tools", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-console-message", "title": "KromiumConsoleMessage", "path": "/api/kromium-console-message", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-console-message-level", "title": "KromiumConsoleMessageLevel", "path": "/api/kromium-console-message-level", "type": "entity", "entityKind": "enum" },
+            { "id": "kromium-console-message-listener", "title": "KromiumConsoleMessageListener", "path": "/api/kromium-console-message-listener", "type": "entity", "entityKind": "interface" }
+          ]
+        },
+        {
+          "id": "pkg-search",
+          "title": "Search",
+          "path": "/api/kromium-search",
+          "type": "package",
+          "children": [
+            { "id": "kromium-search", "title": "KromiumSearch", "path": "/api/kromium-search", "type": "entity", "entityKind": "interface" }
+          ]
+        },
+        {
+          "id": "pkg-bootstrap",
+          "title": "Bootstrap & Runtime",
+          "path": "/api/kromium-engine-download-config",
+          "type": "package",
+          "children": [
+            { "id": "kromium-engine-download-config", "title": "KromiumEngineDownloadConfig", "path": "/api/kromium-engine-download-config", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-engine-download-source", "title": "KromiumEngineDownloadSource", "path": "/api/kromium-engine-download-source", "type": "entity", "entityKind": "interface" },
+            { "id": "kromium-platform-url-resolver", "title": "KromiumPlatformUrlResolver", "path": "/api/kromium-platform-url-resolver", "type": "entity", "entityKind": "interface" }
+          ]
+        },
+        {
+          "id": "pkg-error",
+          "title": "Error Handling",
+          "path": "/api/kromium-exception",
+          "type": "package",
+          "children": [
+            { "id": "kromium-exception", "title": "KromiumException", "path": "/api/kromium-exception", "type": "entity", "entityKind": "class" },
+            { "id": "kromium-error-code", "title": "KromiumErrorCode", "path": "/api/kromium-error-code", "type": "entity", "entityKind": "enum" }
+          ]
+        }
+      ]
+    }
+  ]
+}

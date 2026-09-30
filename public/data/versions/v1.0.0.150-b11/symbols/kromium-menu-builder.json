@@ -1,0 +1,42 @@
+{
+  "id": "kromium-menu-builder",
+  "name": "KromiumMenuBuilder",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Declarative builder for configuring browser right-click context menus.",
+  "declaration": "interface KromiumMenuBuilder",
+  "since": "v1.0.0.150-b11",
+  "properties": [
+    { "name": "context", "type": "KromiumContextMenuContext", "description": "Contextual parameters and action helpers for the current right-click event." },
+    { "name": "count", "type": "Int", "description": "Number of items currently present in the menu." }
+  ],
+  "methods": [
+    { "name": "clear", "signature": "fun clear(): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Clears all existing default menu items from the context menu." },
+    { "name": "clearDefaults", "signature": "fun clearDefaults(): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Clears all existing default menu items (alias for Java / fluent style)." },
+    { "name": "removeDefault", "signature": "fun removeDefault(menuId: Int): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Removes a specific menu item by its integer command ID." },
+    { "name": "addItem", "signature": "fun addItem(label: String, enabled: Boolean = true, action: (KromiumContextMenuContext) -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds a standard clickable context menu item with an action callback." },
+    { "name": "item", "signature": "fun item(label: String, enabled: Boolean = true, action: (KromiumContextMenuContext) -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Kotlin DSL alias for addItem." },
+    { "name": "addCheckItem", "signature": "fun addCheckItem(label: String, checked: Boolean, enabled: Boolean = true, onToggle: (Boolean) -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds a checkable (checkbox) menu item." },
+    { "name": "checkItem", "signature": "fun checkItem(label: String, checked: Boolean, enabled: Boolean = true, onToggle: (Boolean) -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Kotlin DSL alias for addCheckItem." },
+    { "name": "addRadioItem", "signature": "fun addRadioItem(label: String, checked: Boolean, groupId: Int, enabled: Boolean = true, onSelect: () -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds a radio menu item belonging to a mutual-exclusion group." },
+    { "name": "radioItem", "signature": "fun radioItem(label: String, checked: Boolean, groupId: Int, enabled: Boolean = true, onSelect: () -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Kotlin DSL alias for addRadioItem." },
+    { "name": "addSeparator", "signature": "fun addSeparator(): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds a visual separator line between menu items." },
+    { "name": "separator", "signature": "fun separator(): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Kotlin DSL alias for addSeparator." },
+    { "name": "addSubMenu", "signature": "fun addSubMenu(label: String, block: (KromiumMenuBuilder) -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds a nested submenu with its own child builder." },
+    { "name": "subMenu", "signature": "fun subMenu(label: String, block: KromiumMenuBuilder.() -> Unit): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Kotlin DSL alias for addSubMenu." },
+    { "name": "back", "signature": "fun back(label: String = \"Back\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Back command." },
+    { "name": "forward", "signature": "fun forward(label: String = \"Forward\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Forward command." },
+    { "name": "reload", "signature": "fun reload(label: String = \"Reload\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Reload command." },
+    { "name": "print", "signature": "fun print(label: String = \"Print...\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Print command." },
+    { "name": "viewSource", "signature": "fun viewSource(label: String = \"View Page Source\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native View Page Source command." },
+    { "name": "copy", "signature": "fun copy(label: String = \"Copy\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Copy command." },
+    { "name": "cut", "signature": "fun cut(label: String = \"Cut\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Cut command." },
+    { "name": "paste", "signature": "fun paste(label: String = \"Paste\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Paste command." },
+    { "name": "selectAll", "signature": "fun selectAll(label: String = \"Select All\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Adds the native Select All command." },
+    { "name": "inspectElement", "signature": "fun inspectElement(label: String = \"Inspect Element\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Turnkey action: Opens DevTools targeting clicked element coordinates." },
+    { "name": "copyLink", "signature": "fun copyLink(label: String = \"Copy Link Address\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Turnkey action: Copies target link URL to clipboard if on hyperlink." },
+    { "name": "saveImageAs", "signature": "fun saveImageAs(label: String = \"Save Image As...\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Turnkey action: Triggers download for image/media under cursor." },
+    { "name": "copyImageUrl", "signature": "fun copyImageUrl(label: String = \"Copy Image Address\"): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Turnkey action: Copies media/image source URL to clipboard." },
+    { "name": "searchWeb", "signature": "fun searchWeb(labelFormat: String = \"Search Google for \\\"%s\\\"\", engineUrl: String = \"https://www.google.com/search?q=%s\", openInSystemBrowser: Boolean = true): KromiumMenuBuilder", "returnType": "KromiumMenuBuilder", "description": "Turnkey action: Searches web for selected text." }
+  ]
+}

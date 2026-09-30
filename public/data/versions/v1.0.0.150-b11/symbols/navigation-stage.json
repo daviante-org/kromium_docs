@@ -1,0 +1,23 @@
+{
+  "id": "navigation-stage",
+  "name": "NavigationStage",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.navigation",
+  "summary": "Defines the navigation lifecycle stage to await during page navigation.",
+  "declaration": "enum class NavigationStage",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    {
+      "name": "STARTED",
+      "description": "Main frame navigation has started."
+    },
+    {
+      "name": "LOADED",
+      "description": "Main frame document and static assets have finished loading."
+    },
+    {
+      "name": "NETWORK_IDLE",
+      "description": "Main frame has finished loading and active in-flight network requests have settled to zero for at least a specific idle duration."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "kromium-engine-download-config",
+  "name": "KromiumEngineDownloadConfig",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.bootstrap",
+  "summary": "Configuration for downloading and installing the JCEF engine binaries.",
+  "declaration": "data class KromiumEngineDownloadConfig internal constructor(\n    val installDir: File?,\n    val source: KromiumEngineDownloadSource\n)",
+  "since": "v1.0.0.150-b11",
+  "properties": [
+    { "name": "installDir", "type": "File?", "description": "Custom directory to install the downloaded engine binaries." },
+    { "name": "source", "type": "KromiumEngineDownloadSource", "description": "Download source strategy for acquiring binaries." }
+  ],
+  "companionMethods": [
+    {
+      "name": "builder",
+      "signature": "fun builder(): Builder",
+      "returnType": "Builder",
+      "description": "Creates a new fluent builder for configuring engine downloads."
+    }
+  ]
+}

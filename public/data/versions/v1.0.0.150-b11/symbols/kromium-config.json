@@ -1,0 +1,89 @@
+{
+  "id": "kromium-config",
+  "name": "KromiumConfig",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "@ConsistentCopyVisibility data class KromiumConfig internal constructor(val downloadConfig: KromiumEngineDownloadConfig, val browserConfig: KromiumBrowserConfig, val hardwareConfig: KromiumHardwareConfig, val securityConfig: KromiumSecurityConfig, val loggingConfig: KromiumLoggingConfig)",
+  "description": "The master configuration object for the Kromium engine. Composed of specialized domain sub-configurations for engine downloading, general browser parameters, hardware/GPU acceleration, enterprise security, and logging severity.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Instantiate via KromiumConfig.builder() to configure the engine prior to calling Kromium.createEngine(config, provider) or provider.createEngine(config).",
+  "options": [],
+  "properties": [
+    {
+      "name": "downloadConfig",
+      "signature": "val downloadConfig: KromiumEngineDownloadConfig",
+      "description": "Engine downloading, CDN release channels, and installation path configurations.",
+      "type": "KromiumEngineDownloadConfig",
+      "default": "none"
+    },
+    {
+      "name": "browserConfig",
+      "signature": "val browserConfig: KromiumBrowserConfig",
+      "description": "General browser settings, cache directory, remote debugging port, proxy, and custom schemes.",
+      "type": "KromiumBrowserConfig",
+      "default": "none"
+    },
+    {
+      "name": "hardwareConfig",
+      "signature": "val hardwareConfig: KromiumHardwareConfig",
+      "description": "Host OS process model and GPU hardware acceleration options.",
+      "type": "KromiumHardwareConfig",
+      "default": "none"
+    },
+    {
+      "name": "securityConfig",
+      "signature": "val securityConfig: KromiumSecurityConfig",
+      "description": "Chromium sandbox controls, telemetry blockers, WebRTC IP policies, and HTTP auth allowlists.",
+      "type": "KromiumSecurityConfig",
+      "default": "none"
+    },
+    {
+      "name": "loggingConfig",
+      "signature": "val loggingConfig: KromiumLoggingConfig",
+      "description": "Engine native logging severity level and log destination settings.",
+      "type": "KromiumLoggingConfig",
+      "default": "none"
+    }
+  ],
+  "methods": [
+    {
+      "name": "validate",
+      "signature": "fun validate()",
+      "description": "Validates this configuration and throws KromiumException.InvalidConfig if any values are invalid (e.g. remoteDebuggingPort outside 0..65535 or path traversal in cachePath).",
+      "returns": "Unit",
+      "isSuspend": false,
+      "throws": [
+        "KromiumException.InvalidConfig"
+      ]
+    },
+    {
+      "name": "builder",
+      "signature": "@JvmStatic fun builder(): Builder",
+      "description": "Returns a new builder for KromiumConfig initialized with default values.",
+      "returns": "Builder",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [
+    {
+      "name": "KromiumException.InvalidConfig",
+      "whenThrown": "When remoteDebuggingPort is not in 0..65535 or cachePath contains path traversal sequence ('..').",
+      "recovery": "Ensure port is within 0..65535 and supply a clean normalized filesystem path."
+    }
+  ],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig\nimport org.daviante.kromium.api.config.KromiumGpuMode\n\nval config = KromiumConfig.builder()\n    .browserConfig { it.remoteDebuggingPort(9222) }\n    .hardwareConfig { it.gpuMode(KromiumGpuMode.HARDWARE) }\n    .securityConfig { it.sandboxEnabled(true).doNotTrack(true) }\n    .build()\n\nconfig.validate()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig;\nimport org.daviante.kromium.api.config.KromiumBrowserConfig;\n\npublic class ConfigFactory {\n    public static KromiumConfig create() {\n        KromiumBrowserConfig browserConfig = KromiumBrowserConfig.builder()\n            .remoteDebuggingPort(9222)\n            .build();\n\n        return KromiumConfig.builder()\n            .browserConfig(browserConfig)\n            .build();\n    }\n}"
+    }
+  ]
+}

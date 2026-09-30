@@ -1,0 +1,24 @@
+{
+  "id": "kromium-console-message-listener",
+  "name": "KromiumConsoleMessageListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.devtools",
+  "summary": "Listener for JavaScript console messages emitted by the browser.",
+  "declaration": "fun interface KromiumConsoleMessageListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onConsoleMessage",
+      "signature": "fun onConsoleMessage(message: KromiumConsoleMessage): Boolean",
+      "returnType": "Boolean",
+      "description": "Invoked when a console message is logged. Returns true to indicate the message was handled and suppress default logging, or false to allow standard output.",
+      "parameters": [
+        {
+          "name": "message",
+          "type": "KromiumConsoleMessage",
+          "description": "The structured console message details including severity level."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "id": "kromium-asset-filter",
+  "name": "KromiumAssetFilter",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Pure configuration for blocking or allowlisting network assets.",
+  "declaration": "data class KromiumAssetFilter(\n    val blockedExtensions: Set<String> = emptySet(),\n    val blockedUrlPatterns: Set<String> = emptySet(),\n    val blockedResourceTypes: Set<KromiumResourceType> = emptySet(),\n    val blockFilter: ((request: KromiumWebResourceRequest) -> Boolean)? = null,\n    val allowedExtensions: Set<String> = emptySet(),\n    val allowedUrlPatterns: Set<String> = emptySet(),\n    val allowedResourceTypes: Set<KromiumResourceType> = emptySet(),\n    val allowFilter: ((request: KromiumWebResourceRequest) -> Boolean)? = null,\n    val allowMainFrame: Boolean = true,\n    val mode: AssetFilterMode = AssetFilterMode.BLOCKLIST\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumAssetFilter(blockedExtensions: Set<String> = emptySet(), blockedUrlPatterns: Set<String> = emptySet(), blockedResourceTypes: Set<KromiumResourceType> = emptySet(), blockFilter: ((request: KromiumWebResourceRequest) -> Boolean)? = null, allowedExtensions: Set<String> = emptySet(), allowedUrlPatterns: Set<String> = emptySet(), allowedResourceTypes: Set<KromiumResourceType> = emptySet(), allowFilter: ((request: KromiumWebResourceRequest) -> Boolean)? = null, allowMainFrame: Boolean = true, mode: AssetFilterMode = AssetFilterMode.BLOCKLIST)",
+      "description": "Constructs an asset filter configuration.",
+      "parameters": [
+        {
+          "name": "blockedExtensions",
+          "type": "Set<String>",
+          "description": "File extensions to block.",
+          "optional": true,
+          "defaultValue": "emptySet()"
+        },
+        {
+          "name": "blockedUrlPatterns",
+          "type": "Set<String>",
+          "description": "Substrings or URL patterns to block.",
+          "optional": true,
+          "defaultValue": "emptySet()"
+        },
+        {
+          "name": "blockedResourceTypes",
+          "type": "Set<KromiumResourceType>",
+          "description": "Resource types to block.",
+          "optional": true,
+          "defaultValue": "emptySet()"
+        },
+        {
+          "name": "blockFilter",
+          "type": "((request: KromiumWebResourceRequest) -> Boolean)?",
+          "description": "Custom functional predicate to determine if a request should be blocked.",
+          "optional": true,
+          "defaultValue": "null"
+        },
+        {
+          "name": "allowedExtensions",
+          "type": "Set<String>",
+          "description": "File extensions to explicitly allow/whitelist.",
+          "optional": true,
+          "defaultValue": "emptySet()"
+        },
+        {
+          "name": "allowedUrlPatterns",
+          "type": "Set<String>",
+          "description": "Substrings or URL patterns to explicitly allow/whitelist.",
+          "optional": true,
+          "defaultValue": "emptySet()"
+        },
+        {
+          "name": "allowedResourceTypes",
+          "type": "Set<KromiumResourceType>",
+          "description": "Resource types to explicitly allow/whitelist.",
+          "optional": true,
+          "defaultValue": "emptySet()"
+        },
+        {
+          "name": "allowFilter",
+          "type": "((request: KromiumWebResourceRequest) -> Boolean)?",
+          "description": "Custom functional predicate to determine if a request should be explicitly allowed.",
+          "optional": true,
+          "defaultValue": "null"
+        },
+        {
+          "name": "allowMainFrame",
+          "type": "Boolean",
+          "description": "Whether to exempt the top-level main frame navigation from filtering.",
+          "optional": true,
+          "defaultValue": "true"
+        },
+        {
+          "name": "mode",
+          "type": "AssetFilterMode",
+          "description": "Operating mode (BLOCKLIST or ALLOWLIST).",
+          "optional": true,
+          "defaultValue": "AssetFilterMode.BLOCKLIST"
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "blockedExtensions",
+      "type": "Set<String>",
+      "description": "File extensions to block."
+    },
+    {
+      "name": "blockedUrlPatterns",
+      "type": "Set<String>",
+      "description": "Substrings or URL patterns to block."
+    },
+    {
+      "name": "blockedResourceTypes",
+      "type": "Set<KromiumResourceType>",
+      "description": "Resource types to block."
+    },
+    {
+      "name": "blockFilter",
+      "type": "((request: KromiumWebResourceRequest) -> Boolean)?",
+      "description": "Custom functional predicate to determine if a request should be blocked."
+    },
+    {
+      "name": "allowedExtensions",
+      "type": "Set<String>",
+      "description": "File extensions to explicitly allow/whitelist."
+    },
+    {
+      "name": "allowedUrlPatterns",
+      "type": "Set<String>",
+      "description": "Substrings or URL patterns to explicitly allow."
+    },
+    {
+      "name": "allowedResourceTypes",
+      "type": "Set<KromiumResourceType>",
+      "description": "Resource types to explicitly allow."
+    },
+    {
+      "name": "allowFilter",
+      "type": "((request: KromiumWebResourceRequest) -> Boolean)?",
+      "description": "Custom functional predicate to determine if a request should be allowed."
+    },
+    {
+      "name": "allowMainFrame",
+      "type": "Boolean",
+      "description": "Whether to exempt the top-level main frame navigation from filtering."
+    },
+    {
+      "name": "mode",
+      "type": "AssetFilterMode",
+      "description": "Operating mode (BLOCKLIST or ALLOWLIST)."
+    },
+    {
+      "name": "isEnabled",
+      "type": "Boolean",
+      "description": "Whether any filtering rules or allowlist mode are active."
+    }
+  ],
+  "methods": [
+    {
+      "name": "shouldBlock",
+      "signature": "fun shouldBlock(request: KromiumWebResourceRequest): Boolean",
+      "returnType": "Boolean",
+      "description": "Determines whether a given request should be blocked based on configured filter rules and mode.",
+      "parameters": [
+        {
+          "name": "request",
+          "type": "KromiumWebResourceRequest",
+          "description": "The incoming web resource request."
+        }
+      ]
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "extractHost",
+      "signature": "fun extractHost(url: String): String?",
+      "returnType": "String?",
+      "description": "Safely extracts the host component from a URL without throwing on non-standard URIs.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The URL to extract host from."
+        }
+      ]
+    },
+    {
+      "name": "isHostAllowed",
+      "signature": "fun isHostAllowed(url: String, allowedHosts: Set<String>): Boolean",
+      "returnType": "Boolean",
+      "description": "Helper to verify whether a URL's host matches the allowed host set (including subdomains).",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The URL to test."
+        },
+        {
+          "name": "allowedHosts",
+          "type": "Set<String>",
+          "description": "Set of allowed hostnames or patterns."
+        }
+      ]
+    }
+  ]
+}
