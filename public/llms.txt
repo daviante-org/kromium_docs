@@ -6,7 +6,7 @@
 - **Rendering:** Decoupled Off-Screen Rendering (OSR) with direct BGRA pixel buffer streaming
 - **Desktop UI Frameworks:** Jetpack Compose Multiplatform, Java Swing, OpenJFX / JavaFX, Eclipse SWT, Pure Java AWT
 - **Supported Platforms:** Windows (x64, ARM64), macOS (Intel x64, Apple Silicon ARM64), Linux (x64, ARM64)
-- **Version:** v1.0.0.150-b11
+- **Version:** v1.0.0.150-b16
 - **Maven Group:** `org.daviante.kromium`
 - **GitHub:** https://github.com/daviante-org/kromium
 - **Documentation Portal:** https://kromium.daviante.org

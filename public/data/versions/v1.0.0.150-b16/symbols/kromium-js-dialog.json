@@ -1,0 +1,33 @@
+{
+  "id": "kromium-js-dialog",
+  "name": "KromiumJsDialog",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Encapsulates a JavaScript alert, confirm, or prompt dialog with thread-safe continuation.",
+  "declaration": "class KromiumJsDialog(\n    val message: String,\n    val defaultPromptText: String,\n    val type: KromiumJsDialogType,\n    val originUrl: String = \"\",\n    private val onConfirm: (promptResult: String) -> Unit,\n    private val onCancel: () -> Unit\n)",
+  "since": "v1.0.0.150-b11",
+  "properties": [
+    { "name": "message", "type": "String", "description": "The text message displayed by the dialog." },
+    { "name": "defaultPromptText", "type": "String", "description": "The default input text if type is PROMPT." },
+    { "name": "type", "type": "KromiumJsDialogType", "description": "The dialog classification (ALERT, CONFIRM, PROMPT)." },
+    { "name": "originUrl", "type": "String", "description": "The URL of the web page that initiated the dialog." },
+    { "name": "isHandled", "type": "Boolean", "description": "Indicates whether this dialog has already been confirmed or cancelled." }
+  ],
+  "methods": [
+    {
+      "name": "confirm",
+      "signature": "fun confirm(promptResult: String = defaultPromptText)",
+      "returnType": "Unit",
+      "description": "Confirms or accepts the dialog. For prompts, passes promptResult back to the JavaScript engine.",
+      "parameters": [
+        { "name": "promptResult", "type": "String", "description": "Prompt input response value.", "optional": true, "defaultValue": "defaultPromptText" }
+      ]
+    },
+    {
+      "name": "cancel",
+      "signature": "fun cancel()",
+      "returnType": "Unit",
+      "description": "Cancels or dismisses the dialog."
+    }
+  ]
+}

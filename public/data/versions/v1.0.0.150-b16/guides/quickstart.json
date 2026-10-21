@@ -1,0 +1,57 @@
+{
+  "id": "quickstart",
+  "title": "5-Minute Quickstart Guide",
+  "summary": "Add Kromium to your Gradle project, bootstrap the Chromium engine, and create your first browser instance.",
+  "category": "Getting Started",
+  "readTime": "5 min",
+  "lastUpdated": "2026-10-20",
+  "sections": [
+    {
+      "id": "prerequisites",
+      "title": "Prerequisites",
+      "content": "Before integrating Kromium, ensure your environment meets the minimum runtime requirements:\n- **JDK:** Java 17 or higher (Java 21 LTS recommended, e.g., Eclipse Temurin).\n- **Supported Operating Systems:**\n  - **Windows:** 10 / 11 (x86_64, ARM64)\n  - **macOS:** 12+ Monterey, Ventura, Sonoma, Sequoia (Intel x86_64, Apple Silicon ARM64)\n  - **Linux:** Ubuntu 20.04+, Debian 11+, Fedora, Arch (x86_64, ARM64) with GTK 3+ installed."
+    },
+    {
+      "id": "gradle-dependencies",
+      "title": "Adding Gradle Dependencies",
+      "content": "Add Kromium to your build.gradle.kts using either Gradle Version Catalog or direct coordinates.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// build.gradle.kts\ndependencies {\n    val kromiumVersion = \"1.0.0.150-b16\"\n    \n    implementation(\"org.daviante.kromium:kromium-api:$kromiumVersion\")\n    implementation(\"org.daviante.kromium:kromium-provider-jcef:$kromiumVersion\")\n\n    // Target UI integration:\n    implementation(\"org.daviante.kromium:kromium-compose:$kromiumVersion\")\n    // implementation(\"org.daviante.kromium:kromium-swing:$kromiumVersion\")\n    // implementation(\"org.daviante.kromium:kromium-javafx:$kromiumVersion\")\n    // implementation(\"org.daviante.kromium:kromium-swt:$kromiumVersion\")\n    // implementation(\"org.daviante.kromium:kromium-awt:$kromiumVersion\")\n}"
+      }
+    },
+    {
+      "id": "engine-lifecycle",
+      "title": "Basic Engine Lifecycle & First Browser",
+      "content": "Kromium separates the engine lifecycle into three clean stages:\n1. **KromiumEngine**: Manages the underlying native Chromium runtime, process models, and shared cache.\n2. **KromiumClient**: Represents an isolated session (cookies, storage, and global listeners).\n3. **KromiumBrowser**: Represents a single web page view and its control facades.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val config = KromiumConfig.builder()\n    .browserConfig { b ->\n        b.cachePath(File(System.getProperty(\"user.home\"), \".myapp-cache\").absolutePath)\n    }\n    .build()\n\n// 1. Instantiate and initialize engine\nval engine = Kromium.createEngine(config)\nengine.initialize() // Suspends until native runtime is extracted and ready\n\n// 2. Create isolated client session\nval client = engine.createClient()\n\n// 3. Create browser instance for your UI toolkit\nval browser = client.createBrowser(\n    url = \"https://example.com\",\n    framework = KromiumUiFramework.SWING\n)"
+      }
+    },
+    {
+      "id": "controlling-browser",
+      "title": "Controlling the Browser",
+      "content": "Once created, browser exposes dedicated facades for all web operations: navigation, DevTools, downloads, cookies, and automation.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// --- Navigation ---\nbrowser.navigation.loadUrl(\"https://github.com\")\n\n// Suspending load (waits until DOM is ready):\nval loaded = browser.navigation.loadUrl(\n    url = \"https://github.com\",\n    waitUntil = NavigationStage.LOADED,\n    timeoutMs = 15_000L\n)\n\n// --- DevTools ---\nbrowser.devTools.openDevTools()"
+      }
+    },
+    {
+      "id": "reactive-state",
+      "title": "Observing Reactive Navigation State",
+      "content": "browser.navigation.navigationState is a coroutine StateFlow<KromiumNavigationState> that continuously emits real-time loading updates.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "scope.launch {\n    browser.navigation.navigationState.collect { state ->\n        println(\"URL: ${state.url}\")\n        println(\"Page Title: ${state.title}\")\n        println(\"Is Loading: ${state.isLoading}\")\n        println(\"Can Go Back: ${state.canGoBack}\")\n        println(\"Can Go Forward: ${state.canGoForward}\")\n    }\n}"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "Kromium", "path": "/api/kromium" },
+    { "name": "KromiumEngine", "path": "/api/kromium-engine" },
+    { "name": "KromiumBrowser", "path": "/api/kromium-browser" },
+    { "name": "KromiumClient", "path": "/api/kromium-client" }
+  ]
+}

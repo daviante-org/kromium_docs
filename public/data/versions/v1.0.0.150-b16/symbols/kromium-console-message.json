@@ -1,0 +1,63 @@
+{
+  "id": "kromium-console-message",
+  "name": "KromiumConsoleMessage",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.devtools",
+  "summary": "A message logged to the browser's JavaScript developer console.",
+  "declaration": "data class KromiumConsoleMessage(\n    val level: KromiumConsoleMessageLevel,\n    val message: String,\n    val source: String = \"\",\n    val line: Int = 0\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumConsoleMessage(level: KromiumConsoleMessageLevel, message: String, source: String = \"\", line: Int = 0)",
+      "description": "Constructs a console message instance.",
+      "parameters": [
+        {
+          "name": "level",
+          "type": "KromiumConsoleMessageLevel",
+          "description": "The severity level of the console message."
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "description": "The text content of the message."
+        },
+        {
+          "name": "source",
+          "type": "String",
+          "description": "The URL or script origin that emitted the message.",
+          "optional": true,
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "line",
+          "type": "Int",
+          "description": "The line number in the source file where the message was emitted (1-based), or 0 if unknown.",
+          "optional": true,
+          "defaultValue": "0"
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "level",
+      "type": "KromiumConsoleMessageLevel",
+      "description": "The severity level of the console message."
+    },
+    {
+      "name": "message",
+      "type": "String",
+      "description": "The text content of the message."
+    },
+    {
+      "name": "source",
+      "type": "String",
+      "description": "The URL or script origin that emitted the message."
+    },
+    {
+      "name": "line",
+      "type": "Int",
+      "description": "The line number in the source file where the message was emitted (1-based), or 0 if unknown."
+    }
+  ]
+}

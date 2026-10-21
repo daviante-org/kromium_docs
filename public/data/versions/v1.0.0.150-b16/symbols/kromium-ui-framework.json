@@ -1,0 +1,28 @@
+{
+  "id": "kromium-ui-framework",
+  "name": "KromiumUiFramework",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "UI framework targets supported by Kromium for hosting OSR surfaces.",
+  "declaration": "enum class KromiumUiFramework",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    { "name": "SWING", "description": "Standard Java Swing toolkit. Hosts OSR output in a native javax.swing.JPanel." },
+    { "name": "AWT", "description": "Pure Java AWT toolkit. Hosts OSR output in a native java.awt.Canvas." },
+    { "name": "SWT", "description": "Eclipse SWT toolkit. Hosts OSR output in a native org.eclipse.swt.widgets.Canvas." },
+    { "name": "JAVAFX", "description": "JavaFX toolkit. Hosts OSR output in a native JavaFX Canvas/Region." },
+    { "name": "COMPOSE", "description": "Jetpack Compose Desktop toolkit." },
+    { "name": "HEADLESS", "description": "Off-screen headless rendering without a UI window hierarchy." }
+  ],
+  "companionMethods": [
+    {
+      "name": "fromString",
+      "signature": "fun fromString(name: String?): KromiumUiFramework",
+      "returnType": "KromiumUiFramework",
+      "description": "Resolves a framework enum by name (case-insensitive).",
+      "parameters": [
+        { "name": "name", "type": "String?", "description": "UI framework name." }
+      ]
+    }
+  ]
+}

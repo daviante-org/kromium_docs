@@ -1,0 +1,85 @@
+{
+  "id": "kromium-paper-size",
+  "name": "KromiumPaperSize",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.print",
+  "summary": "Standard paper dimension definitions for PDF printing.",
+  "declaration": "data class KromiumPaperSize(\n    val widthInches: Double,\n    val heightInches: Double\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumPaperSize(widthInches: Double, heightInches: Double)",
+      "description": "Constructs a paper size with width and height in inches.",
+      "parameters": [
+        {
+          "name": "widthInches",
+          "type": "Double",
+          "description": "Width of the page in inches."
+        },
+        {
+          "name": "heightInches",
+          "type": "Double",
+          "description": "Height of the page in inches."
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "widthInches",
+      "type": "Double",
+      "description": "Width of the page in inches."
+    },
+    {
+      "name": "heightInches",
+      "type": "Double",
+      "description": "Height of the page in inches."
+    }
+  ],
+  "companionProperties": [
+    { "name": "A4", "type": "KromiumPaperSize", "description": "Standard ISO A4 (210 mm × 297 mm / 8.27 in × 11.69 in)." },
+    { "name": "Letter", "type": "KromiumPaperSize", "description": "Standard North American Letter (8.5 in × 11.0 in / 215.9 mm × 279.4 mm)." },
+    { "name": "Legal", "type": "KromiumPaperSize", "description": "Standard North American Legal (8.5 in × 14.0 in / 215.9 mm × 355.6 mm)." },
+    { "name": "Tabloid", "type": "KromiumPaperSize", "description": "Standard Tabloid / Ledger (11.0 in × 17.0 in / 279.4 mm × 431.8 mm)." },
+    { "name": "A3", "type": "KromiumPaperSize", "description": "Standard ISO A3 (297 mm × 420 mm / 11.69 in × 16.54 in)." },
+    { "name": "A5", "type": "KromiumPaperSize", "description": "Standard ISO A5 (148 mm × 210 mm / 5.83 in × 8.27 in)." }
+  ],
+  "companionMethods": [
+    {
+      "name": "fromMillimeters",
+      "signature": "fun fromMillimeters(widthMm: Double, heightMm: Double): KromiumPaperSize",
+      "returnType": "KromiumPaperSize",
+      "description": "Creates a paper size with dimensions specified in millimeters.",
+      "parameters": [
+        {
+          "name": "widthMm",
+          "type": "Double",
+          "description": "Width in millimeters."
+        },
+        {
+          "name": "heightMm",
+          "type": "Double",
+          "description": "Height in millimeters."
+        }
+      ]
+    },
+    {
+      "name": "fromInches",
+      "signature": "fun fromInches(widthInches: Double, heightInches: Double): KromiumPaperSize",
+      "returnType": "KromiumPaperSize",
+      "description": "Creates a paper size with dimensions specified in inches.",
+      "parameters": [
+        {
+          "name": "widthInches",
+          "type": "Double",
+          "description": "Width in inches."
+        },
+        {
+          "name": "heightInches",
+          "type": "Double",
+          "description": "Height in inches."
+        }
+      ]
+    }
+  ]
+}

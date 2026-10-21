@@ -1,0 +1,55 @@
+{
+  "id": "kromium-asset-request",
+  "name": "KromiumAssetRequest",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.scheme",
+  "summary": "Represents an incoming virtual HTTP request intercepted by a KromiumAssetHandler.",
+  "declaration": "data class KromiumAssetRequest @JvmOverloads constructor(\n    val url: String,\n    val method: String = \"GET\",\n    val scheme: String = \"\",\n    val domain: String = \"\",\n    val path: String = \"/\",\n    val queryString: String? = null,\n    val queryParameters: Map<String, String> = emptyMap(),\n    val headers: Map<String, String> = emptyMap()\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumAssetRequest(url: String, method: String = \"GET\", scheme: String = \"\", domain: String = \"\", path: String = \"/\", queryString: String? = null, queryParameters: Map<String, String> = emptyMap(), headers: Map<String, String> = emptyMap())",
+      "description": "Constructs an asset request descriptor.",
+      "parameters": [
+        { "name": "url", "type": "String", "description": "The full URL string of the intercepted request." },
+        { "name": "method", "type": "String", "description": "The HTTP method (e.g. 'GET', 'POST').", "optional": true, "defaultValue": "\"GET\"" },
+        { "name": "scheme", "type": "String", "description": "The protocol scheme (e.g. 'app', 'https').", "optional": true, "defaultValue": "\"\"" },
+        { "name": "domain", "type": "String", "description": "The host or authority domain component.", "optional": true, "defaultValue": "\"\"" },
+        { "name": "path", "type": "String", "description": "The absolute request path without query strings.", "optional": true, "defaultValue": "\"/\"" },
+        { "name": "queryString", "type": "String?", "description": "The raw URL query string (without the leading '?'), or null.", "optional": true, "defaultValue": "null" },
+        { "name": "queryParameters", "type": "Map<String, String>", "description": "Parsed query parameters map.", "optional": true, "defaultValue": "emptyMap()" },
+        { "name": "headers", "type": "Map<String, String>", "description": "Request headers map.", "optional": true, "defaultValue": "emptyMap()" }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "url", "type": "String", "description": "The full URL string of the intercepted request." },
+    { "name": "method", "type": "String", "description": "The HTTP method (e.g. 'GET', 'POST')." },
+    { "name": "scheme", "type": "String", "description": "The protocol scheme." },
+    { "name": "domain", "type": "String", "description": "The host or authority domain component." },
+    { "name": "path", "type": "String", "description": "The absolute request path without query strings." },
+    { "name": "queryString", "type": "String?", "description": "The raw URL query string, or null." },
+    { "name": "queryParameters", "type": "Map<String, String>", "description": "Parsed query parameters map." },
+    { "name": "headers", "type": "Map<String, String>", "description": "Request headers map." }
+  ],
+  "methods": [
+    {
+      "name": "getHeader",
+      "signature": "fun getHeader(name: String): String?",
+      "returnType": "String?",
+      "description": "Retrieves the value of a specific HTTP header in a case-insensitive manner.",
+      "parameters": [
+        { "name": "name", "type": "String", "description": "The header name to lookup." }
+      ]
+    },
+    {
+      "name": "getQueryParam",
+      "signature": "fun getQueryParam(key: String): String?",
+      "returnType": "String?",
+      "description": "Retrieves a query parameter by key.",
+      "parameters": [
+        { "name": "key", "type": "String", "description": "The query parameter name." }
+      ]
+    }
+  ]
+}

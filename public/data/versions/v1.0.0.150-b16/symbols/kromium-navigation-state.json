@@ -1,0 +1,79 @@
+{
+  "id": "kromium-navigation-state",
+  "name": "KromiumNavigationState",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.navigation",
+  "summary": "Represents the current navigation and loading state of the browser.",
+  "declaration": "data class KromiumNavigationState(\n    val isLoading: Boolean = false,\n    val canGoBack: Boolean = false,\n    val canGoForward: Boolean = false,\n    val url: String = \"\",\n    val title: String = \"\"\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumNavigationState(isLoading: Boolean = false, canGoBack: Boolean = false, canGoForward: Boolean = false, url: String = \"\", title: String = \"\")",
+      "description": "Constructs navigation state snapshot.",
+      "parameters": [
+        {
+          "name": "isLoading",
+          "type": "Boolean",
+          "description": "Whether the browser is currently loading a resource.",
+          "optional": true,
+          "defaultValue": "false"
+        },
+        {
+          "name": "canGoBack",
+          "type": "Boolean",
+          "description": "Whether backward navigation is available in session history.",
+          "optional": true,
+          "defaultValue": "false"
+        },
+        {
+          "name": "canGoForward",
+          "type": "Boolean",
+          "description": "Whether forward navigation is available in session history.",
+          "optional": true,
+          "defaultValue": "false"
+        },
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The currently loaded URL.",
+          "optional": true,
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "title",
+          "type": "String",
+          "description": "The title of the currently loaded page.",
+          "optional": true,
+          "defaultValue": "\"\""
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "isLoading",
+      "type": "Boolean",
+      "description": "Whether the browser is currently loading a resource."
+    },
+    {
+      "name": "canGoBack",
+      "type": "Boolean",
+      "description": "Whether backward navigation is available in session history."
+    },
+    {
+      "name": "canGoForward",
+      "type": "Boolean",
+      "description": "Whether forward navigation is available in session history."
+    },
+    {
+      "name": "url",
+      "type": "String",
+      "description": "The currently loaded URL."
+    },
+    {
+      "name": "title",
+      "type": "String",
+      "description": "The title of the currently loaded page."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "kromium-key-codes",
+  "name": "KromiumKeyCodes",
+  "kind": "object",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Standard Virtual Key Codes matching universal USB HID / Windows / AWT VK specifications.",
+  "declaration": "object KromiumKeyCodes",
+  "since": "v1.0.0.150-b11",
+  "properties": [
+    { "name": "VK_ENTER", "type": "Int", "description": "Virtual key code for Enter (10)." },
+    { "name": "VK_BACK_SPACE", "type": "Int", "description": "Virtual key code for Backspace (8)." },
+    { "name": "VK_TAB", "type": "Int", "description": "Virtual key code for Tab (9)." },
+    { "name": "VK_ESCAPE", "type": "Int", "description": "Virtual key code for Escape (27)." },
+    { "name": "VK_SPACE", "type": "Int", "description": "Virtual key code for Space (32)." },
+    { "name": "VK_SHIFT", "type": "Int", "description": "Virtual key code for Shift (16)." },
+    { "name": "VK_CONTROL", "type": "Int", "description": "Virtual key code for Control (17)." },
+    { "name": "VK_ALT", "type": "Int", "description": "Virtual key code for Alt (18)." },
+    { "name": "VK_META", "type": "Int", "description": "Virtual key code for Meta/Windows/Command (157)." },
+    { "name": "VK_DELETE", "type": "Int", "description": "Virtual key code for Delete (127)." },
+    { "name": "VK_LEFT", "type": "Int", "description": "Virtual key code for Left Arrow (37)." },
+    { "name": "VK_UP", "type": "Int", "description": "Virtual key code for Up Arrow (38)." },
+    { "name": "VK_RIGHT", "type": "Int", "description": "Virtual key code for Right Arrow (39)." },
+    { "name": "VK_DOWN", "type": "Int", "description": "Virtual key code for Down Arrow (40)." }
+  ]
+}

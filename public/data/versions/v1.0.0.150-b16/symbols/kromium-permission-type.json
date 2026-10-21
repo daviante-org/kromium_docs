@@ -1,0 +1,62 @@
+{
+  "id": "kromium-permission-type",
+  "name": "KromiumPermissionType",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.permission",
+  "summary": "Types of media and hardware device permissions requested by web applications.",
+  "declaration": "enum class KromiumPermissionType(val flag: Int)",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    {
+      "name": "AUDIO_CAPTURE",
+      "description": "Microphone / audio input device access (DEVICE_AUDIO_CAPTURE)."
+    },
+    {
+      "name": "VIDEO_CAPTURE",
+      "description": "Camera / video input device access (DEVICE_VIDEO_CAPTURE)."
+    },
+    {
+      "name": "DESKTOP_AUDIO",
+      "description": "Desktop audio access (DESKTOP_AUDIO_CAPTURE)."
+    },
+    {
+      "name": "DESKTOP_VIDEO",
+      "description": "Screen sharing / desktop video access (DESKTOP_VIDEO_CAPTURE)."
+    }
+  ],
+  "properties": [
+    {
+      "name": "flag",
+      "type": "Int",
+      "description": "Bitmask value corresponding to Chromium's native media permission flags."
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "fromFlags",
+      "signature": "fun fromFlags(flags: Int): Set<KromiumPermissionType>",
+      "returnType": "Set<KromiumPermissionType>",
+      "description": "Decodes a native Chromium media permission bitmask into a set of KromiumPermissionType.",
+      "parameters": [
+        {
+          "name": "flags",
+          "type": "Int",
+          "description": "Bitmask of Chromium access flags."
+        }
+      ]
+    },
+    {
+      "name": "toFlags",
+      "signature": "fun toFlags(types: Iterable<KromiumPermissionType>): Int",
+      "returnType": "Int",
+      "description": "Encodes a collection of KromiumPermissionType into a native Chromium bitmask.",
+      "parameters": [
+        {
+          "name": "types",
+          "type": "Iterable<KromiumPermissionType>",
+          "description": "Collection of permission types."
+        }
+      ]
+    }
+  ]
+}

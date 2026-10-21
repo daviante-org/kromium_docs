@@ -1,0 +1,148 @@
+{
+  "id": "kromium-exception",
+  "name": "KromiumException",
+  "module": "kromium-api",
+  "category": "Error Handling",
+  "package": "org.daviante.kromium.api.error",
+  "declaration": "sealed class KromiumException(@JvmField val errorCode: KromiumErrorCode, @JvmField val isRecoverable: Boolean, override val message: String, override val cause: Throwable? = null) : RuntimeException(message, cause)",
+  "description": "Sealed exception hierarchy for all Kromium-specific errors. Provides an errorCode and isRecoverable flag for robust programmatic error handling and recovery.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Catch KromiumException or its typed subclasses when initializing the engine, configuring proxies, running JavaScript evaluations, exporting PDFs, or creating OSR browser canvases.",
+  "options": [],
+  "properties": [
+    {
+      "name": "errorCode",
+      "signature": "@JvmField val errorCode: KromiumErrorCode",
+      "description": "Standardized error code classification for programmatic handling and telemetry.",
+      "type": "KromiumErrorCode",
+      "default": "none"
+    },
+    {
+      "name": "isRecoverable",
+      "signature": "@JvmField val isRecoverable: Boolean",
+      "description": "Indicates whether the operation can be retried (true) or is a fatal state (false).",
+      "type": "Boolean",
+      "default": "none"
+    },
+    {
+      "name": "message",
+      "signature": "override val message: String",
+      "description": "Human-readable diagnostic message explaining the cause of the failure.",
+      "type": "String",
+      "default": "none"
+    },
+    {
+      "name": "cause",
+      "signature": "override val cause: Throwable? = null",
+      "description": "Underlying causal exception if wrapped.",
+      "type": "Throwable?",
+      "default": "null"
+    }
+  ],
+  "methods": [],
+  "exceptions": [],
+  "variants": [
+    {
+      "name": "KromiumException.NotInitialized",
+      "declaration": "class NotInitialized : KromiumException(KromiumErrorCode.INITIALIZATION_ERROR, false, \"Kromium is not initialized. Call Kromium.initialize() first.\")",
+      "description": "Kromium is not initialized. Call Kromium.initialize() first."
+    },
+    {
+      "name": "KromiumException.Disposed",
+      "declaration": "class Disposed : KromiumException(KromiumErrorCode.INITIALIZATION_ERROR, false, \"Kromium has been disposed and cannot accept new operations.\")",
+      "description": "Kromium has been disposed and cannot accept new operations."
+    },
+    {
+      "name": "KromiumException.UnsupportedPlatform",
+      "declaration": "class UnsupportedPlatform(@JvmField val os: String?, @JvmField val arch: String?) : KromiumException(KromiumErrorCode.UNSUPPORTED_PLATFORM, false, ...)",
+      "description": "Unsupported platform: os=$os, arch=$arch"
+    },
+    {
+      "name": "KromiumException.InstallationFailed",
+      "declaration": "class InstallationFailed(@JvmField val directory: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.INSTALLATION_FAILED, true, ...)",
+      "description": "Failed to prepare installation directory: $directory"
+    },
+    {
+      "name": "KromiumException.AutoDownloadDisabled",
+      "declaration": "class AutoDownloadDisabled(@JvmField val directory: String) : KromiumException(KromiumErrorCode.DOWNLOAD_DISABLED, false, ...)",
+      "description": "Auto-download is disabled (autoDownload = false), and no valid JCEF engine binaries were found at: $directory"
+    },
+    {
+      "name": "KromiumException.NoBundleAvailable",
+      "declaration": "class NoBundleAvailable(@JvmField val platform: String, @JvmField val releaseTag: String?) : KromiumException(KromiumErrorCode.NO_BUNDLE_AVAILABLE, false, ...)",
+      "description": "No compatible JCEF bundle found for $platform in release ${releaseTag ?: \"latest\"}"
+    },
+    {
+      "name": "KromiumException.DownloadFailed",
+      "declaration": "class DownloadFailed(@JvmField val url: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.DOWNLOAD_FAILED, true, ...)",
+      "description": "Failed to download engine bundle from: $url"
+    },
+    {
+      "name": "KromiumException.ChecksumMismatch",
+      "declaration": "class ChecksumMismatch(@JvmField val expected: String, @JvmField val actual: String) : KromiumException(KromiumErrorCode.CHECKSUM_MISMATCH, true, ...)",
+      "description": "Archive checksum mismatch — expected: $expected, actual: $actual. The download may be corrupted or tampered with."
+    },
+    {
+      "name": "KromiumException.ExtractionFailed",
+      "declaration": "class ExtractionFailed(@JvmField val archivePath: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.EXTRACTION_FAILED, true, ...)",
+      "description": "Failed to extract engine bundle from: $archivePath"
+    },
+    {
+      "name": "KromiumException.MaliciousArchiveEntry",
+      "declaration": "class MaliciousArchiveEntry(@JvmField val entryName: String) : KromiumException(KromiumErrorCode.MALICIOUS_ARCHIVE, false, ...)",
+      "description": "Malicious archive entry detected (directory traversal): $entryName"
+    },
+    {
+      "name": "KromiumException.BootstrapFailed",
+      "declaration": "class BootstrapFailed(cause: Throwable? = null) : KromiumException(KromiumErrorCode.BOOTSTRAP_FAILED, false, ...)",
+      "description": "CEF native bootstrap failed."
+    },
+    {
+      "name": "KromiumException.InstallationCorrupted",
+      "declaration": "class InstallationCorrupted(@JvmField val directory: String) : KromiumException(KromiumErrorCode.INSTALLATION_CORRUPTED, true, ...)",
+      "description": "JCEF installation at $directory appears corrupted — re-download required."
+    },
+    {
+      "name": "KromiumException.JsEvaluationTimeout",
+      "declaration": "class JsEvaluationTimeout(@JvmField val timeoutMs: Long) : KromiumException(KromiumErrorCode.JS_TIMEOUT, true, ...)",
+      "description": "JavaScript evaluation timed out after ${timeoutMs}ms"
+    },
+    {
+      "name": "KromiumException.InvalidConfig",
+      "declaration": "class InvalidConfig(@JvmField val detail: String) : KromiumException(KromiumErrorCode.INVALID_CONFIG, false, ...)",
+      "description": "Invalid Kromium configuration: $detail"
+    },
+    {
+      "name": "KromiumException.ProxyError",
+      "declaration": "class ProxyError(@JvmField val detail: String) : KromiumException(KromiumErrorCode.PROXY_ERROR, true, ...)",
+      "description": "Proxy error: $detail"
+    },
+    {
+      "name": "KromiumException.PdfPrintFailed",
+      "declaration": "class PdfPrintFailed(@JvmField val path: String, cause: Throwable? = null) : KromiumException(KromiumErrorCode.PDF_PRINT_FAILED, true, ...)",
+      "description": "Failed to print web page to PDF: $path"
+    },
+    {
+      "name": "KromiumException.FrameworkRequired",
+      "declaration": "class FrameworkRequired @JvmOverloads constructor(message: String = \"UI framework is mandatory for OSR browser creation. No default OSR framework is permitted.\") : KromiumException(KromiumErrorCode.FRAMEWORK_REQUIRED, false, message)",
+      "description": "UI framework is mandatory for OSR browser creation. No default OSR framework is permitted."
+    },
+    {
+      "name": "KromiumException.CanvasNotAvailable",
+      "declaration": "class CanvasNotAvailable @JvmOverloads constructor(@JvmField val framework: KromiumUiFramework, message: String = ...) : KromiumException(KromiumErrorCode.CANVAS_NOT_AVAILABLE, false, message)",
+      "description": "No OSR canvas factory registered for framework: $framework. Please ensure kromium-${framework.name.lowercase()} is on the classpath."
+    }
+  ],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.error.KromiumException\nimport org.daviante.kromium.api.error.KromiumErrorCode\n\ntry {\n    // engine operations\n} catch (e: KromiumException) {\n    if (e.isRecoverable) {\n        println(\"Recoverable error [${e.errorCode}]: ${e.message}\")\n    } else {\n        System.err.println(\"Fatal error [${e.errorCode}]: ${e.message}\")\n    }\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.error.KromiumException;\n\ntry {\n    // engine operations\n} catch (KromiumException e) {\n    System.err.println(\"Error code: \" + e.errorCode + \", recoverable: \" + e.isRecoverable);\n}"
+    }
+  ]
+}

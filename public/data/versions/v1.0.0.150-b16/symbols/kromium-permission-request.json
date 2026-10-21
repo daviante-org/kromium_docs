@@ -1,0 +1,118 @@
+{
+  "id": "kromium-permission-request",
+  "name": "KromiumPermissionRequest",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.permission",
+  "summary": "Encapsulates an incoming media or device permission request from a web page.",
+  "declaration": "data class KromiumPermissionRequest(\n    val url: String,\n    val origin: String,\n    val requestedTypes: Set<KromiumPermissionType>,\n    val rawFlags: Int\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumPermissionRequest(url: String, origin: String, requestedTypes: Set<KromiumPermissionType>, rawFlags: Int)",
+      "description": "Constructs a permission request descriptor.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "Full URL of the frame initiating the permission request."
+        },
+        {
+          "name": "origin",
+          "type": "String",
+          "description": "Extracted web origin."
+        },
+        {
+          "name": "requestedTypes",
+          "type": "Set<KromiumPermissionType>",
+          "description": "The set of permission types being requested."
+        },
+        {
+          "name": "rawFlags",
+          "type": "Int",
+          "description": "The raw Chromium media permission bitmask."
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "url",
+      "type": "String",
+      "description": "Full URL of the frame initiating the permission request."
+    },
+    {
+      "name": "origin",
+      "type": "String",
+      "description": "Extracted web origin."
+    },
+    {
+      "name": "requestedTypes",
+      "type": "Set<KromiumPermissionType>",
+      "description": "The set of permission types being requested."
+    },
+    {
+      "name": "rawFlags",
+      "type": "Int",
+      "description": "The raw Chromium media permission bitmask."
+    }
+  ],
+  "methods": [
+    {
+      "name": "hasAudio",
+      "signature": "fun hasAudio(): Boolean",
+      "returnType": "Boolean",
+      "description": "True if the request seeks microphone access."
+    },
+    {
+      "name": "hasVideo",
+      "signature": "fun hasVideo(): Boolean",
+      "returnType": "Boolean",
+      "description": "True if the request seeks camera / webcam video capture access."
+    },
+    {
+      "name": "hasScreenShare",
+      "signature": "fun hasScreenShare(): Boolean",
+      "returnType": "Boolean",
+      "description": "True if the request seeks screen sharing / desktop video capture access."
+    },
+    {
+      "name": "hasDesktopAudio",
+      "signature": "fun hasDesktopAudio(): Boolean",
+      "returnType": "Boolean",
+      "description": "True if the request seeks system audio capture access."
+    },
+    {
+      "name": "contains",
+      "signature": "fun contains(type: KromiumPermissionType): Boolean",
+      "returnType": "Boolean",
+      "description": "True if the request includes the specified permission type.",
+      "parameters": [
+        {
+          "name": "type",
+          "type": "KromiumPermissionType",
+          "description": "The permission type to check for."
+        }
+      ]
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "from",
+      "signature": "fun from(requestingUrl: String, accessFlags: Int): KromiumPermissionRequest",
+      "returnType": "KromiumPermissionRequest",
+      "description": "Constructs a KromiumPermissionRequest from a URL and raw native bitmask.",
+      "parameters": [
+        {
+          "name": "requestingUrl",
+          "type": "String",
+          "description": "Full URL of requesting frame."
+        },
+        {
+          "name": "accessFlags",
+          "type": "Int",
+          "description": "Bitmask of Chromium access flags."
+        }
+      ]
+    }
+  ]
+}

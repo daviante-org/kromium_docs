@@ -1,0 +1,26 @@
+{
+  "id": "kromium-security",
+  "name": "KromiumSecurity",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Facade for managing browser security rules such as host locking.",
+  "declaration": "interface KromiumSecurity",
+  "since": "v1.0.0.150-b11",
+  "properties": [
+    {
+      "name": "hostLock",
+      "type": "Set<String>?",
+      "description": "Whitelist of allowed hostnames/domains. Navigations outside these domains will be rejected."
+    },
+    {
+      "name": "hostLockSubresources",
+      "type": "Boolean",
+      "description": "When true, host lock also restricts subresource network requests (scripts, xhr, fetch)."
+    },
+    {
+      "name": "hostLockSubframes",
+      "type": "Boolean",
+      "description": "When true, host lock also restricts navigations in subframes (iframes). Defaults to false, allowing embedded verification widgets to navigate within iframes without violating host locking."
+    }
+  ]
+}

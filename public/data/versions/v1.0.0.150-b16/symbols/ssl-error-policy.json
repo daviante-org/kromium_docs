@@ -1,0 +1,63 @@
+{
+  "id": "ssl-error-policy",
+  "name": "SslErrorPolicy",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "SSL error handling policy for clients. Controls how certificate validation errors are handled.",
+  "declaration": "sealed class SslErrorPolicy",
+  "since": "v1.0.0.150-b11",
+  "subclasses": [
+    {
+      "name": "SslErrorPolicy.Strict",
+      "description": "Reject all certificate errors (default, recommended for production)."
+    },
+    {
+      "name": "SslErrorPolicy.AllowDomains",
+      "description": "Allow certificate errors only for the specified domains."
+    },
+    {
+      "name": "SslErrorPolicy.AllowAll",
+      "description": "DANGEROUS: Allow ALL certificate errors for ALL domains. Development/testing only."
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "strict",
+      "signature": "fun strict(): SslErrorPolicy",
+      "returnType": "SslErrorPolicy",
+      "description": "Returns strict SSL error policy."
+    },
+    {
+      "name": "allowAll",
+      "signature": "fun allowAll(): SslErrorPolicy",
+      "returnType": "SslErrorPolicy",
+      "description": "Returns policy allowing all SSL errors."
+    },
+    {
+      "name": "allowDomains",
+      "signature": "fun allowDomains(vararg domains: String): SslErrorPolicy",
+      "returnType": "SslErrorPolicy",
+      "description": "Returns policy allowing SSL errors for given domains.",
+      "parameters": [
+        {
+          "name": "domains",
+          "type": "vararg String",
+          "description": "Domain names or wildcard patterns to allow."
+        }
+      ]
+    },
+    {
+      "name": "allowDomains",
+      "signature": "fun allowDomains(domains: Set<String>): SslErrorPolicy",
+      "returnType": "SslErrorPolicy",
+      "description": "Returns policy allowing SSL errors for a set of domains.",
+      "parameters": [
+        {
+          "name": "domains",
+          "type": "Set<String>",
+          "description": "Set of domain names or wildcard patterns to allow."
+        }
+      ]
+    }
+  ]
+}

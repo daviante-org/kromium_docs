@@ -1,0 +1,63 @@
+{
+  "id": "kromium-storage",
+  "name": "KromiumStorage",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.storage",
+  "summary": "Facade for Cookie and Storage Management. Provides methods for clearing cache, reading cookies, and mutating storage state.",
+  "declaration": "interface KromiumStorage",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "getCookiesAsync",
+      "signature": "fun getCookiesAsync(): CompletableFuture<Map<String, String>>",
+      "returnType": "CompletableFuture<Map<String, String>>",
+      "description": "Retrieves all cookies available to the current page."
+    },
+    {
+      "name": "getCookieAsync",
+      "signature": "fun getCookieAsync(name: String): CompletableFuture<String?>",
+      "returnType": "CompletableFuture<String?>",
+      "description": "Retrieves a specific cookie by name.",
+      "parameters": [
+        { "name": "name", "type": "String", "description": "The cookie name." }
+      ]
+    },
+    {
+      "name": "setCookie",
+      "signature": "fun setCookie(name: String, value: String, domain: String? = null, path: String = \"/\", isSecure: Boolean = false, isHttpOnly: Boolean = false, expires: Date? = null): Boolean",
+      "returnType": "Boolean",
+      "description": "Sets a cookie on the global cookie manager.",
+      "parameters": [
+        { "name": "name", "type": "String", "description": "Cookie name." },
+        { "name": "value", "type": "String", "description": "Cookie value." },
+        { "name": "domain", "type": "String?", "description": "Cookie domain.", "optional": true, "defaultValue": "null" },
+        { "name": "path", "type": "String", "description": "Cookie path.", "optional": true, "defaultValue": "\"/\"" },
+        { "name": "isSecure", "type": "Boolean", "description": "Whether cookie is HTTPS only.", "optional": true, "defaultValue": "false" },
+        { "name": "isHttpOnly", "type": "Boolean", "description": "Whether cookie is HttpOnly.", "optional": true, "defaultValue": "false" },
+        { "name": "expires", "type": "Date?", "description": "Expiration date, or null for session cookie.", "optional": true, "defaultValue": "null" }
+      ]
+    },
+    {
+      "name": "clearCookies",
+      "signature": "fun clearCookies(): Boolean",
+      "returnType": "Boolean",
+      "description": "Clears all cookies from the global manager."
+    },
+    {
+      "name": "clearWebStorageAsync",
+      "signature": "fun clearWebStorageAsync(): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Clears Local Storage and Session Storage for the current origin."
+    },
+    {
+      "name": "clearBrowsingDataAsync",
+      "signature": "fun clearBrowsingDataAsync(clearCookies: Boolean = true, clearStorage: Boolean = true): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Aggregates cookie and storage clearing.",
+      "parameters": [
+        { "name": "clearCookies", "type": "Boolean", "description": "Whether to clear cookies.", "optional": true, "defaultValue": "true" },
+        { "name": "clearStorage", "type": "Boolean", "description": "Whether to clear web storage.", "optional": true, "defaultValue": "true" }
+      ]
+    }
+  ]
+}

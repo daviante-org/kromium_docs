@@ -1,0 +1,49 @@
+{
+  "id": "sample-applications",
+  "title": "Sample Applications & Reference Code",
+  "summary": "Explore the 5 official Kromium desktop sample applications covering Compose Multiplatform, Swing, JavaFX, SWT, and AWT.",
+  "category": "Getting Started",
+  "readTime": "8 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "Official Sample Applications",
+      "content": "The Kromium repository provides 5 fully functional desktop sample applications in the `samples/` directory. Each sample demonstrates production-grade architecture, theming, window management, and Kromium feature integration.\n\n| Sample Application | Path | UI Framework | Features Covered |\n| :--- | :--- | :--- | :--- |\n| **`kromium-sample-compose`** | `samples/kromium-sample-compose` | Compose Multiplatform (Desktop) | 9 Feature Panels: Automation, Cookies/Storage, DevTools, DOM Extraction, Downloads, Navigation, PDF Print, Security/Network, View Tools |\n| **`kromium-sample-swing`** | `samples/kromium-sample-swing` | Java Swing | 9 Feature Panels with custom dark/light theme, card components, traffic light window controls, and logging console |\n| **`kromium-sample-javafx`** | `samples/kromium-sample-javafx` | OpenJFX / JavaFX | FXML-free declarative Kotlin UI, TabPane navigation, hardware texture blitting, and automation |\n| **`kromium-sample-swt`** | `samples/kromium-sample-swt` | Eclipse SWT | SWT Composite embedding, native OS event loop integration, key event bridge, and developer tools |\n| **`kromium-sample-awt`** | `samples/kromium-sample-awt` | Pure Java AWT | Minimalist dependency-free browser, Java2D BufferedImage blitting, and navigation controls |"
+    },
+    {
+      "id": "running-samples",
+      "title": "Running the Samples",
+      "content": "You can launch any sample directly from the root repository using Gradle:\n\n```bash\n# Run Compose Multiplatform sample\n./gradlew :samples:kromium-sample-compose:run\n\n# Run Swing sample\n./gradlew :samples:kromium-sample-swing:run\n\n# Run JavaFX sample\n./gradlew :samples:kromium-sample-javafx:run\n\n# Run Eclipse SWT sample\n./gradlew :samples:kromium-sample-swt:run\n\n# Run Pure AWT sample\n./gradlew :samples:kromium-sample-awt:run\n```"
+    },
+    {
+      "id": "compose-architecture",
+      "title": "Compose Multiplatform Sample Architecture",
+      "content": "Located at `samples/kromium-sample-compose`, this sample demonstrates how to build a tabbed developer workbench using Compose Desktop with reactive StateFlow collection.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// From samples/kromium-sample-compose/src/main/kotlin/org/daviante/kromium/sample/Main.kt\nfun main() = application {\n    val engine = remember { Kromium.createEngine() }\n    DisposableEffect(Unit) {\n        engine.initialize()\n        onDispose { engine.dispose() }\n    }\n\n    val client = remember(engine) { engine.createClient() }\n    val browser = remember(client) {\n        client.createBrowser(\n            url = \"https://example.com\",\n            framework = KromiumUiFramework.COMPOSE\n        )\n    }\n\n    Window(onCloseRequest = ::exitApplication, title = \"Kromium Compose Sample\") {\n        SampleAppShell(browser = browser)\n    }\n}"
+      }
+    },
+    {
+      "id": "swing-architecture",
+      "title": "Swing Sample Architecture & UI Shell",
+      "content": "Located at `samples/kromium-sample-swing`, this sample illustrates embedding `KromiumSwingCanvas` inside a custom-themed Swing layout with `BorderLayout` and custom swing components.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// From samples/kromium-sample-swing/src/main/kotlin/org/daviante/kromium/sample/swing/Main.kt\nSwingUtilities.invokeLater {\n    val engine = Kromium.createEngine()\n    engine.initialize()\n\n    val client = engine.createClient()\n    val browser = client.createBrowser(\n        url = \"https://example.com\",\n        framework = KromiumUiFramework.SWING\n    )\n\n    val frame = JFrame(\"Kromium Swing Sample\")\n    frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE\n    frame.setSize(1400, 900)\n\n    val canvas = browser.view.surface.unwrap(Component::class.java) as JPanel\n    frame.contentPane.add(canvas, BorderLayout.CENTER)\n    frame.isVisible = true\n}"
+      }
+    },
+    {
+      "id": "feature-catalogue",
+      "title": "Feature Code Samples in the Repository",
+      "content": "The sample applications contain dedicated feature files that developers can directly copy into their projects:\n\n- **`AutomationFeature.kt`**: Automatic form filling, clicking buttons by CSS selector, typing into inputs, and dispatching keyboard events.\n- **`CookieStorageFeature.kt`**: Reading/setting cookies, inspecting Local Storage, and clearing browser cache.\n- **`DevToolsFeature.kt`**: Launching undocked DevTools window, inspecting specific elements, and measuring page performance.\n- **`DomExtractionFeature.kt`**: Extracting page title, outer HTML, text content, and resolving dynamic elements.\n- **`DownloadsFeature.kt`**: Intercepting download items, tracking download speed and bytes received, and pausing/canceling.\n- **`NavigationFeature.kt`**: URL loading, back/forward history, stop/reload, and navigation stage state listeners.\n- **`PdfPrintFeature.kt`**: Vector PDF generation with custom margins, paper sizes, and headers/footers.\n- **`SecurityNetworkFeature.kt`**: Custom SOCKS5/HTTP proxy setup, SSL certificate exception handling, and media permissions.\n- **`ViewToolsFeature.kt`**: Zoom level manipulation, window resizing, and screenshot capture."
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumUiFramework", "path": "/api/kromium-ui-framework" },
+    { "name": "KromiumView", "path": "/api/kromium-view" },
+    { "name": "KromiumBrowser", "path": "/api/kromium-browser" },
+    { "name": "KromiumAutomation", "path": "/api/kromium-automation" }
+  ]
+}

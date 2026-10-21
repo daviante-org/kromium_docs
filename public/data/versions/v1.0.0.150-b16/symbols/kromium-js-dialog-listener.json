@@ -1,0 +1,20 @@
+{
+  "id": "kromium-js-dialog-listener",
+  "name": "KromiumJsDialogListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Listener for handling JavaScript dialogs (alert, confirm, prompt).",
+  "declaration": "fun interface KromiumJsDialogListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onDialog",
+      "signature": "fun onDialog(dialog: KromiumJsDialog): Boolean",
+      "returnType": "Boolean",
+      "description": "Called when a webpage triggers an alert, confirm, or prompt dialog.",
+      "parameters": [
+        { "name": "dialog", "type": "KromiumJsDialog", "description": "Encapsulation of the dialog request with confirm/cancel actions." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "id": "kromium-engine-download-source",
+  "name": "KromiumEngineDownloadSource",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.bootstrap",
+  "summary": "Defines the strategy for acquiring the JCEF engine binaries.",
+  "declaration": "sealed interface KromiumEngineDownloadSource",
+  "since": "v1.0.0.150-b11",
+  "subclasses": [
+    { "name": "KromiumEngineDownloadSource.Manual", "description": "Do not attempt to download the engine. Binaries must be placed manually." },
+    { "name": "KromiumEngineDownloadSource.DirectUrl", "description": "Download the engine from a direct URL resolved dynamically based on current platform." },
+    { "name": "KromiumEngineDownloadSource.GitHubRelease", "description": "Resolve and download the engine from a GitHub Release API endpoint." }
+  ],
+  "companionMethods": [
+    {
+      "name": "manual",
+      "signature": "fun manual(): KromiumEngineDownloadSource",
+      "returnType": "KromiumEngineDownloadSource",
+      "description": "Returns manual download strategy."
+    },
+    {
+      "name": "directUrl",
+      "signature": "fun directUrl(bundleUrl: String, checksumUrl: String? = null): KromiumEngineDownloadSource",
+      "returnType": "KromiumEngineDownloadSource",
+      "description": "Uses a static, hardcoded URL regardless of the platform.",
+      "parameters": [
+        { "name": "bundleUrl", "type": "String", "description": "Binary bundle download URL." },
+        { "name": "checksumUrl", "type": "String?", "description": "Optional SHA256 checksum URL.", "optional": true, "defaultValue": "null" }
+      ]
+    },
+    {
+      "name": "directUrl",
+      "signature": "fun directUrl(bundleResolver: KromiumPlatformUrlResolver, checksumResolver: KromiumPlatformUrlResolver? = null): KromiumEngineDownloadSource",
+      "returnType": "KromiumEngineDownloadSource",
+      "description": "Uses a dynamic resolver function to determine the URL based on OS and architecture.",
+      "parameters": [
+        { "name": "bundleResolver", "type": "KromiumPlatformUrlResolver", "description": "Platform resolver for bundle URL." },
+        { "name": "checksumResolver", "type": "KromiumPlatformUrlResolver?", "description": "Optional platform resolver for checksum URL.", "optional": true, "defaultValue": "null" }
+      ]
+    },
+    {
+      "name": "githubRelease",
+      "signature": "fun githubRelease(repoOwner: String = \"JetBrains\", repoName: String = \"JetBrainsRuntime\", releaseTag: String? = null, apiBaseUrl: String = \"https://api.github.com\"): KromiumEngineDownloadSource",
+      "returnType": "KromiumEngineDownloadSource",
+      "description": "Resolves engine release assets from GitHub Releases API.",
+      "parameters": [
+        { "name": "repoOwner", "type": "String", "description": "GitHub repository owner.", "optional": true, "defaultValue": "\"JetBrains\"" },
+        { "name": "repoName", "type": "String", "description": "GitHub repository name.", "optional": true, "defaultValue": "\"JetBrainsRuntime\"" },
+        { "name": "releaseTag", "type": "String?", "description": "Specific release tag or null for latest.", "optional": true, "defaultValue": "null" },
+        { "name": "apiBaseUrl", "type": "String", "description": "GitHub API base URL.", "optional": true, "defaultValue": "\"https://api.github.com\"" }
+      ]
+    }
+  ]
+}

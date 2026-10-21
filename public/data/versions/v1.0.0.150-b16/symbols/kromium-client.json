@@ -1,0 +1,245 @@
+{
+  "id": "kromium-client",
+  "name": "KromiumClient",
+  "module": "kromium-api",
+  "category": "Browser & Client Components",
+  "package": "org.daviante.kromium.api.core",
+  "declaration": "interface KromiumClient",
+  "description": "Represents a client session in the engine. A client groups multiple browsers under a shared context (such as shared cookies, cache, proxy configuration, network request interceptors, and listeners).",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Obtain via engine.createClient(config) to group browser instances with custom session interceptors, listeners, proxy rules, and download configurations.",
+  "options": [],
+  "properties": [
+    {
+      "name": "inFlightRequestCount",
+      "signature": "val inFlightRequestCount: Int",
+      "description": "The number of active, in-flight network requests across all browsers in this client.",
+      "type": "Int",
+      "default": "none"
+    },
+    {
+      "name": "downloadListener",
+      "signature": "var downloadListener: KromiumDownloadListener?",
+      "description": "Listener for tracking global download progress.",
+      "type": "KromiumDownloadListener?",
+      "default": "null"
+    },
+    {
+      "name": "downloadDirectory",
+      "signature": "var downloadDirectory: File",
+      "description": "The default directory where downloads should be saved.",
+      "type": "File",
+      "default": "none"
+    },
+    {
+      "name": "onBeforeDownloadListener",
+      "signature": "var onBeforeDownloadListener: KromiumBeforeDownloadListener?",
+      "description": "Optional interceptor to dynamically resolve the target path before a download begins. Return null to use default path, or return empty string \"\" to cancel.",
+      "type": "KromiumBeforeDownloadListener?",
+      "default": "null"
+    },
+    {
+      "name": "doNotTrack",
+      "signature": "var doNotTrack: Boolean",
+      "description": "Whether to assert Do Not Track (DNT) and Global Privacy Control (Sec-GPC) headers on outbound requests.",
+      "type": "Boolean",
+      "default": "none"
+    },
+    {
+      "name": "rememberPermissions",
+      "signature": "var rememberPermissions: Boolean",
+      "description": "Whether permission decisions (e.g. camera, microphone) should be cached for the lifetime of this client session.",
+      "type": "Boolean",
+      "default": "none"
+    },
+    {
+      "name": "requestInterceptor",
+      "signature": "var requestInterceptor: KromiumRequestInterceptor?",
+      "description": "Request interceptor for filtering or modifying outgoing HTTP/HTTPS requests.",
+      "type": "KromiumRequestInterceptor?",
+      "default": "null"
+    },
+    {
+      "name": "navigationInterceptor",
+      "signature": "var navigationInterceptor: KromiumNavigationInterceptor?",
+      "description": "Interceptor for evaluating and potentially overriding top-level navigation.",
+      "type": "KromiumNavigationInterceptor?",
+      "default": "null"
+    },
+    {
+      "name": "authListener",
+      "signature": "var authListener: KromiumAuthListener?",
+      "description": "Listener for HTTP authentication challenges.",
+      "type": "KromiumAuthListener?",
+      "default": "null"
+    },
+    {
+      "name": "popupListener",
+      "signature": "var popupListener: KromiumPopupListener?",
+      "description": "Listener for popup window requests.",
+      "type": "KromiumPopupListener?",
+      "default": "null"
+    },
+    {
+      "name": "jsDialogListener",
+      "signature": "var jsDialogListener: KromiumJsDialogListener?",
+      "description": "Listener for JavaScript dialogs (alert, confirm, prompt).",
+      "type": "KromiumJsDialogListener?",
+      "default": "null"
+    },
+    {
+      "name": "enableContextMenus",
+      "signature": "var enableContextMenus: Boolean",
+      "description": "Globally enables or disables native right-click context menus for this client. Defaults to true.",
+      "type": "Boolean",
+      "default": "true"
+    },
+    {
+      "name": "contextMenuListener",
+      "signature": "var contextMenuListener: KromiumContextMenuListener?",
+      "description": "Listener for context menu events and custom menu construction.",
+      "type": "KromiumContextMenuListener?",
+      "default": "null"
+    },
+    {
+      "name": "permissionListener",
+      "signature": "var permissionListener: KromiumPermissionListener?",
+      "description": "Listener for media/device permission requests.",
+      "type": "KromiumPermissionListener?",
+      "default": "null"
+    },
+    {
+      "name": "consoleMessageListener",
+      "signature": "var consoleMessageListener: KromiumConsoleMessageListener?",
+      "description": "Listener for browser console messages.",
+      "type": "KromiumConsoleMessageListener?",
+      "default": "null"
+    },
+    {
+      "name": "loadErrorListener",
+      "signature": "var loadErrorListener: KromiumLoadErrorListener?",
+      "description": "Listener for page load errors.",
+      "type": "KromiumLoadErrorListener?",
+      "default": "null"
+    },
+    {
+      "name": "currentProxy",
+      "signature": "val currentProxy: KromiumProxy?",
+      "description": "The currently active proxy configuration for this client session, or null if no custom proxy has been set.",
+      "type": "KromiumProxy?",
+      "default": "none"
+    }
+  ],
+  "methods": [
+    {
+      "name": "createBrowser",
+      "signature": "fun createBrowser(url: String, config: KromiumClientConfig = KromiumClientConfig.default()): KromiumBrowser",
+      "description": "Creates a new browser instance managed by this client.",
+      "returns": "KromiumBrowser",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "createBrowser",
+      "signature": "fun createBrowser(url: String, framework: KromiumUiFramework): KromiumBrowser",
+      "description": "Creates a new browser instance managed by this client with an explicit UI framework.",
+      "returns": "KromiumBrowser",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "hasPendingRequests",
+      "signature": "fun hasPendingRequests(): Boolean",
+      "description": "Whether there are any pending network requests active on this client.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "timeSinceLastRequestMs",
+      "signature": "fun timeSinceLastRequestMs(): Long",
+      "description": "The number of milliseconds elapsed since the last network request completed.",
+      "returns": "Long",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "setContextMenu",
+      "signature": "fun setContextMenu(block: KromiumMenuBuilder.(KromiumContextMenuContext) -> Unit)",
+      "description": "Configures the right-click context menu using a declarative builder block.",
+      "returns": "Unit",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "updateProxy",
+      "signature": "fun updateProxy(proxy: KromiumProxy): Boolean",
+      "description": "Dynamically updates the proxy settings for this client session.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "clearPermissionCache",
+      "signature": "fun clearPermissionCache()",
+      "description": "Clears all remembered permission decisions from the in-memory session cache.",
+      "returns": "Unit",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "cancelDownload",
+      "signature": "fun cancelDownload(downloadId: Int): Boolean",
+      "description": "Cancels an active download by its ID.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "pauseDownload",
+      "signature": "fun pauseDownload(downloadId: Int): Boolean",
+      "description": "Pauses an active download by its ID.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "resumeDownload",
+      "signature": "fun resumeDownload(downloadId: Int): Boolean",
+      "description": "Resumes a paused download by its ID.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "isDownloadPaused",
+      "signature": "fun isDownloadPaused(downloadId: Int): Boolean",
+      "description": "Checks if a download is currently paused.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "dispose",
+      "signature": "fun dispose()",
+      "description": "Disposes the client and all associated browsers.",
+      "returns": "Unit",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.core.KromiumEngine\nimport org.daviante.kromium.api.core.KromiumClient\nimport org.daviante.kromium.api.core.KromiumBrowser\nimport org.daviante.kromium.api.ui.KromiumUiFramework\n\nfun createClientSession(engine: KromiumEngine): KromiumBrowser {\n    val client: KromiumClient = engine.createClient()\n    client.enableContextMenus = true\n    return client.createBrowser(\"https://github.com\", KromiumUiFramework.COMPOSE)\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.core.KromiumEngine;\nimport org.daviante.kromium.api.core.KromiumClient;\nimport org.daviante.kromium.api.core.KromiumBrowser;\nimport org.daviante.kromium.api.ui.KromiumUiFramework;\n\npublic class ClientSetup {\n    public static KromiumBrowser setup(KromiumEngine engine) {\n        KromiumClient client = engine.createClient();\n        return client.createBrowser(\"https://example.com\", KromiumUiFramework.SWING);\n    }\n}"
+    }
+  ]
+}

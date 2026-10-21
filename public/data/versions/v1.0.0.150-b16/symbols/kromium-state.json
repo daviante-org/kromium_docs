@@ -1,0 +1,69 @@
+{
+  "id": "kromium-state",
+  "name": "KromiumState",
+  "module": "kromium-api",
+  "category": "Core Engine",
+  "package": "org.daviante.kromium.api.core",
+  "declaration": "sealed class KromiumState",
+  "description": "Observable lifecycle and operational states of the Kromium engine emitted by KromiumEngine.state StateFlow.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Observe engine.state in UI layers (Compose Multiplatform, JavaFX, Swing) to display progress indicators, download status, or error messages before browser creation.",
+  "options": [],
+  "properties": [],
+  "methods": [],
+  "exceptions": [],
+  "variants": [
+    {
+      "name": "KromiumState.Idle",
+      "declaration": "data object Idle : KromiumState()",
+      "description": "Engine has not started initialization or download."
+    },
+    {
+      "name": "KromiumState.Locating",
+      "declaration": "data object Locating : KromiumState()",
+      "description": "Locating local JCEF engine binaries on the system."
+    },
+    {
+      "name": "KromiumState.Downloading",
+      "declaration": "data class Downloading(val progress: KromiumDownloadProgress) : KromiumState()",
+      "description": "Downloading native JCEF bundle binaries with reactive progress metrics."
+    },
+    {
+      "name": "KromiumState.Extracting",
+      "declaration": "data object Extracting : KromiumState()",
+      "description": "Extracting downloaded bundle archive to the local cache directory."
+    },
+    {
+      "name": "KromiumState.Initializing",
+      "declaration": "data object Initializing : KromiumState()",
+      "description": "Bootstrapping CEF native binaries and preparing Chromium subsystems."
+    },
+    {
+      "name": "KromiumState.Ready",
+      "declaration": "data object Ready : KromiumState()",
+      "description": "CEF native runtime is initialized, healthy, and ready to create browser instances."
+    },
+    {
+      "name": "KromiumState.Error",
+      "declaration": "data class Error(val cause: Throwable) : KromiumState()",
+      "description": "Engine initialization or operational failure occurred; inspect cause for details."
+    },
+    {
+      "name": "KromiumState.Disposed",
+      "declaration": "data object Disposed : KromiumState()",
+      "description": "Engine and all associated browser instances have been disposed and shut down."
+    }
+  ],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import androidx.compose.runtime.*\nimport org.daviante.kromium.api.core.KromiumEngine\nimport org.daviante.kromium.api.core.KromiumState\n\n@Composable\nfun ObserveState(engine: KromiumEngine) {\n    val state by engine.state.collectAsState()\n    when (val s = state) {\n        is KromiumState.Downloading -> println(\"Downloading: ${s.progress.fraction * 100}%\")\n        is KromiumState.Ready -> println(\"Engine ready\")\n        is KromiumState.Error -> println(\"Failed: ${s.cause.message}\")\n        else -> println(\"State: $s\")\n    }\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.core.KromiumEngine;\nimport org.daviante.kromium.api.core.KromiumState;\n\npublic class StateObserver {\n    public static void check(KromiumEngine engine) {\n        KromiumState state = engine.getState().getValue();\n        if (state instanceof KromiumState.Ready) {\n            System.out.println(\"Ready!\");\n        }\n    }\n}"
+    }
+  ]
+}

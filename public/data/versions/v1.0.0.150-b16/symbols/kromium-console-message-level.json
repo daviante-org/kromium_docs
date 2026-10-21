@@ -1,0 +1,31 @@
+{
+  "id": "kromium-console-message-level",
+  "name": "KromiumConsoleMessageLevel",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.devtools",
+  "summary": "Represents the severity level of a browser console message.",
+  "declaration": "enum class KromiumConsoleMessageLevel",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    {
+      "name": "DEBUG",
+      "description": "Debug severity console message."
+    },
+    {
+      "name": "INFO",
+      "description": "Informational console message."
+    },
+    {
+      "name": "WARNING",
+      "description": "Warning severity console message."
+    },
+    {
+      "name": "ERROR",
+      "description": "Error severity console message."
+    },
+    {
+      "name": "DEFAULT",
+      "description": "Default or unspecified severity level."
+    }
+  ]
+}

@@ -1,10 +1,17 @@
 {
-  "latestVersion": "v1.0.0.150-b11",
+  "latestVersion": "v1.0.0.150-b16",
   "versions": [
     {
-      "version": "v1.0.0.150-b11",
-      "name": "Stable",
+      "version": "v1.0.0.150-b16",
+      "name": "v1.0.0.150-b16",
       "isLatest": true,
+      "releaseDate": "2026-10-20",
+      "notes": "Patch release updating upstream JetBrains JCEF binaries (api-1.21-263-b16 / 150.0.22), Gradle build caching, and network retry handling. Published to Cloudflare R2 Maven repository at https://repo.daviante.org/artifacts"
+    },
+    {
+      "version": "v1.0.0.150-b11",
+      "name": "v1.0.0.150-b11",
+      "isLatest": false,
       "releaseDate": "2026-09-26",
       "notes": "Published to Cloudflare R2 Maven repository at https://repo.daviante.org/artifacts"
     }

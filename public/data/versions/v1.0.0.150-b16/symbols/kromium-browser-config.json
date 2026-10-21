@@ -1,0 +1,87 @@
+{
+  "id": "kromium-browser-config",
+  "name": "KromiumBrowserConfig",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "@ConsistentCopyVisibility data class KromiumBrowserConfig internal constructor(val cachePath: String?, val isHeadless: Boolean, val remoteDebuggingPort: Int, val commandLineArgs: List<String>, val customSchemes: List<KromiumCustomScheme>, val schemeRegistrations: List<KromiumSchemeRegistration> = emptyList(), val proxy: KromiumProxy? = null)",
+  "description": "General browser behavior and storage configuration for the Kromium engine. Controls disk cache directories, headless rendering mode, remote CDP debugging port, command-line arguments, custom URL scheme definitions, and default proxy rules.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Configure within KromiumConfig.builder().browserConfig { ... } to define engine-wide caching, debugging ports, and startup flags.",
+  "options": [],
+  "properties": [
+    {
+      "name": "cachePath",
+      "signature": "val cachePath: String?",
+      "description": "Filesystem path where persistent cache and storage are kept, or null for in-memory incognito cache.",
+      "type": "String?",
+      "default": "null"
+    },
+    {
+      "name": "isHeadless",
+      "signature": "val isHeadless: Boolean",
+      "description": "Whether the engine operates in headless mode without desktop window handles.",
+      "type": "Boolean",
+      "default": "false"
+    },
+    {
+      "name": "remoteDebuggingPort",
+      "signature": "val remoteDebuggingPort: Int",
+      "description": "Port for Chromium Remote Debugging Protocol (0 disables remote debugging).",
+      "type": "Int",
+      "default": "0"
+    },
+    {
+      "name": "commandLineArgs",
+      "signature": "val commandLineArgs: List<String>",
+      "description": "Additional native Chromium command-line switches passed during process initialization.",
+      "type": "List<String>",
+      "default": "emptyList()"
+    },
+    {
+      "name": "customSchemes",
+      "signature": "val customSchemes: List<KromiumCustomScheme>",
+      "description": "Custom URL schemes (e.g. app, res) registered with Chromium prior to engine startup.",
+      "type": "List<KromiumCustomScheme>",
+      "default": "emptyList()"
+    },
+    {
+      "name": "schemeRegistrations",
+      "signature": "val schemeRegistrations: List<KromiumSchemeRegistration> = emptyList()",
+      "description": "Initial custom scheme handler registrations binding asset handlers to scheme and domain names.",
+      "type": "List<KromiumSchemeRegistration>",
+      "default": "emptyList()"
+    },
+    {
+      "name": "proxy",
+      "signature": "val proxy: KromiumProxy? = null",
+      "description": "Default proxy strategy applied to the engine and all client sessions.",
+      "type": "KromiumProxy?",
+      "default": "null"
+    }
+  ],
+  "methods": [
+    {
+      "name": "builder",
+      "signature": "@JvmStatic fun builder(): Builder",
+      "description": "Returns a new builder for KromiumBrowserConfig.",
+      "returns": "Builder",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumBrowserConfig\nimport org.daviante.kromium.api.proxy.KromiumProxy\n\nval browserConfig = KromiumBrowserConfig.builder()\n    .cachePath(\"/tmp/kromium-cache\")\n    .remoteDebuggingPort(9222)\n    .proxy(KromiumProxy.system())\n    .addArgs(\"--disable-gpu-shader-disk-cache\", \"--autoplay-policy=no-user-gesture-required\")\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumBrowserConfig;\n\npublic class BrowserConfigSetup {\n    public static KromiumBrowserConfig create() {\n        return KromiumBrowserConfig.builder()\n            .isHeadless(false)\n            .remoteDebuggingPort(9222)\n            .build();\n    }\n}"
+    }
+  ]
+}

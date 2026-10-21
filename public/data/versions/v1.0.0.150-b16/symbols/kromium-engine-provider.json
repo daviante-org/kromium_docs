@@ -1,0 +1,24 @@
+{
+  "id": "kromium-engine-provider",
+  "name": "KromiumEngineProvider",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.core",
+  "summary": "Service Provider Interface (SPI) for instantiating the Kromium engine.",
+  "declaration": "interface KromiumEngineProvider",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "createEngine",
+      "signature": "fun createEngine(config: KromiumConfig): KromiumEngine",
+      "returnType": "KromiumEngine",
+      "description": "Creates and initializes a new KromiumEngine instance based on the provided configuration.",
+      "parameters": [
+        {
+          "name": "config",
+          "type": "KromiumConfig",
+          "description": "The master configuration for the engine."
+        }
+      ]
+    }
+  ]
+}

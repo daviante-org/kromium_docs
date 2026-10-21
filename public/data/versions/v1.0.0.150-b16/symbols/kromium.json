@@ -1,0 +1,37 @@
+{
+  "id": "kromium",
+  "name": "Kromium",
+  "module": "kromium-api",
+  "category": "Core Engine",
+  "package": "org.daviante.kromium.api",
+  "declaration": "object Kromium",
+  "description": "The main entry point for the Kromium library. Provides synchronized factory access to create and manage the active singleton KromiumEngine instance using a specified KromiumConfig and KromiumEngineProvider.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Call Kromium.createEngine(config, provider) during application bootstrap to create the shared uninitialized KromiumEngine instance.",
+  "options": [],
+  "properties": [],
+  "methods": [
+    {
+      "name": "createEngine",
+      "signature": "@JvmStatic @Synchronized fun createEngine(config: KromiumConfig, provider: KromiumEngineProvider): KromiumEngine",
+      "description": "Creates the Kromium engine using the provided configuration and provider. The engine is NOT automatically initialized. You must call engine.initialize() on a background thread so you can observe engine.state from the UI.",
+      "returns": "KromiumEngine",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.Kromium\nimport org.daviante.kromium.api.config.KromiumConfig\nimport org.daviante.kromium.jcef.JcefProvider\n\nval config = KromiumConfig.builder().build()\nval engine = Kromium.createEngine(config, JcefProvider)\nengine.initialize()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.Kromium;\nimport org.daviante.kromium.api.config.KromiumConfig;\nimport org.daviante.kromium.api.core.KromiumEngine;\nimport org.daviante.kromium.jcef.JcefProvider;\n\nKromiumConfig config = KromiumConfig.builder().build();\nKromiumEngine engine = Kromium.createEngine(config, JcefProvider.INSTANCE);\nengine.initializeAsync();"
+    }
+  ]
+}

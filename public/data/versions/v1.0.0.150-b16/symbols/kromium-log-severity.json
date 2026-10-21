@@ -1,0 +1,64 @@
+{
+  "id": "kromium-log-severity",
+  "name": "KromiumLogSeverity",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "enum class KromiumLogSeverity",
+  "description": "Log severity levels for the Chromium engine. Controls the verbosity of native CEF log output written to the Kromium log file.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Set via KromiumLoggingConfig when building KromiumConfig to control native log verbosity. Use DISABLE in production to suppress all native logging, or VERBOSE during debugging to capture full Chromium internals.",
+  "options": [],
+  "properties": [],
+  "methods": [],
+  "exceptions": [],
+  "variants": [
+    {
+      "name": "DEFAULT",
+      "declaration": "DEFAULT",
+      "description": "Default Chromium log severity. Equivalent to INFO in most configurations."
+    },
+    {
+      "name": "VERBOSE",
+      "declaration": "VERBOSE",
+      "description": "Most verbose logging level. Captures all internal Chromium diagnostic output."
+    },
+    {
+      "name": "INFO",
+      "declaration": "INFO",
+      "description": "Informational messages about normal engine operation."
+    },
+    {
+      "name": "WARNING",
+      "declaration": "WARNING",
+      "description": "Warnings about potential issues that do not prevent operation."
+    },
+    {
+      "name": "ERROR",
+      "declaration": "ERROR",
+      "description": "Error conditions that may affect engine functionality."
+    },
+    {
+      "name": "FATAL",
+      "declaration": "FATAL",
+      "description": "Fatal errors that cause immediate engine termination."
+    },
+    {
+      "name": "DISABLE",
+      "declaration": "DISABLE",
+      "description": "Disables all native Chromium log output. Recommended for production deployments."
+    }
+  ],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig\nimport org.daviante.kromium.api.config.KromiumLogSeverity\n\nval config = KromiumConfig.builder()\n    .loggingConfig { log ->\n        log.severity(KromiumLogSeverity.DISABLE)\n    }\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig;\nimport org.daviante.kromium.api.config.KromiumLogSeverity;\n\nKromiumConfig config = KromiumConfig.builder()\n    .loggingConfig(log -> log.severity(KromiumLogSeverity.WARNING))\n    .build();"
+    }
+  ]
+}

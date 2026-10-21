@@ -6,7 +6,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const ROOT_DIR = path.resolve(__dirname, '..');
-const VERSION = 'v1.0.0.150-b11';
+const MANIFEST_PATH = path.join(ROOT_DIR, 'public', 'data', 'versions', 'manifest.json');
+const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+const VERSION = manifest.latestVersion || 'v1.0.0.150-b16';
 const DATA_DIR = path.join(ROOT_DIR, 'public', 'data', 'versions', VERSION);
 const TOC_PATH = path.join(DATA_DIR, 'toc.json');
 const GUIDES_DIR = path.join(DATA_DIR, 'guides');

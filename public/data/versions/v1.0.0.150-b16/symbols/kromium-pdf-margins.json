@@ -1,0 +1,41 @@
+{
+  "id": "kromium-pdf-margins",
+  "name": "KromiumPdfMargins",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.print",
+  "summary": "Page margin configuration for PDF printing.",
+  "declaration": "sealed class KromiumPdfMargins",
+  "since": "v1.0.0.150-b11",
+  "subclasses": [
+    { "name": "KromiumPdfMargins.Default", "description": "Standard Chromium default margins (0.4 inches / ~10 mm)." },
+    { "name": "KromiumPdfMargins.None", "description": "Borderless printing with zero margins." },
+    { "name": "KromiumPdfMargins.Minimum", "description": "Minimum allowable margins (~0.1 inches / ~2.5 mm)." },
+    { "name": "KromiumPdfMargins.Custom", "description": "Custom margins specified in inches." }
+  ],
+  "companionMethods": [
+    {
+      "name": "fromMillimeters",
+      "signature": "fun fromMillimeters(topMm: Double, rightMm: Double, bottomMm: Double, leftMm: Double): Custom",
+      "returnType": "Custom",
+      "description": "Creates custom margins with values specified in millimeters.",
+      "parameters": [
+        { "name": "topMm", "type": "Double", "description": "Top margin in millimeters." },
+        { "name": "rightMm", "type": "Double", "description": "Right margin in millimeters." },
+        { "name": "bottomMm", "type": "Double", "description": "Bottom margin in millimeters." },
+        { "name": "leftMm", "type": "Double", "description": "Left margin in millimeters." }
+      ]
+    },
+    {
+      "name": "fromInches",
+      "signature": "fun fromInches(topInches: Double, rightInches: Double, bottomInches: Double, leftInches: Double): Custom",
+      "returnType": "Custom",
+      "description": "Creates custom margins with values specified in inches.",
+      "parameters": [
+        { "name": "topInches", "type": "Double", "description": "Top margin in inches." },
+        { "name": "rightInches", "type": "Double", "description": "Right margin in inches." },
+        { "name": "bottomInches", "type": "Double", "description": "Bottom margin in inches." },
+        { "name": "leftInches", "type": "Double", "description": "Left margin in inches." }
+      ]
+    }
+  ]
+}

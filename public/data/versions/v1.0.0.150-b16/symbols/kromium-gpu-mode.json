@@ -1,0 +1,49 @@
+{
+  "id": "kromium-gpu-mode",
+  "name": "KromiumGpuMode",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "enum class KromiumGpuMode",
+  "description": "Controls GPU hardware acceleration and graphics rendering strategy. Determines how the Chromium engine interacts with host GPU drivers, which is critical for VM environments, CI pipelines, and machines with unstable or overclocked graphics hardware.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Set via KromiumHardwareConfig when running in virtual machines, Docker containers, or CI environments where GPU drivers may not be available. Use SOFTWARE for bulletproof CPU rendering, or ANGLE_WARP on Windows to avoid D3D device removal errors.",
+  "options": [],
+  "properties": [],
+  "methods": [],
+  "exceptions": [],
+  "variants": [
+    {
+      "name": "HARDWARE",
+      "declaration": "HARDWARE",
+      "description": "Full hardware acceleration using native OS graphics APIs (DirectX/Direct3D on Windows, Metal on macOS, Vulkan/OpenGL on Linux)."
+    },
+    {
+      "name": "SOFTWARE",
+      "declaration": "SOFTWARE",
+      "description": "Pure software rendering (CPU-based). Forces --disable-gpu, --use-gl=angle, and --use-angle=swiftshader. Completely eliminates any direct interaction with GPU drivers or hardware Direct3D devices. Recommended as a bulletproof fallback when running in virtual machines or on machines with unstable/overclocked graphics drivers."
+    },
+    {
+      "name": "COMPOSITING_DISABLED",
+      "declaration": "COMPOSITING_DISABLED",
+      "description": "Hardware-accelerated GPU rasterization with CPU compositing. Applies --disable-gpu-compositing."
+    },
+    {
+      "name": "ANGLE_WARP",
+      "declaration": "ANGLE_WARP",
+      "description": "Direct3D 11 WARP (Windows Advanced Rasterization Platform). Uses Microsoft's high-speed software Direct3D rasterizer. Bypasses vendor hardware drivers and avoids physical GPU device reset/removal errors (0x887a0005) while maintaining DirectX pipeline compatibility on Windows."
+    }
+  ],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig\nimport org.daviante.kromium.api.config.KromiumGpuMode\n\nval config = KromiumConfig.builder()\n    .hardwareConfig { hw ->\n        hw.gpuMode(KromiumGpuMode.SOFTWARE) // CPU-only rendering for CI\n    }\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig;\nimport org.daviante.kromium.api.config.KromiumGpuMode;\n\nKromiumConfig config = KromiumConfig.builder()\n    .hardwareConfig(hw -> hw.gpuMode(KromiumGpuMode.ANGLE_WARP))\n    .build();"
+    }
+  ]
+}

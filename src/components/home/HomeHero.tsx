@@ -102,7 +102,7 @@ public class SwingApp {
 }
 
 dependencies {
-    val kromiumVersion = "${version}"
+    val kromiumVersion = "${version.replace(/^v/, '')}"
 
     // Core API & Native JCEF Provider
     implementation("org.daviante.kromium:kromium-api:$kromiumVersion")

@@ -1,0 +1,27 @@
+{
+  "id": "r2-maven-repository",
+  "title": "Cloudflare R2 Maven Repository Guide",
+  "summary": "How Kromium packages are published to Cloudflare R2 and how downstream projects configure their Maven / Gradle builds.",
+  "category": "Deployment",
+  "readTime": "6 min",
+  "lastUpdated": "2026-09-27",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "Overview & Architecture",
+      "content": "Kromium publishes standard Maven repository layouts directly to Cloudflare R2 under https://repo.daviante.org/artifacts.\n\n### Benefits of Cloudflare R2\n- **Zero Egress Fees:** $0 for outbound data transfer.\n- **S3-Compatible API:** Operates seamlessly with standard build tools.\n- **Edge Caching:** Fast global distribution via Cloudflare's CDN."
+    },
+    {
+      "id": "consumer-setup",
+      "title": "Configuring Downstream Projects",
+      "content": "To consume Kromium artifacts in downstream Gradle or Maven projects, add the repository URL to your repository configuration.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// settings.gradle.kts or build.gradle.kts\nrepositories {\n    mavenCentral()\n    maven(\"https://repo.daviante.org/artifacts\")\n}"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumEngineDownloadConfig", "path": "/api/kromium-engine-download-config" }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "kromium-permission-decision",
+  "name": "KromiumPermissionDecision",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.permission",
+  "summary": "Outcome decision returned by a KromiumPermissionListener in response to a web permission request.",
+  "declaration": "sealed class KromiumPermissionDecision",
+  "since": "v1.0.0.150-b11",
+  "subclasses": [
+    {
+      "name": "KromiumPermissionDecision.Grant",
+      "description": "Grants access to the requested permissions (all, or an optional restricted subset)."
+    },
+    {
+      "name": "KromiumPermissionDecision.Deny",
+      "description": "Denies access to all requested permissions."
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "grant",
+      "signature": "fun grant(vararg types: KromiumPermissionType): Grant",
+      "returnType": "Grant",
+      "description": "Selectively grants a specific subset of permissions.",
+      "parameters": [
+        {
+          "name": "types",
+          "type": "vararg KromiumPermissionType",
+          "description": "The specific permission types to grant."
+        }
+      ]
+    },
+    {
+      "name": "grant",
+      "signature": "fun grant(types: Iterable<KromiumPermissionType>): Grant",
+      "returnType": "Grant",
+      "description": "Selectively grants a specific collection of permissions.",
+      "parameters": [
+        {
+          "name": "types",
+          "type": "Iterable<KromiumPermissionType>",
+          "description": "The specific permission types to grant."
+        }
+      ]
+    }
+  ]
+}

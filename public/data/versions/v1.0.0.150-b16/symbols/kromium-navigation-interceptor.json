@@ -1,0 +1,29 @@
+{
+  "id": "kromium-navigation-interceptor",
+  "name": "KromiumNavigationInterceptor",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Functional interface to intercept and override browser navigation.",
+  "declaration": "fun interface KromiumNavigationInterceptor",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "shouldOverrideUrlLoading",
+      "signature": "fun shouldOverrideUrlLoading(url: String, isRedirect: Boolean): Boolean",
+      "returnType": "Boolean",
+      "description": "Called before browser navigation occurs. Returns true to cancel the navigation, false to allow it.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The target URL."
+        },
+        {
+          "name": "isRedirect",
+          "type": "Boolean",
+          "description": "True if this navigation is the result of a server or client redirect."
+        }
+      ]
+    }
+  ]
+}

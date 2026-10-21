@@ -1,0 +1,52 @@
+{
+  "id": "security-sandboxing",
+  "title": "Downloads, Permissions & SSL Security API",
+  "summary": "Intercept downloads, handle camera/microphone permissions, and enforce SSL certificate policies and domain whitelists.",
+  "category": "Security",
+  "readTime": "6 min",
+  "lastUpdated": "2026-09-27",
+  "sections": [
+    {
+      "id": "downloads",
+      "title": "File Download Management",
+      "content": "Control file downloads with beforeDownloadListener to customize target paths or cancel downloads, and downloadListener to track real-time progress.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "client.beforeDownloadListener = KromiumBeforeDownloadListener { item, suggestedFileName ->\n    if (suggestedFileName.endsWith(\".exe\")) {\n        return@KromiumBeforeDownloadListener \"\" // Cancel download\n    }\n    File(downloadsDir, suggestedFileName).absolutePath\n}\n\nclient.downloadListener = KromiumDownloadListener { item ->\n    println(\"Progress: ${item.percentComplete}%\")\n}"
+      }
+    },
+    {
+      "id": "permissions",
+      "title": "Camera, Microphone & Device Permissions",
+      "content": "Intercept WebRTC camera, microphone, and screen share requests via KromiumPermissionListener.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "client.permissionListener = KromiumPermissionListener { request ->\n    if (request.origin.endsWith(\"meet.google.com\")) {\n        KromiumPermissionDecision.GRANT\n    } else {\n        KromiumPermissionDecision.DENY\n    }\n}"
+      }
+    },
+    {
+      "id": "ssl-policies",
+      "title": "SSL/TLS Certificate Policies",
+      "content": "Configure certificate validation error handling using SslErrorPolicy.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val config = KromiumClientConfig.builder()\n    .sslErrorPolicy(SslErrorPolicy.allowDomains(\"*.corp.internal\", \"localhost\"))\n    .build()"
+      }
+    },
+    {
+      "id": "host-locking",
+      "title": "Domain Sandboxing & Host Locking",
+      "content": "Lock the browser to navigate strictly within an allowed set of hostnames or domains.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "browser.security.hostLock = setOf(\"app.internal.net\", \"accounts.google.com\")\nbrowser.security.hostLockSubresources = true"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumSecurity", "path": "/api/kromium-security" },
+    { "name": "SslErrorPolicy", "path": "/api/ssl-error-policy" },
+    { "name": "KromiumPermissionListener", "path": "/api/kromium-permission-listener" },
+    { "name": "KromiumDownloads", "path": "/api/kromium-downloads" }
+  ]
+}

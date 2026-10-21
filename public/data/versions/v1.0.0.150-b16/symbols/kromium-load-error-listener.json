@@ -1,0 +1,24 @@
+{
+  "id": "kromium-load-error-listener",
+  "name": "KromiumLoadErrorListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.navigation",
+  "summary": "Listener invoked when a page load error occurs.",
+  "declaration": "fun interface KromiumLoadErrorListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onLoadError",
+      "signature": "fun onLoadError(error: KromiumLoadError)",
+      "returnType": "Unit",
+      "description": "Callback triggered when a navigation or page load failure occurs.",
+      "parameters": [
+        {
+          "name": "error",
+          "type": "KromiumLoadError",
+          "description": "The load error details."
+        }
+      ]
+    }
+  ]
+}

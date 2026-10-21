@@ -1,0 +1,45 @@
+{
+  "id": "kromium-logging-config",
+  "name": "KromiumLoggingConfig",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "@ConsistentCopyVisibility data class KromiumLoggingConfig internal constructor(val logSeverity: KromiumLogSeverity)",
+  "description": "Logging configuration for the Kromium engine. Controls the verbosity of Chromium's internal native logging subsystem.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Configure within KromiumConfig.builder().loggingConfig { ... } to adjust native console logging or completely silence CEF diagnostic messages.",
+  "options": [],
+  "properties": [
+    {
+      "name": "logSeverity",
+      "signature": "val logSeverity: KromiumLogSeverity",
+      "description": "Log severity level: DEFAULT, VERBOSE, INFO, WARNING, ERROR, FATAL, or DISABLE.",
+      "type": "KromiumLogSeverity",
+      "default": "KromiumLogSeverity.DEFAULT"
+    }
+  ],
+  "methods": [
+    {
+      "name": "builder",
+      "signature": "@JvmStatic fun builder(): Builder",
+      "description": "Returns a new builder for KromiumLoggingConfig.",
+      "returns": "Builder",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumLoggingConfig\nimport org.daviante.kromium.api.config.KromiumLogSeverity\n\nval loggingConfig = KromiumLoggingConfig.builder()\n    .logSeverity(KromiumLogSeverity.WARNING)\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumLoggingConfig;\nimport org.daviante.kromium.api.config.KromiumLogSeverity;\n\npublic class LoggingSetup {\n    public static KromiumLoggingConfig create() {\n        return KromiumLoggingConfig.builder()\n            .logSeverity(KromiumLogSeverity.DISABLE)\n            .build();\n    }\n}"
+    }
+  ]
+}

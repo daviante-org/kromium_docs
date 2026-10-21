@@ -47,7 +47,7 @@ export function LeftSidebar({
             {versions.length > 0 ? (
               versions.map((v) => (
                 <option key={v.version} value={v.version}>
-                  {v.version} ({v.name || 'Release'})
+                  {v.version}{v.isLatest ? ' (Latest)' : v.name && v.name !== v.version ? ` (${v.name})` : ''}
                 </option>
               ))
             ) : (

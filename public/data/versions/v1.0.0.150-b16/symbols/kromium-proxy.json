@@ -1,0 +1,169 @@
+{
+  "id": "kromium-proxy",
+  "name": "KromiumProxy",
+  "module": "kromium-api",
+  "category": "Network & Security",
+  "package": "org.daviante.kromium.api.proxy",
+  "declaration": "sealed class KromiumProxy",
+  "description": "Defines the proxy strategy for the Kromium browser engine and client sessions. Supports Operating System Default, Direct bypass, WPAD Auto-Discovery, PAC script URLs, HTTP/HTTPS secure tunnels, SOCKS5 (with remote DNS resolution), and Multi-Protocol routing.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Configure in KromiumBrowserConfig, KromiumClientConfig, or dynamically at runtime via client.updateProxy(proxy) or browser.proxyManager.updateProxy(proxy).",
+  "options": [],
+  "properties": [],
+  "methods": [
+    {
+      "name": "toCommandLineArgs",
+      "signature": "abstract fun toCommandLineArgs(): List<String>",
+      "description": "Generates Chromium command-line switches (e.g. --proxy-server, --proxy-bypass-list) for process initialization.",
+      "returns": "List<String>",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "toPreferenceMap",
+      "signature": "abstract fun toPreferenceMap(): Map<String, Any>",
+      "description": "Generates the CEF preference dictionary required for dynamic runtime proxy reconfiguration.",
+      "returns": "Map<String, Any>",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "validate",
+      "signature": "open fun validate()",
+      "description": "Validates proxy parameters and throws KromiumException.InvalidConfig if blank or out of range.",
+      "returns": "Unit",
+      "isSuspend": false,
+      "throws": [
+        "KromiumException.InvalidConfig"
+      ]
+    },
+    {
+      "name": "getCredentials",
+      "signature": "open fun getCredentials(host: String?, port: Int? = null): Pair<String, String>?",
+      "description": "Returns authentication credentials (username to password) configured for this proxy if the requested target matches.",
+      "returns": "Pair<String, String>?",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "system",
+      "signature": "@JvmStatic fun system(): KromiumProxy",
+      "description": "Factory method returning the System singleton proxy.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "direct",
+      "signature": "@JvmStatic fun direct(): KromiumProxy",
+      "description": "Factory method returning the Direct singleton proxy.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "autoDetect",
+      "signature": "@JvmStatic fun autoDetect(): KromiumProxy",
+      "description": "Factory method returning the AutoDetect WPAD singleton proxy.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "pac",
+      "signature": "@JvmStatic fun pac(pacUrl: String): KromiumProxy",
+      "description": "Factory method creating a PAC script proxy.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "http",
+      "signature": "@JvmStatic @JvmOverloads fun http(host: String, port: Int, username: String? = null, password: String? = null, isSecure: Boolean = false, bypassList: List<String> = emptyList()): KromiumProxy",
+      "description": "Factory method creating an authenticated or unauthenticated HTTP forward proxy.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "https",
+      "signature": "@JvmStatic @JvmOverloads fun https(host: String, port: Int, username: String? = null, password: String? = null, bypassList: List<String> = emptyList()): KromiumProxy",
+      "description": "Factory method creating an authenticated secure HTTPS tunnel forward proxy.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "socks5",
+      "signature": "@JvmStatic @JvmOverloads fun socks5(host: String, port: Int, username: String? = null, password: String? = null, remoteDns: Boolean = true, bypassList: List<String> = emptyList()): KromiumProxy",
+      "description": "Factory method creating a SOCKS5 proxy with remote DNS leak prevention.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "multiProtocol",
+      "signature": "@JvmStatic @JvmOverloads fun multiProtocol(http: String? = null, https: String? = null, ftp: String? = null, socks: String? = null, bypassList: List<String> = emptyList()): KromiumProxy",
+      "description": "Factory method creating a MultiProtocol proxy router.",
+      "returns": "KromiumProxy",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [
+    {
+      "name": "KromiumException.InvalidConfig",
+      "whenThrown": "When proxy host is blank, port is not in 1..65535, PAC script URL is blank, or multi-protocol config has no rules.",
+      "recovery": "Provide a non-empty hostname or IP, set port within 1..65535, and ensure valid endpoint URLs."
+    }
+  ],
+  "variants": [
+    {
+      "name": "KromiumProxy.System",
+      "declaration": "data object System : KromiumProxy()",
+      "description": "Uses operating system default proxy configuration."
+    },
+    {
+      "name": "KromiumProxy.Direct",
+      "declaration": "data object Direct : KromiumProxy()",
+      "description": "Bypasses all proxies and connects directly to destination hosts."
+    },
+    {
+      "name": "KromiumProxy.AutoDetect",
+      "declaration": "data object AutoDetect : KromiumProxy()",
+      "description": "Automatically discovers proxy settings using Web Proxy Auto-Discovery (WPAD) via DHCP/DNS queries."
+    },
+    {
+      "name": "KromiumProxy.Pac",
+      "declaration": "data class Pac(val pacUrl: String) : KromiumProxy()",
+      "description": "Connects using a Proxy Auto-Configuration (PAC) script URL (e.g. http://pac.corp.internal/wpad.dat)."
+    },
+    {
+      "name": "KromiumProxy.Http",
+      "declaration": "data class Http @JvmOverloads constructor(val host: String, val port: Int, val username: String? = null, val password: String? = null, val isSecure: Boolean = false, val bypassList: List<String> = emptyList()) : KromiumProxy()",
+      "description": "Connects via an HTTP or HTTPS forward proxy with optional credentials and bypass list."
+    },
+    {
+      "name": "KromiumProxy.Socks5",
+      "declaration": "data class Socks5 @JvmOverloads constructor(val host: String, val port: Int, val username: String? = null, val password: String? = null, val remoteDns: Boolean = true, val bypassList: List<String> = emptyList()) : KromiumProxy()",
+      "description": "Connects via a SOCKS5 (or SOCKS4) proxy with remote DNS resolution to prevent DNS leaks."
+    },
+    {
+      "name": "KromiumProxy.MultiProtocol",
+      "declaration": "data class MultiProtocol @JvmOverloads constructor(val http: String? = null, val https: String? = null, val ftp: String? = null, val socks: String? = null, val bypassList: List<String> = emptyList()) : KromiumProxy()",
+      "description": "Connects using separate, dedicated proxies for different network protocols (HTTP vs HTTPS vs SOCKS)."
+    }
+  ],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.proxy.KromiumProxy\nimport org.daviante.kromium.api.core.KromiumBrowser\n\nfun applyProxy(browser: KromiumBrowser) {\n    val proxy = KromiumProxy.http(\"127.0.0.1\", 8080)\n    browser.proxyManager.updateProxy(proxy)\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.proxy.KromiumProxy;\nimport org.daviante.kromium.api.core.KromiumBrowser;\n\npublic class ProxySetup {\n    public static void configure(KromiumBrowser browser) {\n        KromiumProxy proxy = KromiumProxy.socks5(\"127.0.0.1\", 1080);\n        browser.getProxyManager().updateProxy(proxy);\n    }\n}"
+    }
+  ]
+}

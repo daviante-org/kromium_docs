@@ -1,0 +1,42 @@
+{
+  "id": "cookie-storage",
+  "title": "Cookie & Storage Management",
+  "summary": "Read, set, and delete cookies, clear browser cache, and manage Local Storage via KromiumCookieManager and KromiumStorage facades.",
+  "category": "Core API",
+  "readTime": "6 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "global-cookie-manager",
+      "title": "Global Cookie Manager",
+      "content": "The engine-level `KromiumCookieManager` provides full cookie CRUD operations across all domains. Access it via `engine.cookieManager`.\n\n| Method | Description |\n| :--- | :--- |\n| `getCookies(url)` | Retrieves all cookies for a URL as key-value map (suspend) |\n| `getCookie(url, name)` | Retrieves a specific cookie by name (suspend) |\n| `getAllCookies()` | Retrieves all cookies across all domains (suspend) |\n| `setCookie(url, name, value, ...)` | Sets a cookie with domain, path, secure, httpOnly, expiry |\n| `deleteCookie(url, name)` | Deletes a specific cookie |\n| `clearCookies()` | Deletes all cookies from the store |\n| `flush()` | Flushes the cookie store to disk for persistence |",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Read all cookies for a URL\nval cookies = engine.cookieManager.getCookies(\"https://example.com\")\nprintln(\"Session: ${cookies[\"session_id\"]}\")\n\n// Set a secure, HTTP-only cookie with expiry\nengine.cookieManager.setCookie(\n    url = \"https://example.com\",\n    name = \"auth_token\",\n    value = \"jwt_value_here\",\n    domain = \".example.com\",\n    path = \"/\",\n    isSecure = true,\n    isHttpOnly = true,\n    expires = Date(System.currentTimeMillis() + 86_400_000L)\n)\n\n// Delete and flush\nengine.cookieManager.deleteCookie(\"https://example.com\", \"auth_token\")\nengine.cookieManager.flush()"
+      }
+    },
+    {
+      "id": "browser-storage",
+      "title": "Browser-Level Storage Facade",
+      "content": "Each browser instance also exposes a `KromiumStorage` facade (`browser.storage`) for per-page cookie and web storage operations including clearing Local Storage, Session Storage, and browsing data.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Set a cookie from browser context\nbrowser.storage.setCookie(\n    name = \"theme\",\n    value = \"dark\",\n    domain = \".myapp.com\"\n)\n\n// Clear all web storage (Local Storage + Session Storage)\nbrowser.storage.clearWebStorageAsync().thenAccept { success ->\n    println(\"Web storage cleared: $success\")\n}\n\n// Clear all browsing data at once\nbrowser.storage.clearBrowsingDataAsync(\n    clearCookies = true,\n    clearStorage = true\n)"
+      }
+    },
+    {
+      "id": "java-interop",
+      "title": "Java CompletableFuture Interop",
+      "content": "All suspend cookie methods have `*Async` counterparts returning Java `CompletableFuture` for seamless Java interop.",
+      "codeSnippet": {
+        "language": "java",
+        "code": "// Java: Read cookies asynchronously\nengine.getCookieManager().getCookiesAsync(\"https://example.com\")\n    .thenAccept(cookies -> {\n        System.out.println(\"Found \" + cookies.size() + \" cookies\");\n    });\n\n// Java: Get all cookies across all domains\nengine.getCookieManager().getAllCookiesAsync()\n    .thenAccept(allCookies -> {\n        for (KromiumCookie cookie : allCookies) {\n            System.out.println(cookie.getName() + \" = \" + cookie.getValue());\n        }\n    });"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumCookieManager", "path": "/api/kromium-cookie-manager" },
+    { "name": "KromiumCookie", "path": "/api/kromium-cookie" },
+    { "name": "KromiumStorage", "path": "/api/kromium-storage" }
+  ]
+}

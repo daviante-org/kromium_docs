@@ -4,7 +4,7 @@
 
 - **Category:** Getting Started
 - **Read Time:** 5 min
-- **Last Updated:** 2026-09-27
+- **Last Updated:** 2026-10-20
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ Add Kromium to your build.gradle.kts using either Gradle Version Catalog or dire
 ```kotlin
 // build.gradle.kts
 dependencies {
-    val kromiumVersion = "1.0.0.150-b11"
+    val kromiumVersion = "1.0.0.150-b16"
     
     implementation("org.daviante.kromium:kromium-api:$kromiumVersion")
     implementation("org.daviante.kromium:kromium-provider-jcef:$kromiumVersion")
