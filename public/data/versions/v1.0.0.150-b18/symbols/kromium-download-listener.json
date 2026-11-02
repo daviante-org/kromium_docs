@@ -1,0 +1,24 @@
+{
+  "id": "kromium-download-listener",
+  "name": "KromiumDownloadListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.download",
+  "summary": "Callback for listening to and customizing file downloads.",
+  "declaration": "fun interface KromiumDownloadListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onDownloadUpdated",
+      "signature": "fun onDownloadUpdated(item: KromiumDownloadItem)",
+      "returnType": "Unit",
+      "description": "Callback triggered when progress or state of a download item changes.",
+      "parameters": [
+        {
+          "name": "item",
+          "type": "KromiumDownloadItem",
+          "description": "The updated download item metadata."
+        }
+      ]
+    }
+  ]
+}

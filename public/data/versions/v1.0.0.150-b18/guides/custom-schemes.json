@@ -1,0 +1,58 @@
+{
+  "id": "custom-schemes",
+  "title": "Custom Protocol Scheme Handlers",
+  "summary": "Register custom protocols (app://, kromium://) to serve web assets from the classpath, local directories, or dynamic handlers.",
+  "category": "Core API",
+  "readTime": "8 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "How Custom Schemes Work",
+      "content": "Custom schemes allow you to intercept `app://myapp/index.html` style URLs and serve content from JVM resources, local files, or dynamically generated responses. This enables building fully offline desktop apps with web UIs.\n\n**Two-step process:**\n1. **Register the scheme** with `KromiumCustomScheme` in `KromiumConfig` (before engine init).\n2. **Register the handler** via `engine.registerSchemeHandler(...)` (after engine init)."
+    },
+    {
+      "id": "scheme-registration",
+      "title": "Registering a Custom Scheme",
+      "content": "Custom schemes must be declared before engine initialization. Use `KromiumCustomScheme.secure()` for a secure scheme with CORS and Fetch API enabled, or construct with full control over security flags.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val config = KromiumConfig.builder()\n    .browserConfig { b ->\n        b.customSchemes(listOf(\n            KromiumCustomScheme.secure(\"app\"),\n            KromiumCustomScheme(\n                schemeName = \"local\",\n                isStandard = true,\n                isLocal = true,\n                isSecure = true,\n                isCorsEnabled = true,\n                isCspBypassing = false,\n                isFetchEnabled = true\n            )\n        ))\n    }\n    .build()"
+      }
+    },
+    {
+      "id": "classpath-handler",
+      "title": "Serving Assets from the Classpath",
+      "content": "`KromiumSchemeHandler.fromClasspath()` creates a turnkey handler that streams resources bundled inside your application JAR. Supports SPA fallback routing for React/Vue/Angular apps.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val engine = Kromium.createEngine(config)\nengine.initialize()\n\n// Serve from src/main/resources/web/\nval handler = KromiumSchemeHandler.fromClasspath(\n    resourcePath = \"web\",\n    spaFallback = \"index.html\"\n)\nengine.registerSchemeHandler(\"app\", \"myapp\", handler)\n\n// Now navigate to app://myapp/index.html\nval browser = engine.createClient().createBrowser(\"app://myapp/index.html\")"
+      }
+    },
+    {
+      "id": "directory-handler",
+      "title": "Serving Assets from a Local Directory",
+      "content": "`KromiumSchemeHandler.fromDirectory()` serves files from a local filesystem directory with built-in directory traversal protection and SPA fallback support.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val handler = KromiumSchemeHandler.fromDirectory(\n    directory = File(\"./frontend/dist\"),\n    spaFallback = \"index.html\",\n    defaultHeaders = mapOf(\n        \"X-Frame-Options\" to \"DENY\"\n    )\n)\nengine.registerSchemeHandler(\"app\", \"myapp\", handler)"
+      }
+    },
+    {
+      "id": "custom-handler",
+      "title": "Dynamic Custom Handlers",
+      "content": "For dynamic content, implement `KromiumAssetHandler` directly. Return `KromiumAssetResponse.json()`, `.html()`, `.text()`, or `.stream()` — or `null` for 404.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val apiHandler = KromiumSchemeHandler.create { request ->\n    when {\n        request.path == \"/api/user\" -> {\n            KromiumAssetResponse.json(\"\"\"\n                {\"id\": 1, \"name\": \"Alice\"}\n            \"\"\".trimIndent())\n        }\n        request.path.startsWith(\"/api/\") -> {\n            KromiumAssetResponse.notFound(\"Endpoint not found: ${request.path}\")\n        }\n        else -> null // 404\n    }\n}\nengine.registerSchemeHandler(\"app\", \"api\", apiHandler)"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumCustomScheme", "path": "/api/kromium-custom-scheme" },
+    { "name": "KromiumSchemeHandler", "path": "/api/kromium-scheme-handler" },
+    { "name": "KromiumAssetHandler", "path": "/api/kromium-asset-handler" },
+    { "name": "KromiumAssetRequest", "path": "/api/kromium-asset-request" },
+    { "name": "KromiumAssetResponse", "path": "/api/kromium-asset-response" }
+  ]
+}

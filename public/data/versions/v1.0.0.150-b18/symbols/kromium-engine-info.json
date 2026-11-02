@@ -1,0 +1,70 @@
+{
+  "id": "kromium-engine-info",
+  "name": "KromiumEngineInfo",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.core",
+  "summary": "Provides information about the installed Kromium Engine.",
+  "declaration": "data class KromiumEngineInfo(\n    val installDir: File,\n    val isInstalled: Boolean,\n    val engineVersion: String,\n    val browserVersion: String,\n    val providerMetadata: Map<String, String> = emptyMap()\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumEngineInfo(installDir: File, isInstalled: Boolean, engineVersion: String, browserVersion: String, providerMetadata: Map<String, String> = emptyMap())",
+      "description": "Constructs engine metadata instance.",
+      "parameters": [
+        {
+          "name": "installDir",
+          "type": "File",
+          "description": "Directory where the Kromium engine binaries are installed."
+        },
+        {
+          "name": "isInstalled",
+          "type": "Boolean",
+          "description": "Whether the engine is currently installed."
+        },
+        {
+          "name": "engineVersion",
+          "type": "String",
+          "description": "Version string of the engine."
+        },
+        {
+          "name": "browserVersion",
+          "type": "String",
+          "description": "Version string of the underlying browser."
+        },
+        {
+          "name": "providerMetadata",
+          "type": "Map<String, String>",
+          "description": "Additional metadata provided by the engine provider.",
+          "optional": true
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "installDir",
+      "type": "File",
+      "description": "Directory where the Kromium engine binaries are installed."
+    },
+    {
+      "name": "isInstalled",
+      "type": "Boolean",
+      "description": "Whether the engine is currently installed."
+    },
+    {
+      "name": "engineVersion",
+      "type": "String",
+      "description": "Version string of the engine."
+    },
+    {
+      "name": "browserVersion",
+      "type": "String",
+      "description": "Version string of the underlying browser."
+    },
+    {
+      "name": "providerMetadata",
+      "type": "Map<String, String>",
+      "description": "Additional metadata provided by the engine provider."
+    }
+  ]
+}

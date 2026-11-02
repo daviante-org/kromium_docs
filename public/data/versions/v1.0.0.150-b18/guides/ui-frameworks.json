@@ -1,0 +1,65 @@
+{
+  "id": "ui-frameworks",
+  "title": "Multi-Framework UI Integration Guide",
+  "summary": "Learn how to embed Kromium's off-screen rendering (OSR) surface in Jetpack Compose, Swing, JavaFX, SWT, and AWT.",
+  "category": "UI Integrations",
+  "readTime": "10 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "Supported UI Frameworks",
+      "content": "Kromium features a decoupled Off-Screen Rendering (OSR) engine that streams raw Chromium BGRA pixel buffers directly into the native graphical surface of your chosen UI toolkit.\n\n| Framework | Target Module | Framework Identifier | Canvas Surface |\n| :--- | :--- | :--- | :--- |\n| **Compose Multiplatform** | `kromium-compose` | `KromiumUiFramework.COMPOSE` | `KromiumView` Composable |\n| **Swing** | `kromium-swing` | `KromiumUiFramework.SWING` | `KromiumSwingCanvas` (`JPanel`) |\n| **JavaFX** | `kromium-javafx` | `KromiumUiFramework.JAVAFX` | `KromiumJavaFxCanvas` (`StackPane`) |\n| **Eclipse SWT** | `kromium-swt` | `KromiumUiFramework.SWT` | `KromiumSwtCanvas` (`Canvas`) |\n| **Pure AWT** | `kromium-awt` | `KromiumUiFramework.AWT` | `KromiumAwtCanvas` (`Canvas`) |"
+    },
+    {
+      "id": "compose",
+      "title": "Compose Multiplatform Integration",
+      "content": "The kromium-compose module provides the declarative @Composable KromiumView component with built-in reactive navigation state collection.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val client = engine.createClient()\nval browser = client.createBrowser(\n    url = \"https://example.com\",\n    framework = KromiumUiFramework.COMPOSE\n)\n\n// In your Composable hierarchy:\nKromiumView(\n    browser = browser,\n    modifier = Modifier.fillMaxSize()\n)"
+      }
+    },
+    {
+      "id": "swing",
+      "title": "Java Swing Integration",
+      "content": "In Swing applications, Kromium unwraps into a standard javax.swing.JPanel component.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val browser = client.createBrowser(\n    url = \"https://example.com\",\n    framework = KromiumUiFramework.SWING\n)\n\nval panel = browser.view.surface.unwrap(Component::class) as JPanel\nframe.contentPane.add(panel, BorderLayout.CENTER)"
+      }
+    },
+    {
+      "id": "javafx",
+      "title": "JavaFX Integration",
+      "content": "For JavaFX applications, Kromium provides hardware-accelerated texture blitting into a JavaFX Region.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val browser = client.createBrowser(\n    url = \"https://example.com\",\n    framework = KromiumUiFramework.JAVAFX\n)\n\nval fxNode = browser.view.surface.unwrap(javafx.scene.Node::class)\nrootStackPane.children.add(fxNode)"
+      }
+    },
+    {
+      "id": "swt",
+      "title": "Eclipse SWT Integration",
+      "content": "For Eclipse SWT/RCP applications, `kromium-swt` provides `KromiumSwtCanvas` which renders Chromium frames into an SWT `Canvas` widget using an internal `SwtOsrBuffer`. A keyboard bridge handles SWT-to-CEF key event translation automatically.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val browser = client.createBrowser(\n    url = \"https://example.com\",\n    framework = KromiumUiFramework.SWT\n)\n\nval swtCanvas = browser.view.surface.unwrap(org.eclipse.swt.widgets.Canvas::class)\n// Add the canvas to your SWT Composite layout\nval layoutData = GridData(SWT.FILL, SWT.FILL, true, true)\nswtCanvas.layoutData = layoutData\nparent.layout(true, true)"
+      }
+    },
+    {
+      "id": "awt",
+      "title": "Pure AWT Integration",
+      "content": "For lightweight Pure AWT applications without Swing dependencies, `kromium-awt` provides `KromiumAwtCanvas` which renders directly into a `java.awt.Canvas` component using Java2D `BufferedImage` blitting.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val browser = client.createBrowser(\n    url = \"https://example.com\",\n    framework = KromiumUiFramework.AWT\n)\n\nval awtCanvas = browser.view.surface.unwrap(java.awt.Canvas::class)\nval frame = Frame(\"Kromium AWT Browser\")\nframe.add(awtCanvas, BorderLayout.CENTER)\nframe.setSize(1280, 800)\nframe.isVisible = true"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumUiFramework", "path": "/api/kromium-ui-framework" },
+    { "name": "KromiumView", "path": "/api/kromium-view" },
+    { "name": "KromiumRenderSurface", "path": "/api/kromium-render-surface" }
+  ]
+}

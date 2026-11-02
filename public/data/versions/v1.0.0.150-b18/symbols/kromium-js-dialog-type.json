@@ -1,0 +1,14 @@
+{
+  "id": "kromium-js-dialog-type",
+  "name": "KromiumJsDialogType",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Types of JavaScript dialogs emitted by web pages.",
+  "declaration": "enum class KromiumJsDialogType",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    { "name": "ALERT", "description": "JavaScript alert() dialog." },
+    { "name": "CONFIRM", "description": "JavaScript confirm() dialog." },
+    { "name": "PROMPT", "description": "JavaScript prompt() dialog." }
+  ]
+}

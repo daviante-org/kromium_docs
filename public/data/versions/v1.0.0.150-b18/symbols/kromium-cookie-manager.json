@@ -1,0 +1,117 @@
+{
+  "id": "kromium-cookie-manager",
+  "name": "KromiumCookieManager",
+  "module": "kromium-api",
+  "category": "Storage & Cookies",
+  "package": "org.daviante.kromium.api.cookie",
+  "declaration": "interface KromiumCookieManager",
+  "description": "Interface for managing cookies across the browser engine. Provides suspending Kotlin coroutine and Java CompletableFuture APIs to query, set, delete, clear, and flush HTTP cookies to disk.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Obtain via engine.cookieManager to manipulate cookies globally across all browser sessions.",
+  "options": [],
+  "properties": [
+    {
+      "name": "timeoutMs",
+      "signature": "var timeoutMs: Long",
+      "description": "Timeout for cookie retrieval operations in milliseconds.",
+      "type": "Long",
+      "default": "none"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getCookies",
+      "signature": "suspend fun getCookies(url: String, includeHttpOnly: Boolean = true): Map<String, String>",
+      "description": "Retrieves all cookies for the specified url as a key-value map.",
+      "returns": "Map<String, String>",
+      "isSuspend": true,
+      "throws": []
+    },
+    {
+      "name": "getCookiesAsync",
+      "signature": "fun getCookiesAsync(url: String, includeHttpOnly: Boolean = true): CompletableFuture<Map<String, String>>",
+      "description": "Asynchronously retrieves all cookies for url returning a Java CompletableFuture.",
+      "returns": "CompletableFuture<Map<String, String>>",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "getCookie",
+      "signature": "suspend fun getCookie(url: String, name: String): String?",
+      "description": "Retrieves the value of a specific cookie by name for url.",
+      "returns": "String?",
+      "isSuspend": true,
+      "throws": []
+    },
+    {
+      "name": "getCookieAsync",
+      "signature": "fun getCookieAsync(url: String, name: String): CompletableFuture<String?>",
+      "description": "Asynchronously retrieves a specific cookie by name for url returning a Java CompletableFuture.",
+      "returns": "CompletableFuture<String?>",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "getAllCookies",
+      "signature": "suspend fun getAllCookies(): List<KromiumCookie>",
+      "description": "Retrieves all cookies across all domains stored in the engine's global cookie store.",
+      "returns": "List<KromiumCookie>",
+      "isSuspend": true,
+      "throws": []
+    },
+    {
+      "name": "getAllCookiesAsync",
+      "signature": "fun getAllCookiesAsync(): CompletableFuture<List<KromiumCookie>>",
+      "description": "Asynchronously retrieves all cookies across all domains stored in the global cookie store returning a Java CompletableFuture.",
+      "returns": "CompletableFuture<List<KromiumCookie>>",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "setCookie",
+      "signature": "fun setCookie(url: String, name: String, value: String, domain: String? = null, path: String = \"/\", isSecure: Boolean = false, isHttpOnly: Boolean = false, expires: Date? = null): Boolean",
+      "description": "Sets a cookie for the specified url.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "deleteCookie",
+      "signature": "fun deleteCookie(url: String, name: String): Boolean",
+      "description": "Deletes a specific cookie for the specified url.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "clearCookies",
+      "signature": "fun clearCookies(): Boolean",
+      "description": "Deletes all cookies from the cookie store.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    },
+    {
+      "name": "flush",
+      "signature": "fun flush(): Boolean",
+      "description": "Flushes the cookie store to disk to ensure session persistence.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.core.KromiumEngine\n\nsuspend fun manageCookies(engine: KromiumEngine) {\n    val cookieManager = engine.cookieManager\n    cookieManager.setCookie(\n        url = \"https://example.com\",\n        name = \"auth_token\",\n        value = \"secret-token-123\",\n        isSecure = true,\n        isHttpOnly = true\n    )\n    val token = cookieManager.getCookie(\"https://example.com\", \"auth_token\")\n    cookieManager.flush()\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.core.KromiumEngine;\nimport org.daviante.kromium.api.cookie.KromiumCookieManager;\n\npublic class CookieHandler {\n    public static void clearAll(KromiumEngine engine) {\n        KromiumCookieManager cm = engine.getCookieManager();\n        cm.clearCookies();\n        cm.flush();\n    }\n}"
+    }
+  ]
+}

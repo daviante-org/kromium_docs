@@ -1,0 +1,16 @@
+{
+  "id": "kromium-assets",
+  "name": "KromiumAssets",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Facade for managing network asset blocking (e.g. images, media, fonts).",
+  "declaration": "interface KromiumAssets",
+  "since": "v1.0.0.150-b11",
+  "properties": [
+    {
+      "name": "filter",
+      "type": "KromiumAssetFilter?",
+      "description": "The active asset filter configuration, or null if filtering is disabled."
+    }
+  ]
+}

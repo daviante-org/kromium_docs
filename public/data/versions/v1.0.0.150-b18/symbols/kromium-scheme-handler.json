@@ -1,0 +1,52 @@
+{
+  "id": "kromium-scheme-handler",
+  "name": "KromiumSchemeHandler",
+  "kind": "object",
+  "package": "org.daviante.kromium.api.scheme",
+  "summary": "Factory utilities for creating turnkey KromiumAssetHandler instances to serve web assets from JVM classpath or local directories via custom protocols.",
+  "declaration": "object KromiumSchemeHandler",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "fromClasspath",
+      "signature": "fun fromClasspath(resourcePath: String = \"\", classLoader: ClassLoader = KromiumSchemeHandler::class.java.classLoader, spaFallback: String? = null, defaultHeaders: Map<String, String> = emptyMap()): KromiumAssetHandler",
+      "returnType": "KromiumAssetHandler",
+      "description": "Creates an asset handler that streams resources bundled inside the application JAR or classpath.",
+      "parameters": [
+        { "name": "resourcePath", "type": "String", "description": "Base path within classpath (e.g. 'web').", "optional": true, "defaultValue": "\"\"" },
+        { "name": "classLoader", "type": "ClassLoader", "description": "ClassLoader used to locate resources.", "optional": true, "defaultValue": "KromiumSchemeHandler::class.java.classLoader" },
+        { "name": "spaFallback", "type": "String?", "description": "Optional fallback file (e.g. 'index.html') served on extensionless GET routes for SPAs.", "optional": true, "defaultValue": "null" },
+        { "name": "defaultHeaders", "type": "Map<String, String>", "description": "Default headers appended to every response.", "optional": true, "defaultValue": "emptyMap()" }
+      ]
+    },
+    {
+      "name": "fromDirectory",
+      "signature": "fun fromDirectory(directory: File, spaFallback: String? = null, defaultHeaders: Map<String, String> = emptyMap()): KromiumAssetHandler",
+      "returnType": "KromiumAssetHandler",
+      "description": "Creates an asset handler that serves files from a local directory on disk with directory traversal protection.",
+      "parameters": [
+        { "name": "directory", "type": "File", "description": "The local root directory containing web assets." },
+        { "name": "spaFallback", "type": "String?", "description": "Optional fallback file name served on extensionless GET routes.", "optional": true, "defaultValue": "null" },
+        { "name": "defaultHeaders", "type": "Map<String, String>", "description": "Default headers appended to every response.", "optional": true, "defaultValue": "emptyMap()" }
+      ]
+    },
+    {
+      "name": "create",
+      "signature": "fun create(handler: KromiumAssetHandler): KromiumAssetHandler",
+      "returnType": "KromiumAssetHandler",
+      "description": "Creates a custom KromiumAssetHandler from a functional lambda.",
+      "parameters": [
+        { "name": "handler", "type": "KromiumAssetHandler", "description": "The functional handler implementation." }
+      ]
+    },
+    {
+      "name": "sanitizePath",
+      "signature": "fun sanitizePath(rawPath: String): String?",
+      "returnType": "String?",
+      "description": "Sanitizes a requested URL path against directory traversal attempts. Returns null if path is malicious.",
+      "parameters": [
+        { "name": "rawPath", "type": "String", "description": "Raw requested URL path." }
+      ]
+    }
+  ]
+}

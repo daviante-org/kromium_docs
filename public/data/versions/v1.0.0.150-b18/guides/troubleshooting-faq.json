@@ -1,0 +1,49 @@
+{
+  "id": "troubleshooting-faq",
+  "title": "Troubleshooting & FAQ",
+  "summary": "Solutions for JVM module access errors, GPU rasterization failures, VM/Docker environments, and platform-specific native dependencies.",
+  "category": "Getting Started",
+  "readTime": "7 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "jvm-module-access",
+      "title": "Java 9+ JVM Module Access (--add-opens)",
+      "content": "On Java 9 and newer, Java Strong Encapsulation restricts reflection into internal `sun.awt` and `sun.java2d` packages. Kromium includes `KromiumJvmModuleOpener` which attempts to open these modules dynamically at runtime. However, if your application runs under strict modularity or custom security managers, add the following JVM flags to your Gradle build or startup scripts:\n\n```bash\n--add-opens=java.desktop/sun.awt=ALL-UNNAMED\n--add-opens=java.desktop/sun.java2d=ALL-UNNAMED\n--add-opens=java.desktop/sun.awt.windows=ALL-UNNAMED # Windows only\n--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED      # macOS only\n--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED    # Linux only\n```\n\nIn Gradle `build.gradle.kts`:\n```kotlin\napplication {\n    applicationDefaultJvmArgs = listOf(\n        \"--add-opens=java.desktop/sun.awt=ALL-UNNAMED\",\n        \"--add-opens=java.desktop/sun.java2d=ALL-UNNAMED\"\n    )\n}\n```"
+    },
+    {
+      "id": "gpu-issues",
+      "title": "GPU Device Loss, VM & CI Rendering Failures",
+      "content": "If you encounter Direct3D device reset errors (`DXGI_ERROR_DEVICE_REMOVED`, `0x887a0005`) on Windows or are running in virtual machines, Docker containers, or headless CI runners without physical GPUs, configure `KromiumGpuMode.SOFTWARE` or `KromiumGpuMode.ANGLE_WARP` in `KromiumHardwareConfig`.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val config = KromiumConfig.builder()\n    .hardwareConfig { hw ->\n        // On Windows with overclocked/unstable drivers:\n        // hw.gpuMode(KromiumGpuMode.ANGLE_WARP)\n\n        // In headless CI or VMs without GPU drivers:\n        hw.gpuMode(KromiumGpuMode.SOFTWARE)\n    }\n    .build()"
+      }
+    },
+    {
+      "id": "linux-dependencies",
+      "title": "Linux Native Library Requirements",
+      "content": "Chromium Embedded Framework (CEF) requires native shared libraries on Linux. If the engine fails to initialize on Debian/Ubuntu, install the required packages:\n\n```bash\nsudo apt-get update && sudo apt-get install -y \\\n    libnss3 \\\n    libatk1.0-0 \\\n    libatk-bridge2.0-0 \\\n    libcups2 \\\n    libxcomposite1 \\\n    libxdamage1 \\\n    libxfixes3 \\\n    libxrandr2 \\\n    libgbm1 \\\n    libasound2 \\\n    libpango-1.0-0 \\\n    libpangocairo-1.0-0\n```"
+    },
+    {
+      "id": "process-model",
+      "title": "Process Model & Compose Desktop Compatibility",
+      "content": "Always keep `KromiumProcessModel.AUTO` (the default) when embedding in Jetpack Compose, Swing, or JavaFX. In `AUTO` mode, Kromium executes the browser host inside the JVM while spawning `jcef_helper` subprocesses for GPU rasterization and web page sandboxing. Avoid `OUT_OF_PROCESS` unless you implement a custom `CefNativeRenderHandler`."
+    },
+    {
+      "id": "native-logging",
+      "title": "Capturing Chromium Diagnostic Logs",
+      "content": "To diagnose native crashes, network handshakes, or certificate errors, enable verbose logging and specify a dedicated log file path.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "import org.daviante.kromium.api.config.KromiumLogSeverity\nimport java.io.File\n\nval config = KromiumConfig.builder()\n    .loggingConfig { log ->\n        log.severity(KromiumLogSeverity.VERBOSE)\n        log.logFile(File(\"./logs/chromium-debug.log\"))\n    }\n    .build()"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumGpuMode", "path": "/api/kromium-gpu-mode" },
+    { "name": "KromiumProcessModel", "path": "/api/kromium-process-model" },
+    { "name": "KromiumLoggingConfig", "path": "/api/kromium-logging-config" },
+    { "name": "KromiumException", "path": "/api/kromium-exception" }
+  ]
+}

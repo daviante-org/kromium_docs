@@ -1,0 +1,20 @@
+{
+  "id": "kromium-platform-url-resolver",
+  "name": "KromiumPlatformUrlResolver",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.bootstrap",
+  "summary": "Resolves the download URL for a specific platform dynamically.",
+  "declaration": "fun interface KromiumPlatformUrlResolver",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "resolveUrl",
+      "signature": "fun resolveUrl(platform: KromiumPlatformInfo): String?",
+      "returnType": "String?",
+      "description": "Resolves the download URL for a specific platform dynamically.",
+      "parameters": [
+        { "name": "platform", "type": "KromiumPlatformInfo", "description": "The detected host operating system and CPU architecture." }
+      ]
+    }
+  ]
+}

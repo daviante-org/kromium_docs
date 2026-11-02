@@ -1,0 +1,29 @@
+{
+  "id": "kromium-error-code",
+  "name": "KromiumErrorCode",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.error",
+  "summary": "Standardized error codes for programmatic recovery and telemetry.",
+  "declaration": "enum class KromiumErrorCode",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    { "name": "INITIALIZATION_ERROR", "description": "Failed to initialize native engine." },
+    { "name": "UNSUPPORTED_PLATFORM", "description": "The current OS/architecture is not supported." },
+    { "name": "INSTALLATION_FAILED", "description": "Failed to unpack or install the engine binaries." },
+    { "name": "DOWNLOAD_DISABLED", "description": "Engine download is disabled but binaries were not found." },
+    { "name": "NO_BUNDLE_AVAILABLE", "description": "No binary bundle available for this platform." },
+    { "name": "DOWNLOAD_FAILED", "description": "Failed to download engine binaries." },
+    { "name": "CHECKSUM_MISMATCH", "description": "Downloaded bundle checksum does not match expected hash." },
+    { "name": "EXTRACTION_FAILED", "description": "Failed to extract bundle archive." },
+    { "name": "MALICIOUS_ARCHIVE", "description": "Zip Slip or path traversal detected in archive." },
+    { "name": "BOOTSTRAP_FAILED", "description": "Bootstrap sequence failed to locate or initialize engine." },
+    { "name": "INSTALLATION_CORRUPTED", "description": "Existing installation files are corrupt or incomplete." },
+    { "name": "JS_TIMEOUT", "description": "JavaScript evaluation timed out." },
+    { "name": "INVALID_CONFIG", "description": "Provided configuration is invalid or missing required fields." },
+    { "name": "PROXY_ERROR", "description": "Proxy configuration or authentication failed." },
+    { "name": "PDF_PRINT_FAILED", "description": "PDF export operation failed." },
+    { "name": "FRAMEWORK_REQUIRED", "description": "UI framework must be explicitly specified." },
+    { "name": "CANVAS_NOT_AVAILABLE", "description": "Rendering surface canvas is not yet ready or visible." },
+    { "name": "UNKNOWN", "description": "Unclassified error." }
+  ]
+}

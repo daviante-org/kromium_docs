@@ -1,0 +1,52 @@
+{
+  "id": "kromium-hardware-config",
+  "name": "KromiumHardwareConfig",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "@ConsistentCopyVisibility data class KromiumHardwareConfig internal constructor(val processModel: KromiumProcessModel, val gpuMode: KromiumGpuMode)",
+  "description": "Controls how the engine interacts with the host OS and GPU. Configures Chromium process isolation architecture and graphics rendering acceleration mode.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Configure within KromiumConfig.builder().hardwareConfig { ... } to enable full GPU acceleration, disable GPU compositing, or activate software fallbacks in virtual machines.",
+  "options": [],
+  "properties": [
+    {
+      "name": "processModel",
+      "signature": "val processModel: KromiumProcessModel",
+      "description": "The process isolation architecture: AUTO (multi-process helper), OUT_OF_PROCESS (external RPC daemon), or IN_PROCESS (embedded).",
+      "type": "KromiumProcessModel",
+      "default": "KromiumProcessModel.AUTO"
+    },
+    {
+      "name": "gpuMode",
+      "signature": "val gpuMode: KromiumGpuMode",
+      "description": "Graphics rendering strategy: HARDWARE (full GPU), SOFTWARE (SwiftShader), COMPOSITING_DISABLED (CPU compositing), or ANGLE_WARP (Direct3D 11 WARP).",
+      "type": "KromiumGpuMode",
+      "default": "KromiumGpuMode.COMPOSITING_DISABLED"
+    }
+  ],
+  "methods": [
+    {
+      "name": "builder",
+      "signature": "@JvmStatic fun builder(): Builder",
+      "description": "Returns a new builder for KromiumHardwareConfig.",
+      "returns": "Builder",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumHardwareConfig\nimport org.daviante.kromium.api.config.KromiumProcessModel\nimport org.daviante.kromium.api.config.KromiumGpuMode\n\nval hardwareConfig = KromiumHardwareConfig.builder()\n    .processModel(KromiumProcessModel.AUTO)\n    .gpuMode(KromiumGpuMode.HARDWARE)\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumHardwareConfig;\nimport org.daviante.kromium.api.config.KromiumProcessModel;\nimport org.daviante.kromium.api.config.KromiumGpuMode;\n\npublic class HardwareSetup {\n    public static KromiumHardwareConfig create() {\n        return KromiumHardwareConfig.builder()\n            .processModel(KromiumProcessModel.AUTO)\n            .gpuMode(KromiumGpuMode.HARDWARE)\n            .build();\n    }\n}"
+    }
+  ]
+}

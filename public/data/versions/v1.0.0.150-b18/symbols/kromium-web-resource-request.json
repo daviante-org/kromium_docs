@@ -1,0 +1,93 @@
+{
+  "id": "kromium-web-resource-request",
+  "name": "KromiumWebResourceRequest",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Represents an outgoing web resource request that can be inspected and modified by a KromiumRequestInterceptor.",
+  "declaration": "data class KromiumWebResourceRequest(\n    val url: String,\n    val method: String,\n    val headers: MutableMap<String, String>,\n    val isNavigation: Boolean,\n    val isDownload: Boolean,\n    val resourceType: KromiumResourceType = KromiumResourceType.UNKNOWN,\n    val requestInitiator: String? = null\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumWebResourceRequest(url: String, method: String, headers: MutableMap<String, String>, isNavigation: Boolean, isDownload: Boolean, resourceType: KromiumResourceType = KromiumResourceType.UNKNOWN, requestInitiator: String? = null)",
+      "description": "Constructs an outgoing web resource request model.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The destination URL of the request."
+        },
+        {
+          "name": "method",
+          "type": "String",
+          "description": "HTTP method (GET, POST, etc.)."
+        },
+        {
+          "name": "headers",
+          "type": "MutableMap<String, String>",
+          "description": "Mutable map of request headers."
+        },
+        {
+          "name": "isNavigation",
+          "type": "Boolean",
+          "description": "Whether this request represents a top-level or frame navigation."
+        },
+        {
+          "name": "isDownload",
+          "type": "Boolean",
+          "description": "Whether this request initiates a file download."
+        },
+        {
+          "name": "resourceType",
+          "type": "KromiumResourceType",
+          "description": "The resource type (e.g., SCRIPT, IMAGE, XHR).",
+          "optional": true,
+          "defaultValue": "KromiumResourceType.UNKNOWN"
+        },
+        {
+          "name": "requestInitiator",
+          "type": "String?",
+          "description": "The origin URL that initiated this request, or null.",
+          "optional": true,
+          "defaultValue": "null"
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "url",
+      "type": "String",
+      "description": "The destination URL of the request."
+    },
+    {
+      "name": "method",
+      "type": "String",
+      "description": "HTTP method (GET, POST, etc.)."
+    },
+    {
+      "name": "headers",
+      "type": "MutableMap<String, String>",
+      "description": "Mutable map of request headers."
+    },
+    {
+      "name": "isNavigation",
+      "type": "Boolean",
+      "description": "Whether this request represents a top-level or frame navigation."
+    },
+    {
+      "name": "isDownload",
+      "type": "Boolean",
+      "description": "Whether this request initiates a file download."
+    },
+    {
+      "name": "resourceType",
+      "type": "KromiumResourceType",
+      "description": "The resource type (e.g., SCRIPT, IMAGE, XHR)."
+    },
+    {
+      "name": "requestInitiator",
+      "type": "String?",
+      "description": "The origin URL that initiated this request, or null."
+    }
+  ]
+}

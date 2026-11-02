@@ -1,0 +1,60 @@
+{
+  "id": "kromium-context-menu-context",
+  "name": "KromiumContextMenuContext",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Context passed to context menu action callbacks when an item is triggered by the user.",
+  "declaration": "class KromiumContextMenuContext(\n    val browser: KromiumBrowser?,\n    val params: KromiumContextMenuParams\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumContextMenuContext(browser: KromiumBrowser?, params: KromiumContextMenuParams)",
+      "description": "Constructs a context menu invocation context.",
+      "parameters": [
+        { "name": "browser", "type": "KromiumBrowser?", "description": "High-level KromiumBrowser instance, if resolved." },
+        { "name": "params", "type": "KromiumContextMenuParams", "description": "Contextual parameters of the right-click event." }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "browser", "type": "KromiumBrowser?", "description": "High-level KromiumBrowser instance, if resolved." },
+    { "name": "params", "type": "KromiumContextMenuParams", "description": "Contextual parameters of the right-click event." }
+  ],
+  "methods": [
+    {
+      "name": "copyToClipboard",
+      "signature": "fun copyToClipboard(text: String)",
+      "returnType": "Unit",
+      "description": "Copies the given text to the system clipboard.",
+      "parameters": [
+        { "name": "text", "type": "String", "description": "Text to copy." }
+      ]
+    },
+    {
+      "name": "inspectElement",
+      "signature": "fun inspectElement()",
+      "returnType": "Unit",
+      "description": "Opens Chromium DevTools targeting the clicked element coordinates."
+    },
+    {
+      "name": "startDownload",
+      "signature": "fun startDownload(url: String)",
+      "returnType": "Unit",
+      "description": "Initiates a download for the given URL using Chromium's download pipeline.",
+      "parameters": [
+        { "name": "url", "type": "String", "description": "URL to download." }
+      ]
+    },
+    {
+      "name": "searchWeb",
+      "signature": "fun searchWeb(query: String = params.selectionText ?: \"\", engineUrl: String = \"https://www.google.com/search?q=%s\", openInSystemBrowser: Boolean = true)",
+      "returnType": "Unit",
+      "description": "Performs a web search using the provided query and template.",
+      "parameters": [
+        { "name": "query", "type": "String", "description": "The search query.", "optional": true, "defaultValue": "params.selectionText ?: \"\"" },
+        { "name": "engineUrl", "type": "String", "description": "Search URL template with '%s' placeholder.", "optional": true, "defaultValue": "\"https://www.google.com/search?q=%s\"" },
+        { "name": "openInSystemBrowser", "type": "Boolean", "description": "Whether to open in system browser or embedded browser.", "optional": true, "defaultValue": "true" }
+      ]
+    }
+  ]
+}

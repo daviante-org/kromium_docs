@@ -1,0 +1,32 @@
+{
+  "id": "kromium-dev-tools",
+  "name": "KromiumDevTools",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.devtools",
+  "summary": "Facade for developer tools operations.",
+  "declaration": "interface KromiumDevTools",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "openDevTools",
+      "signature": "fun openDevTools(inspectPoint: Point? = null)",
+      "returnType": "Unit",
+      "description": "Opens the native Developer Tools for this browser.",
+      "parameters": [
+        {
+          "name": "inspectPoint",
+          "type": "Point?",
+          "description": "Specific coordinate point to inspect, or null to open DevTools generally.",
+          "optional": true,
+          "defaultValue": "null"
+        }
+      ]
+    },
+    {
+      "name": "closeDevTools",
+      "signature": "fun closeDevTools()",
+      "returnType": "Unit",
+      "description": "Closes the Developer Tools if they are open."
+    }
+  ]
+}

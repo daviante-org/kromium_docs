@@ -1,0 +1,48 @@
+{
+  "id": "context-menus",
+  "title": "Context Menu Customization",
+  "summary": "Suppress, customize, or build rich right-click context menus using KromiumMenuBuilder's declarative DSL with built-in browser action shortcuts.",
+  "category": "UI",
+  "readTime": "6 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "preset-menus",
+      "title": "Built-In Preset Menus",
+      "content": "`KromiumContextMenuListener` provides turnkey presets for common scenarios:\n\n| Preset | Description |\n| :--- | :--- |\n| `KromiumContextMenuListener.disabled()` | Suppresses all context menus (kiosk mode) |\n| `KromiumContextMenuListener.defaultMenu()` | Preserves native Chromium menu items |\n| `KromiumContextMenuListener.devToolsOnly()` | Shows only \"Inspect Element\" |\n| `KromiumContextMenuListener.minimalEditing()` | Smart menu: Copy Link on links, Copy/Search on selections, Cut/Paste/Select All in editable fields |",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "// Suppress all right-click menus\nclient.contextMenuListener = KromiumContextMenuListener.disabled()\n\n// Or use the smart minimal editing menu with Inspect Element\nclient.contextMenuListener = KromiumContextMenuListener.minimalEditing(\n    includeInspectElement = true\n)"
+      }
+    },
+    {
+      "id": "declarative-builder",
+      "title": "Declarative Menu Builder DSL",
+      "content": "Use `client.setContextMenu { ... }` with the `KromiumMenuBuilder` DSL to construct custom menus with items, checkboxes, radio buttons, submenus, and separators.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "client.setContextMenu { ctx ->\n    clear() // Remove default items\n\n    item(\"Navigate Home\") { it.browser.navigation.loadUrl(\"https://myapp.com\") }\n    separator()\n\n    if (ctx.params.hasSelection()) {\n        copy()\n        searchWeb()\n        separator()\n    }\n\n    if (ctx.params.isLink()) {\n        copyLink()\n        separator()\n    }\n\n    if (ctx.params.hasMedia()) {\n        saveImageAs()\n        copyImageUrl()\n        separator()\n    }\n\n    subMenu(\"Developer\") {\n        inspectElement()\n        viewSource()\n        reload()\n    }\n}"
+      }
+    },
+    {
+      "id": "menu-actions",
+      "title": "Built-In Action Shortcuts",
+      "content": "KromiumMenuBuilder provides turnkey browser action methods that automatically wire up native commands:\n\n| Method | Action |\n| :--- | :--- |\n| `back()` / `forward()` / `reload()` | Navigation commands |\n| `copy()` / `cut()` / `paste()` / `selectAll()` | Clipboard commands |\n| `print()` | Native print dialog |\n| `viewSource()` | View page source |\n| `inspectElement()` | Opens DevTools at click position |\n| `copyLink()` | Copies the hovered link URL |\n| `saveImageAs()` | Downloads the hovered image |\n| `copyImageUrl()` | Copies the hovered image URL |\n| `searchWeb()` | Searches Google for selected text |"
+    },
+    {
+      "id": "java-usage",
+      "title": "Java Usage",
+      "content": "Context menu customization works identically in Java using `KromiumContextMenuListener` and the Consumer overloads of `addItem()`.",
+      "codeSnippet": {
+        "language": "java",
+        "code": "client.setContextMenuListener(KromiumContextMenuListener.minimalEditing(true));\n\n// Or custom:\nclient.setContextMenuListener((builder, context) -> {\n    builder.clear();\n    builder.addItem(\"Open Dashboard\", ctx -> {\n        ctx.getBrowser().getNavigation().loadUrl(\"https://dashboard.app\");\n    });\n    builder.inspectElement();\n});"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumContextMenuListener", "path": "/api/kromium-context-menu-listener" },
+    { "name": "KromiumMenuBuilder", "path": "/api/kromium-menu-builder" },
+    { "name": "KromiumContextMenuContext", "path": "/api/kromium-context-menu-context" },
+    { "name": "KromiumContextMenuParams", "path": "/api/kromium-context-menu-params" }
+  ]
+}

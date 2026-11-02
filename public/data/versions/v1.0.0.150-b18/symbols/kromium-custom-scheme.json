@@ -1,0 +1,55 @@
+{
+  "id": "kromium-custom-scheme",
+  "name": "KromiumCustomScheme",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.scheme",
+  "summary": "Configuration for registering a custom protocol scheme with the underlying Chromium engine.",
+  "declaration": "data class KromiumCustomScheme @JvmOverloads constructor(\n    val schemeName: String,\n    val isStandard: Boolean = true,\n    val isLocal: Boolean = true,\n    val isDisplayIsolated: Boolean = false,\n    val isSecure: Boolean = true,\n    val isCorsEnabled: Boolean = true,\n    val isCspBypassing: Boolean = false,\n    val isFetchEnabled: Boolean = true\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumCustomScheme(schemeName: String, isStandard: Boolean = true, isLocal: Boolean = true, isDisplayIsolated: Boolean = false, isSecure: Boolean = true, isCorsEnabled: Boolean = true, isCspBypassing: Boolean = false, isFetchEnabled: Boolean = true)",
+      "description": "Constructs a custom protocol scheme registration configuration.",
+      "parameters": [
+        { "name": "schemeName", "type": "String", "description": "The name of the custom protocol scheme (e.g. 'app')." },
+        { "name": "isStandard", "type": "Boolean", "description": "If true, the scheme will be treated as a standard scheme with authority/host component.", "optional": true, "defaultValue": "true" },
+        { "name": "isLocal", "type": "Boolean", "description": "If true, the scheme will be treated as local, similar to file://.", "optional": true, "defaultValue": "true" },
+        { "name": "isDisplayIsolated", "type": "Boolean", "description": "If true, the scheme can only be displayed from other origins with the same scheme.", "optional": true, "defaultValue": "false" },
+        { "name": "isSecure", "type": "Boolean", "description": "If true, treated as secure (HTTPS-equivalent: Web Crypto, Service Workers, Storage).", "optional": true, "defaultValue": "true" },
+        { "name": "isCorsEnabled", "type": "Boolean", "description": "If true, cross-origin requests (CORS) from/to this scheme are permitted.", "optional": true, "defaultValue": "true" },
+        { "name": "isCspBypassing", "type": "Boolean", "description": "If true, Content Security Policy enforcements are bypassed.", "optional": true, "defaultValue": "false" },
+        { "name": "isFetchEnabled", "type": "Boolean", "description": "If true, the Fetch API is allowed for this scheme.", "optional": true, "defaultValue": "true" }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "schemeName", "type": "String", "description": "The name of the custom protocol scheme." },
+    { "name": "isStandard", "type": "Boolean", "description": "If true, treated as a standard scheme with authority/host component." },
+    { "name": "isLocal", "type": "Boolean", "description": "If true, treated as local, similar to file://." },
+    { "name": "isDisplayIsolated", "type": "Boolean", "description": "If true, can only be displayed from other origins with the same scheme." },
+    { "name": "isSecure", "type": "Boolean", "description": "If true, treated as secure (HTTPS-equivalent)." },
+    { "name": "isCorsEnabled", "type": "Boolean", "description": "If true, CORS from/to this scheme are permitted." },
+    { "name": "isCspBypassing", "type": "Boolean", "description": "If true, CSP enforcements are bypassed." },
+    { "name": "isFetchEnabled", "type": "Boolean", "description": "If true, Fetch API is allowed for this scheme." }
+  ],
+  "companionMethods": [
+    {
+      "name": "secure",
+      "signature": "fun secure(schemeName: String): KromiumCustomScheme",
+      "returnType": "KromiumCustomScheme",
+      "description": "Creates a secure, local custom scheme with CORS and standard URL handling enabled.",
+      "parameters": [
+        { "name": "schemeName", "type": "String", "description": "The name of the scheme." }
+      ]
+    },
+    {
+      "name": "standard",
+      "signature": "fun standard(schemeName: String): KromiumCustomScheme",
+      "returnType": "KromiumCustomScheme",
+      "description": "Creates a standard custom scheme without local origin isolation.",
+      "parameters": [
+        { "name": "schemeName", "type": "String", "description": "The name of the scheme." }
+      ]
+    }
+  ]
+}

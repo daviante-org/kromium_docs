@@ -1,0 +1,61 @@
+{
+  "id": "kromium-download-progress",
+  "name": "KromiumDownloadProgress",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.download",
+  "summary": "Detailed download progress state.",
+  "declaration": "data class KromiumDownloadProgress(\n    val bytesRead: Long,\n    val totalBytes: Long?,\n    val fraction: Float\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumDownloadProgress(bytesRead: Long, totalBytes: Long?, fraction: Float)",
+      "description": "Constructs a download progress record.",
+      "parameters": [
+        {
+          "name": "bytesRead",
+          "type": "Long",
+          "description": "Number of bytes downloaded so far."
+        },
+        {
+          "name": "totalBytes",
+          "type": "Long?",
+          "description": "Expected total file size in bytes, or null if unknown."
+        },
+        {
+          "name": "fraction",
+          "type": "Float",
+          "description": "Fraction of download completed from 0.0f to 1.0f."
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "bytesRead",
+      "type": "Long",
+      "description": "Number of bytes downloaded so far."
+    },
+    {
+      "name": "totalBytes",
+      "type": "Long?",
+      "description": "Expected total file size in bytes, or null if unknown."
+    },
+    {
+      "name": "fraction",
+      "type": "Float",
+      "description": "Fraction of download completed from 0.0f to 1.0f."
+    },
+    {
+      "name": "percentage",
+      "type": "Int",
+      "description": "Calculated percentage (0 to 100)."
+    }
+  ],
+  "companionProperties": [
+    {
+      "name": "Initial",
+      "type": "KromiumDownloadProgress",
+      "description": "Initial download progress instance with 0 bytes read and 0.0f fraction."
+    }
+  ]
+}

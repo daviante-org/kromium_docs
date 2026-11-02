@@ -1,0 +1,32 @@
+{
+  "id": "kromium-resource-type",
+  "name": "KromiumResourceType",
+  "kind": "enum",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Platform-agnostic representation of web resource types for network interception and asset filtering.",
+  "declaration": "enum class KromiumResourceType",
+  "since": "v1.0.0.150-b11",
+  "enumConstants": [
+    { "name": "MAIN_FRAME", "description": "Top-level main frame HTML page navigation." },
+    { "name": "SUB_FRAME", "description": "Nested iframe navigation." },
+    { "name": "STYLESHEET", "description": "CSS stylesheet resource." },
+    { "name": "SCRIPT", "description": "JavaScript external script." },
+    { "name": "IMAGE", "description": "Image graphic resource." },
+    { "name": "FONT_RESOURCE", "description": "Web font resource." },
+    { "name": "SUB_RESOURCE", "description": "Generic subresource." },
+    { "name": "OBJECT", "description": "Embedded object resource." },
+    { "name": "MEDIA", "description": "Audio or video stream/media file." },
+    { "name": "WORKER", "description": "Dedicated Web Worker script." },
+    { "name": "SHARED_WORKER", "description": "Shared Web Worker script." },
+    { "name": "PREFETCH", "description": "Prefetched network resource." },
+    { "name": "FAVICON", "description": "Page favicon icon." },
+    { "name": "XHR", "description": "XMLHttpRequest or Fetch API HTTP request." },
+    { "name": "PING", "description": "Hyperlink audit ping request." },
+    { "name": "SERVICE_WORKER", "description": "Service worker script." },
+    { "name": "CSP_REPORT", "description": "Content Security Policy violation report." },
+    { "name": "PLUGIN_RESOURCE", "description": "Plugin-initiated resource request." },
+    { "name": "NAVIGATION_PRELOAD_MAIN_FRAME", "description": "Navigation preload request for main frame." },
+    { "name": "NAVIGATION_PRELOAD_SUB_FRAME", "description": "Navigation preload request for subframe." },
+    { "name": "UNKNOWN", "description": "Unknown or unclassified resource type." }
+  ]
+}

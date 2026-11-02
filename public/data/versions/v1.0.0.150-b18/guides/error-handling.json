@@ -1,0 +1,50 @@
+{
+  "id": "error-handling",
+  "title": "Error Handling & Debugging",
+  "summary": "Handle Kromium's sealed exception hierarchy, recover from download failures, diagnose GPU errors, and monitor console messages for debugging.",
+  "category": "Core API",
+  "readTime": "7 min",
+  "lastUpdated": "2026-10-01",
+  "sections": [
+    {
+      "id": "exception-hierarchy",
+      "title": "KromiumException Sealed Hierarchy",
+      "content": "All Kromium errors extend the sealed class `KromiumException` which provides an `errorCode` (enum) and `isRecoverable` flag for programmatic error handling.\n\n| Exception | Error Code | Recoverable | When Thrown |\n| :--- | :--- | :---: | :--- |\n| `NotInitialized` | `INITIALIZATION_ERROR` | ❌ | Engine used before `initialize()` |\n| `Disposed` | `INITIALIZATION_ERROR` | ❌ | Operations attempted after `dispose()` |\n| `UnsupportedPlatform` | `UNSUPPORTED_PLATFORM` | ❌ | Unsupported OS/architecture combination |\n| `InstallationFailed` | `INSTALLATION_FAILED` | ✅ | Cannot prepare installation directory |\n| `AutoDownloadDisabled` | `DOWNLOAD_DISABLED` | ❌ | No binaries and auto-download is off |\n| `NoBundleAvailable` | `NO_BUNDLE_AVAILABLE` | ❌ | No compatible JCEF bundle for platform |\n| `DownloadFailed` | `DOWNLOAD_FAILED` | ✅ | Network failure downloading engine |\n| `ChecksumMismatch` | `CHECKSUM_MISMATCH` | ✅ | Archive hash doesn't match (retry) |\n| `ExtractionFailed` | `EXTRACTION_FAILED` | ✅ | Cannot extract engine archive |\n| `MaliciousArchiveEntry` | `MALICIOUS_ARCHIVE` | ❌ | Directory traversal in archive |\n| `BootstrapFailed` | `BOOTSTRAP_FAILED` | ❌ | CEF native bootstrap failure |\n| `InstallationCorrupted` | `INSTALLATION_CORRUPTED` | ✅ | Corrupted binaries (re-download) |\n| `JsEvaluationTimeout` | `JS_TIMEOUT` | ✅ | JavaScript evaluation timed out |\n| `InvalidConfig` | `INVALID_CONFIG` | ❌ | Invalid configuration parameters |\n| `ProxyError` | `PROXY_ERROR` | ✅ | Proxy configuration error |\n| `PdfPrintFailed` | `PDF_PRINT_FAILED` | ✅ | PDF export failure |\n| `FrameworkRequired` | `FRAMEWORK_REQUIRED` | ❌ | No UI framework specified for OSR |\n| `CanvasNotAvailable` | `CANVAS_NOT_AVAILABLE` | ❌ | Missing kromium-swing/compose/etc on classpath |"
+    },
+    {
+      "id": "pattern-matching",
+      "title": "Pattern-Matching Error Recovery",
+      "content": "Use Kotlin `when` exhaustive matching or Java `instanceof` checks on the sealed hierarchy for type-safe error recovery.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "try {\n    engine.initialize()\n} catch (e: KromiumException) {\n    when (e) {\n        is KromiumException.DownloadFailed -> {\n            println(\"Download failed from ${e.url}, retrying...\")\n            engine.initialize() // Retry\n        }\n        is KromiumException.ChecksumMismatch -> {\n            println(\"Checksum mismatch: expected=${e.expected}, actual=${e.actual}\")\n            // Delete corrupted file and retry\n        }\n        is KromiumException.UnsupportedPlatform -> {\n            println(\"Platform not supported: ${e.os} / ${e.arch}\")\n        }\n        is KromiumException.CanvasNotAvailable -> {\n            println(\"Add kromium-${e.framework.name.lowercase()} to your dependencies\")\n        }\n        else -> {\n            if (e.isRecoverable) {\n                println(\"Recoverable error [${e.errorCode}]: ${e.message}\")\n            } else {\n                throw e\n            }\n        }\n    }\n}"
+      }
+    },
+    {
+      "id": "console-monitoring",
+      "title": "Console Message Monitoring",
+      "content": "Intercept browser console output (`console.log`, `console.error`, `console.warn`) via `KromiumConsoleMessageListener` for runtime debugging and error tracking.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "client.consoleMessageListener = KromiumConsoleMessageListener { message ->\n    val level = message.level // INFO, WARNING, ERROR\n    val text = message.message\n    val source = message.source\n    val line = message.lineNumber\n    println(\"[$level] $source:$line — $text\")\n}"
+      }
+    },
+    {
+      "id": "load-errors",
+      "title": "Page Load Error Handling",
+      "content": "Detect navigation failures (DNS errors, timeouts, certificate rejections) with `KromiumLoadErrorListener`.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "client.loadErrorListener = KromiumLoadErrorListener { error ->\n    println(\"Load error: ${error.errorCode} — ${error.errorText}\")\n    println(\"Failed URL: ${error.failedUrl}\")\n}"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumException", "path": "/api/kromium-exception" },
+    { "name": "KromiumErrorCode", "path": "/api/kromium-error-code" },
+    { "name": "KromiumConsoleMessage", "path": "/api/kromium-console-message" },
+    { "name": "KromiumConsoleMessageListener", "path": "/api/kromium-console-message-listener" },
+    { "name": "KromiumLoadError", "path": "/api/kromium-load-error" },
+    { "name": "KromiumLoadErrorListener", "path": "/api/kromium-load-error-listener" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "kromium-render-surface",
+  "name": "KromiumRenderSurface",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Represents an opaque rendering surface provided by native engine, following the Adapter pattern to keep the core API agnostic of UI toolkits.",
+  "declaration": "interface KromiumRenderSurface",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "unwrap",
+      "signature": "fun <T : Any> unwrap(clazz: KClass<T>): T?",
+      "returnType": "T?",
+      "description": "Attempts to unwrap this generic surface into a platform-specific UI component (e.g. java.awt.Component for Swing/Compose Desktop).",
+      "parameters": [
+        { "name": "clazz", "type": "KClass<T>", "description": "The Kotlin class type of the expected native component." }
+      ]
+    }
+  ]
+}

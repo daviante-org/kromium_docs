@@ -1,0 +1,24 @@
+{
+  "id": "kromium-request-interceptor",
+  "name": "KromiumRequestInterceptor",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Functional interface to intercept and modify HTTP/HTTPS requests or block unwanted domains.",
+  "declaration": "fun interface KromiumRequestInterceptor",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "intercept",
+      "signature": "fun intercept(request: KromiumWebResourceRequest): Boolean",
+      "returnType": "Boolean",
+      "description": "Intercepts an outgoing request. Developers can mutate request.headers or return true to cancel/block the request.",
+      "parameters": [
+        {
+          "name": "request",
+          "type": "KromiumWebResourceRequest",
+          "description": "The outgoing resource request."
+        }
+      ]
+    }
+  ]
+}

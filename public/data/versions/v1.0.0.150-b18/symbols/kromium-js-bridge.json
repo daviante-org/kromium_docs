@@ -1,0 +1,68 @@
+{
+  "id": "kromium-js-bridge",
+  "name": "KromiumJsBridge",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.automation",
+  "summary": "Facade for JavaScript execution, DOM evaluation, and text extraction.",
+  "declaration": "interface KromiumJsBridge",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "executeJavaScript",
+      "signature": "fun executeJavaScript(code: String)",
+      "returnType": "Unit",
+      "description": "Executes arbitrary JavaScript in the context of the current page.",
+      "parameters": [
+        { "name": "code", "type": "String", "description": "The JavaScript code to execute." }
+      ]
+    },
+    {
+      "name": "evaluateJavaScript",
+      "signature": "suspend fun evaluateJavaScript(expression: String, timeoutMs: Long? = null, bindingTimeoutMs: Long? = null, bindingIntervalMs: Long? = null): String?",
+      "returnType": "String?",
+      "description": "Executes arbitrary JavaScript asynchronously and returns the stringified response.",
+      "parameters": [
+        { "name": "expression", "type": "String", "description": "JavaScript expression to execute." },
+        { "name": "timeoutMs", "type": "Long?", "description": "Maximum evaluation timeout in ms.", "optional": true, "defaultValue": "null" },
+        { "name": "bindingTimeoutMs", "type": "Long?", "description": "Maximum time in ms to poll for the query router function.", "optional": true, "defaultValue": "null" },
+        { "name": "bindingIntervalMs", "type": "Long?", "description": "Polling interval in ms between router binding checks.", "optional": true, "defaultValue": "null" }
+      ]
+    },
+    {
+      "name": "getHtml",
+      "signature": "suspend fun getHtml(): String",
+      "returnType": "String",
+      "description": "Convenience function to fetch the complete HTML of the current document (document.documentElement.outerHTML)."
+    },
+    {
+      "name": "getHtmlAsync",
+      "signature": "fun getHtmlAsync(): CompletableFuture<String>",
+      "returnType": "CompletableFuture<String>",
+      "description": "Asynchronously fetches the complete HTML of the current document."
+    },
+    {
+      "name": "getText",
+      "signature": "suspend fun getText(): String",
+      "returnType": "String",
+      "description": "Convenience function to fetch the visible text content of the current document (document.body.innerText)."
+    },
+    {
+      "name": "getTextAsync",
+      "signature": "fun getTextAsync(): CompletableFuture<String>",
+      "returnType": "CompletableFuture<String>",
+      "description": "Asynchronously fetches the visible text content of the current document."
+    },
+    {
+      "name": "getFaviconUrl",
+      "signature": "suspend fun getFaviconUrl(): String?",
+      "returnType": "String?",
+      "description": "Attempts to resolve the URL of the page's favicon using DOM inspection."
+    },
+    {
+      "name": "getFaviconUrlAsync",
+      "signature": "fun getFaviconUrlAsync(): CompletableFuture<String?>",
+      "returnType": "CompletableFuture<String?>",
+      "description": "Asynchronously resolves the favicon URL."
+    }
+  ]
+}

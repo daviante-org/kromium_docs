@@ -1,0 +1,49 @@
+{
+  "id": "kromium-load-error",
+  "name": "KromiumLoadError",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.navigation",
+  "summary": "Represents a failure that occurred during page navigation or loading.",
+  "declaration": "data class KromiumLoadError(\n    val errorCode: Int,\n    val errorText: String,\n    val failedUrl: String\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumLoadError(errorCode: Int, errorText: String, failedUrl: String)",
+      "description": "Constructs a load error descriptor.",
+      "parameters": [
+        {
+          "name": "errorCode",
+          "type": "Int",
+          "description": "Numeric error code indicating the cause of the failure."
+        },
+        {
+          "name": "errorText",
+          "type": "String",
+          "description": "Human-readable description of the error."
+        },
+        {
+          "name": "failedUrl",
+          "type": "String",
+          "description": "The URL that failed to load."
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "errorCode",
+      "type": "Int",
+      "description": "Numeric error code indicating the cause of the failure."
+    },
+    {
+      "name": "errorText",
+      "type": "String",
+      "description": "Human-readable description of the error."
+    },
+    {
+      "name": "failedUrl",
+      "type": "String",
+      "description": "The URL that failed to load."
+    }
+  ]
+}

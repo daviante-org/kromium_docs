@@ -1,10 +1,17 @@
 {
-  "latestVersion": "v1.0.0.150-b16",
+  "latestVersion": "v1.0.0.150-b18",
   "versions": [
+    {
+      "version": "v1.0.0.150-b18",
+      "name": "v1.0.0.150-b18",
+      "isLatest": true,
+      "releaseDate": "2026-11-02",
+      "notes": "Patch release updating upstream JetBrains JCEF binaries to 150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b18 (Chromium 150.0.7871.129). Published to Cloudflare R2 Maven repository at https://repo.daviante.org/artifacts"
+    },
     {
       "version": "v1.0.0.150-b16",
       "name": "v1.0.0.150-b16",
-      "isLatest": true,
+      "isLatest": false,
       "releaseDate": "2026-10-20",
       "notes": "Patch release updating upstream JetBrains JCEF binaries (api-1.21-263-b16 / 150.0.22), Gradle build caching, and network retry handling. Published to Cloudflare R2 Maven repository at https://repo.daviante.org/artifacts"
     },

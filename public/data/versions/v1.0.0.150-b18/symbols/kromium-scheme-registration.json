@@ -1,0 +1,25 @@
+{
+  "id": "kromium-scheme-registration",
+  "name": "KromiumSchemeRegistration",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.scheme",
+  "summary": "Registration entry pairing a scheme and domain name with a KromiumAssetHandler.",
+  "declaration": "data class KromiumSchemeRegistration(\n    val schemeName: String,\n    val domainName: String?,\n    val handler: KromiumAssetHandler\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumSchemeRegistration(schemeName: String, domainName: String?, handler: KromiumAssetHandler)",
+      "description": "Constructs a scheme registration entry.",
+      "parameters": [
+        { "name": "schemeName", "type": "String", "description": "The scheme protocol (e.g. 'app', 'https')." },
+        { "name": "domainName", "type": "String?", "description": "Optional domain/authority (e.g. 'myapp' or null for all domains)." },
+        { "name": "handler", "type": "KromiumAssetHandler", "description": "The KromiumAssetHandler serving virtual responses." }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "schemeName", "type": "String", "description": "The scheme protocol (e.g. 'app', 'https')." },
+    { "name": "domainName", "type": "String?", "description": "Optional domain/authority (e.g. 'myapp' or null for all domains)." },
+    { "name": "handler", "type": "KromiumAssetHandler", "description": "The KromiumAssetHandler serving virtual responses for this scheme and domain." }
+  ]
+}

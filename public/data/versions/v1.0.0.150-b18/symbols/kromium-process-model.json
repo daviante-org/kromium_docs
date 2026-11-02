@@ -1,0 +1,44 @@
+{
+  "id": "kromium-process-model",
+  "name": "KromiumProcessModel",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "enum class KromiumProcessModel",
+  "description": "Defines the process isolation model used by Kromium and Chromium Embedded Framework. Controls whether the browser engine runs in-process within the host JVM, in a dedicated multi-process architecture via jcef_helper subprocesses, or as an external RPC server daemon.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Configure via KromiumConfig.builder().browserConfig { b -> b.processModel(...) }. Use AUTO (default) for desktop UI applications. Use IN_PROCESS when explicit single-process control is needed. Avoid OUT_OF_PROCESS for standard desktop apps as it requires custom CefNativeRenderHandler.",
+  "options": [],
+  "properties": [],
+  "methods": [],
+  "exceptions": [],
+  "variants": [
+    {
+      "name": "AUTO",
+      "declaration": "AUTO",
+      "description": "Automatically chooses the best process model for the platform. Uses multi-process Chromium architecture where the browser host runs embedded in the host JVM while GPU acceleration, WebGL rasterization, and web renderers run in dedicated jcef_helper subprocesses with their own OS Process IDs (PIDs) via --browser-subprocess-path. Provides 100% compatibility with Compose Desktop (SwingPanel), Swing, JavaFX, and SWT in both Windowed and Off-Screen Rendering (OSR) modes."
+    },
+    {
+      "name": "OUT_OF_PROCESS",
+      "declaration": "OUT_OF_PROCESS",
+      "description": "Executes the Chromium browser engine in an external RPC server daemon (cef_server). In JetBrains JCEF, cef_server RPC mode requires a custom CefNativeRenderHandler (shared memory rasterization) and does not support standard Windowed (CefRendering.DEFAULT) or standard OSR rendering. Use AUTO or IN_PROCESS for desktop UI applications."
+    },
+    {
+      "name": "IN_PROCESS",
+      "declaration": "IN_PROCESS",
+      "description": "Executes the Chromium browser engine directly inside the host JVM process. When running in this mode, Kromium applies defensive GPU flags (such as --disable-direct-composition and --disable-gpu-watchdog on Windows) to prevent swapchain hijacking and Direct3D collisions with the host UI toolkit."
+    }
+  ],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig\nimport org.daviante.kromium.api.config.KromiumProcessModel\n\nval config = KromiumConfig.builder()\n    .browserConfig { b ->\n        b.processModel(KromiumProcessModel.AUTO)\n    }\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumConfig;\nimport org.daviante.kromium.api.config.KromiumProcessModel;\n\nKromiumConfig config = KromiumConfig.builder()\n    .browserConfig(b -> b.processModel(KromiumProcessModel.IN_PROCESS))\n    .build();"
+    }
+  ]
+}

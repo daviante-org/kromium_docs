@@ -1,0 +1,20 @@
+{
+  "id": "kromium-popup-listener",
+  "name": "KromiumPopupListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Listener for intercepting popup window creation events.",
+  "declaration": "fun interface KromiumPopupListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onBeforePopup",
+      "signature": "fun onBeforePopup(targetUrl: String): Boolean",
+      "returnType": "Boolean",
+      "description": "Called before a popup window is opened. Returns true to cancel/block the popup, or false to allow the popup to open.",
+      "parameters": [
+        { "name": "targetUrl", "type": "String", "description": "The destination URL of the popup window." }
+      ]
+    }
+  ]
+}

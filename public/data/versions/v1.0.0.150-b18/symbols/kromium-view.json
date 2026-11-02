@@ -1,0 +1,122 @@
+{
+  "id": "kromium-view",
+  "name": "KromiumView",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Facade for rendering, zooming, and visual operations.",
+  "declaration": "interface KromiumView",
+  "since": "v1.0.0.150-b11",
+  "properties": [
+    { "name": "surface", "type": "KromiumRenderSurface", "description": "The native rendering surface associated with this browser." },
+    { "name": "zoomLevel", "type": "Double", "description": "Gets or sets the current zoom level. (0.0 is 100%, 1.0 is ~120%, -1.0 is ~80%)." },
+    { "name": "scaleFactor", "type": "Double", "description": "Gets or sets the manual UI scaling factor (e.g. 1.0 = 100%, 2.0 = 200%)." },
+    { "name": "isAutoDetectScaleFactor", "type": "Boolean", "description": "Whether OSR automatically detects display DPI scaling." },
+    { "name": "scrollMultiplier", "type": "Double", "description": "Scroll sensitivity multiplier for OSR mode (default: 1.0)." }
+  ],
+  "methods": [
+    {
+      "name": "setZoom",
+      "signature": "fun setZoom(level: Double)",
+      "returnType": "Unit",
+      "description": "Sets the zoom level for this browser.",
+      "parameters": [
+        { "name": "level", "type": "Double", "description": "Zoom level value." }
+      ]
+    },
+    {
+      "name": "getZoom",
+      "signature": "fun getZoom(): Double",
+      "returnType": "Double",
+      "description": "Gets the current zoom level."
+    },
+    {
+      "name": "takeScreenshot",
+      "signature": "fun takeScreenshot(): BufferedImage?",
+      "returnType": "BufferedImage?",
+      "description": "Captures a screenshot of the current page rendering synchronously."
+    },
+    {
+      "name": "takeScreenshotAsync",
+      "signature": "fun takeScreenshotAsync(): CompletableFuture<BufferedImage?>",
+      "returnType": "CompletableFuture<BufferedImage?>",
+      "description": "Asynchronously captures a screenshot of the current page using native capabilities."
+    },
+    {
+      "name": "setAntialiasing",
+      "signature": "fun setAntialiasing(enabled: Boolean)",
+      "returnType": "Unit",
+      "description": "Toggles graphics antialiasing on the underlying rendering component.",
+      "parameters": [
+        { "name": "enabled", "type": "Boolean", "description": "Whether antialiasing is enabled." }
+      ]
+    },
+    {
+      "name": "setInterpolation",
+      "signature": "fun setInterpolation(quality: String)",
+      "returnType": "Unit",
+      "description": "Sets the rendering interpolation quality.",
+      "parameters": [
+        { "name": "quality", "type": "String", "description": "Interpolation quality ('high', 'low', 'bilinear', 'bicubic', 'nearest_neighbor')." }
+      ]
+    },
+    {
+      "name": "resetScaleFactorToAuto",
+      "signature": "fun resetScaleFactorToAuto()",
+      "returnType": "Unit",
+      "description": "Resets the UI scaling factor to automatically match system DPI."
+    },
+    {
+      "name": "print",
+      "signature": "fun print()",
+      "returnType": "Unit",
+      "description": "Triggers the operating system's native interactive print dialog for the current page."
+    },
+    {
+      "name": "printToPdf",
+      "signature": "fun printToPdf(path: String): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Generates a PDF of the current page and saves it to the specified path using default settings.",
+      "parameters": [
+        { "name": "path", "type": "String", "description": "File path to save the PDF." }
+      ]
+    },
+    {
+      "name": "printToPdf",
+      "signature": "fun printToPdf(path: String, settings: KromiumPdfSettings): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Generates a vector PDF of the current page and saves it with custom settings.",
+      "parameters": [
+        { "name": "path", "type": "String", "description": "File path to save the PDF." },
+        { "name": "settings", "type": "KromiumPdfSettings", "description": "Detailed PDF formatting settings." }
+      ]
+    },
+    {
+      "name": "sendKeyEvent",
+      "signature": "fun sendKeyEvent(event: KromiumKeyEvent)",
+      "returnType": "Unit",
+      "description": "Dispatches a standardized cross-platform keyboard event into the browser viewport.",
+      "parameters": [
+        { "name": "event", "type": "KromiumKeyEvent", "description": "The unified keyboard event to dispatch." }
+      ]
+    },
+    {
+      "name": "setFocus",
+      "signature": "fun setFocus(focused: Boolean = true)",
+      "returnType": "Unit",
+      "description": "Explicitly notifies the underlying browser rendering engine whether this view has active focus.",
+      "parameters": [
+        { "name": "focused", "type": "Boolean", "description": "True if browser host should receive focus.", "optional": true, "defaultValue": "true" }
+      ]
+    },
+    {
+      "name": "resize",
+      "signature": "fun resize(width: Int, height: Int)",
+      "returnType": "Unit",
+      "description": "Resizes the underlying browser rendering surface to the specified dimensions.",
+      "parameters": [
+        { "name": "width", "type": "Int", "description": "Width in pixels." },
+        { "name": "height", "type": "Int", "description": "Height in pixels." }
+      ]
+    }
+  ]
+}

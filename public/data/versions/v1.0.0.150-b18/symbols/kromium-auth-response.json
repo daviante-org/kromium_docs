@@ -1,0 +1,45 @@
+{
+  "id": "kromium-auth-response",
+  "name": "KromiumAuthResponse",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "The response decision for an authentication challenge.",
+  "declaration": "sealed class KromiumAuthResponse",
+  "since": "v1.0.0.150-b11",
+  "subclasses": [
+    {
+      "name": "KromiumAuthResponse.Cancel",
+      "description": "Cancel the authentication request."
+    },
+    {
+      "name": "KromiumAuthResponse.Proceed",
+      "description": "Provide authentication credentials with username and password."
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "cancel",
+      "signature": "fun cancel(): KromiumAuthResponse",
+      "returnType": "KromiumAuthResponse",
+      "description": "Returns a response that cancels the authentication challenge."
+    },
+    {
+      "name": "proceed",
+      "signature": "fun proceed(username: String, password: String): KromiumAuthResponse",
+      "returnType": "KromiumAuthResponse",
+      "description": "Returns a response providing authentication credentials.",
+      "parameters": [
+        {
+          "name": "username",
+          "type": "String",
+          "description": "Username for authentication."
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "description": "Password for authentication."
+        }
+      ]
+    }
+  ]
+}

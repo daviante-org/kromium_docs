@@ -1,0 +1,155 @@
+{
+  "id": "kromium-asset-response",
+  "name": "KromiumAssetResponse",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.scheme",
+  "summary": "Represents a virtual HTTP response returned by a KromiumAssetHandler to fulfill a custom scheme request.",
+  "declaration": "class KromiumAssetResponse @JvmOverloads constructor(\n    val statusCode: Int = 200,\n    val statusText: String = \"OK\",\n    val mimeType: String = \"application/octet-stream\",\n    val contentLength: Long? = null,\n    val headers: Map<String, String> = emptyMap(),\n    val openStream: () -> InputStream\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumAssetResponse(statusCode: Int = 200, statusText: String = \"OK\", mimeType: String = \"application/octet-stream\", contentLength: Long? = null, headers: Map<String, String> = emptyMap(), openStream: () -> InputStream)",
+      "description": "Constructs a virtual HTTP response.",
+      "parameters": [
+        { "name": "statusCode", "type": "Int", "description": "HTTP response status code.", "optional": true, "defaultValue": "200" },
+        { "name": "statusText", "type": "String", "description": "HTTP status description.", "optional": true, "defaultValue": "\"OK\"" },
+        { "name": "mimeType", "type": "String", "description": "MIME content type.", "optional": true, "defaultValue": "\"application/octet-stream\"" },
+        { "name": "contentLength", "type": "Long?", "description": "Total content length in bytes, or null.", "optional": true, "defaultValue": "null" },
+        { "name": "headers", "type": "Map<String, String>", "description": "Response headers map.", "optional": true, "defaultValue": "emptyMap()" },
+        { "name": "openStream", "type": "() -> InputStream", "description": "Lambda returning an InputStream to stream data." }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "statusCode", "type": "Int", "description": "HTTP response status code." },
+    { "name": "statusText", "type": "String", "description": "HTTP status line description." },
+    { "name": "mimeType", "type": "String", "description": "MIME Content-Type of payload." },
+    { "name": "contentLength", "type": "Long?", "description": "Total content length in bytes if known." },
+    { "name": "headers", "type": "Map<String, String>", "description": "HTTP response headers." },
+    { "name": "openStream", "type": "() -> InputStream", "description": "Lambda returning an InputStream to stream response data." }
+  ],
+  "methods": [
+    {
+      "name": "withHeader",
+      "signature": "fun withHeader(name: String, value: String): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Returns a new copy with the specified header added or replaced.",
+      "parameters": [
+        { "name": "name", "type": "String", "description": "Header name." },
+        { "name": "value", "type": "String", "description": "Header value." }
+      ]
+    },
+    {
+      "name": "withHeaders",
+      "signature": "fun withHeaders(newHeaders: Map<String, String>): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Returns a new copy with multiple headers appended.",
+      "parameters": [
+        { "name": "newHeaders", "type": "Map<String, String>", "description": "Map of headers to append." }
+      ]
+    },
+    {
+      "name": "withCors",
+      "signature": "fun withCors(allowedOrigins: String = \"*\"): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Appends permissive CORS headers.",
+      "parameters": [
+        { "name": "allowedOrigins", "type": "String", "description": "Origins permitted (default: '*').", "optional": true, "defaultValue": "\"*\"" }
+      ]
+    },
+    {
+      "name": "withCacheControl",
+      "signature": "fun withCacheControl(maxAgeSeconds: Int): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Sets standard Cache-Control header with max-age in seconds.",
+      "parameters": [
+        { "name": "maxAgeSeconds", "type": "Int", "description": "Max age in seconds." }
+      ]
+    },
+    {
+      "name": "withNoCache",
+      "signature": "fun withNoCache(): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Sets Cache-Control: no-cache, no-store, must-revalidate."
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "ok",
+      "signature": "fun ok(bytes: ByteArray, mimeType: String): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a 200 OK response from a byte array.",
+      "parameters": [
+        { "name": "bytes", "type": "ByteArray", "description": "Payload bytes." },
+        { "name": "mimeType", "type": "String", "description": "MIME Content-Type." }
+      ]
+    },
+    {
+      "name": "stream",
+      "signature": "fun stream(mimeType: String, contentLength: Long? = null, streamProvider: () -> InputStream): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a streaming response from an InputStream.",
+      "parameters": [
+        { "name": "mimeType", "type": "String", "description": "MIME Content-Type." },
+        { "name": "contentLength", "type": "Long?", "description": "Total length if known.", "optional": true, "defaultValue": "null" },
+        { "name": "streamProvider", "type": "() -> InputStream", "description": "Provider lambda yielding stream." }
+      ]
+    },
+    {
+      "name": "text",
+      "signature": "fun text(text: String, mimeType: String = \"text/plain; charset=utf-8\"): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a 200 OK response from text with UTF-8 encoding.",
+      "parameters": [
+        { "name": "text", "type": "String", "description": "String text content." },
+        { "name": "mimeType", "type": "String", "description": "MIME type.", "optional": true, "defaultValue": "\"text/plain; charset=utf-8\"" }
+      ]
+    },
+    {
+      "name": "json",
+      "signature": "fun json(json: String): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a 200 OK JSON response.",
+      "parameters": [
+        { "name": "json", "type": "String", "description": "JSON string content." }
+      ]
+    },
+    {
+      "name": "html",
+      "signature": "fun html(html: String): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a 200 OK HTML response.",
+      "parameters": [
+        { "name": "html", "type": "String", "description": "HTML string content." }
+      ]
+    },
+    {
+      "name": "notFound",
+      "signature": "fun notFound(message: String = \"404 Not Found\"): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a 404 Not Found response.",
+      "parameters": [
+        { "name": "message", "type": "String", "description": "Error message.", "optional": true, "defaultValue": "\"404 Not Found\"" }
+      ]
+    },
+    {
+      "name": "forbidden",
+      "signature": "fun forbidden(message: String = \"403 Forbidden\"): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a 403 Forbidden response.",
+      "parameters": [
+        { "name": "message", "type": "String", "description": "Error message.", "optional": true, "defaultValue": "\"403 Forbidden\"" }
+      ]
+    },
+    {
+      "name": "error",
+      "signature": "fun error(statusCode: Int, message: String): KromiumAssetResponse",
+      "returnType": "KromiumAssetResponse",
+      "description": "Creates a generic error response with custom status code.",
+      "parameters": [
+        { "name": "statusCode", "type": "Int", "description": "HTTP status code." },
+        { "name": "message", "type": "String", "description": "Error message." }
+      ]
+    }
+  ]
+}

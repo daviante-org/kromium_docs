@@ -1,0 +1,76 @@
+{
+  "id": "kromium-downloads",
+  "name": "KromiumDownloads",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.download",
+  "summary": "Facade for download management operations.",
+  "declaration": "interface KromiumDownloads",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "startDownload",
+      "signature": "fun startDownload(url: String)",
+      "returnType": "Unit",
+      "description": "Starts a download of the given URL.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The URL of the resource to download."
+        }
+      ]
+    },
+    {
+      "name": "cancelDownload",
+      "signature": "fun cancelDownload(downloadId: Int): Boolean",
+      "returnType": "Boolean",
+      "description": "Cancels an active download by its ID.",
+      "parameters": [
+        {
+          "name": "downloadId",
+          "type": "Int",
+          "description": "The unique identifier of the download."
+        }
+      ]
+    },
+    {
+      "name": "pauseDownload",
+      "signature": "fun pauseDownload(downloadId: Int): Boolean",
+      "returnType": "Boolean",
+      "description": "Pauses an active download by its ID.",
+      "parameters": [
+        {
+          "name": "downloadId",
+          "type": "Int",
+          "description": "The unique identifier of the download."
+        }
+      ]
+    },
+    {
+      "name": "resumeDownload",
+      "signature": "fun resumeDownload(downloadId: Int): Boolean",
+      "returnType": "Boolean",
+      "description": "Resumes a paused download by its ID.",
+      "parameters": [
+        {
+          "name": "downloadId",
+          "type": "Int",
+          "description": "The unique identifier of the download."
+        }
+      ]
+    },
+    {
+      "name": "isDownloadPaused",
+      "signature": "fun isDownloadPaused(downloadId: Int): Boolean",
+      "returnType": "Boolean",
+      "description": "Checks if a download is currently paused.",
+      "parameters": [
+        {
+          "name": "downloadId",
+          "type": "Int",
+          "description": "The unique identifier of the download."
+        }
+      ]
+    }
+  ]
+}

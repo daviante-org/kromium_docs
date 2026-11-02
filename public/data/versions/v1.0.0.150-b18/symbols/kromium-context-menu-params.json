@@ -1,0 +1,48 @@
+{
+  "id": "kromium-context-menu-params",
+  "name": "KromiumContextMenuParams",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Encapsulates the contextual parameters of the user's right-click or context menu gesture.",
+  "declaration": "data class KromiumContextMenuParams(\n    val x: Int,\n    val y: Int,\n    val linkUrl: String? = null,\n    val unfilteredLinkUrl: String? = null,\n    val sourceUrl: String? = null,\n    val hasImage: Boolean = false,\n    val pageUrl: String? = null,\n    val frameUrl: String? = null,\n    val selectionText: String? = null,\n    val misspelledWord: String? = null,\n    val isEditable: Boolean = false,\n    val isSpellCheckEnabled: Boolean = false\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumContextMenuParams(x: Int, y: Int, linkUrl: String? = null, unfilteredLinkUrl: String? = null, sourceUrl: String? = null, hasImage: Boolean = false, pageUrl: String? = null, frameUrl: String? = null, selectionText: String? = null, misspelledWord: String? = null, isEditable: Boolean = false, isSpellCheckEnabled: Boolean = false)",
+      "description": "Constructs a context menu parameters instance.",
+      "parameters": [
+        { "name": "x", "type": "Int", "description": "Horizontal coordinate relative to browser viewport." },
+        { "name": "y", "type": "Int", "description": "Vertical coordinate relative to browser viewport." },
+        { "name": "linkUrl", "type": "String?", "description": "Target URL if right-click occurred on a hyperlink.", "optional": true, "defaultValue": "null" },
+        { "name": "unfilteredLinkUrl", "type": "String?", "description": "Unfiltered target URL if on a hyperlink.", "optional": true, "defaultValue": "null" },
+        { "name": "sourceUrl", "type": "String?", "description": "Source URL if right-click occurred on media.", "optional": true, "defaultValue": "null" },
+        { "name": "hasImage", "type": "Boolean", "description": "True if clicked element has image contents.", "optional": true, "defaultValue": "false" },
+        { "name": "pageUrl", "type": "String?", "description": "URL of the top-level page.", "optional": true, "defaultValue": "null" },
+        { "name": "frameUrl", "type": "String?", "description": "URL of the specific subframe.", "optional": true, "defaultValue": "null" },
+        { "name": "selectionText", "type": "String?", "description": "Any text currently highlighted/selected.", "optional": true, "defaultValue": "null" },
+        { "name": "misspelledWord", "type": "String?", "description": "Misspelled word under cursor if spellcheck active.", "optional": true, "defaultValue": "null" },
+        { "name": "isEditable", "type": "Boolean", "description": "True if triggered inside an editable field.", "optional": true, "defaultValue": "false" },
+        { "name": "isSpellCheckEnabled", "type": "Boolean", "description": "True if spell checking is enabled.", "optional": true, "defaultValue": "false" }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "x", "type": "Int", "description": "Horizontal coordinate relative to the browser viewport." },
+    { "name": "y", "type": "Int", "description": "Vertical coordinate relative to the browser viewport." },
+    { "name": "linkUrl", "type": "String?", "description": "The target URL if right-click occurred on a hyperlink." },
+    { "name": "unfilteredLinkUrl", "type": "String?", "description": "The unfiltered target URL if on a hyperlink." },
+    { "name": "sourceUrl", "type": "String?", "description": "The source URL if right-click occurred on media." },
+    { "name": "hasImage", "type": "Boolean", "description": "True if the clicked element has image contents." },
+    { "name": "pageUrl", "type": "String?", "description": "URL of the top-level page." },
+    { "name": "frameUrl", "type": "String?", "description": "URL of the specific subframe." },
+    { "name": "selectionText", "type": "String?", "description": "Any text currently highlighted/selected." },
+    { "name": "misspelledWord", "type": "String?", "description": "The misspelled word under cursor if spellcheck is active." },
+    { "name": "isEditable", "type": "Boolean", "description": "True if triggered inside an editable field." },
+    { "name": "isSpellCheckEnabled", "type": "Boolean", "description": "True if spell checking is enabled." }
+  ],
+  "methods": [
+    { "name": "hasSelection", "signature": "fun hasSelection(): Boolean", "returnType": "Boolean", "description": "True if text is currently highlighted or selected." },
+    { "name": "isLink", "signature": "fun isLink(): Boolean", "returnType": "Boolean", "description": "True if the click was on a hyperlink." },
+    { "name": "hasMedia", "signature": "fun hasMedia(): Boolean", "returnType": "Boolean", "description": "True if the click was on media or an image element." }
+  ]
+}

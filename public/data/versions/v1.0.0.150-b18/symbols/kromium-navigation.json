@@ -1,0 +1,255 @@
+{
+  "id": "kromium-navigation",
+  "name": "KromiumNavigation",
+  "module": "kromium-api",
+  "category": "Navigation & Lifecycle",
+  "package": "org.daviante.kromium.api.navigation",
+  "declaration": "interface KromiumNavigation",
+  "description": "Facade for browser navigation operations. Provides URL loading with lifecycle stage awaiting, history traversal, HTML injection, network idle detection, and reload/stop controls.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Access via browser.navigation to load URLs, navigate history, wait for page lifecycle stages, or detect network idle state.",
+  "options": [],
+  "properties": [
+    {
+      "name": "navigationState",
+      "type": "StateFlow<KromiumNavigationState>",
+      "description": "Observable state stream of the browser's navigation and loading status."
+    }
+  ],
+  "methods": [
+    {
+      "name": "loadUrl",
+      "signature": "suspend fun loadUrl(url: String, waitUntil: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Loads a specific URL in the browser and suspends until the navigation reaches the requested stage.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The URL to load."
+        },
+        {
+          "name": "waitUntil",
+          "type": "NavigationStage",
+          "description": "The lifecycle stage to await (default: LOADED).",
+          "optional": true,
+          "defaultValue": "NavigationStage.LOADED"
+        },
+        {
+          "name": "timeoutMs",
+          "type": "Long",
+          "description": "Maximum time to wait in milliseconds.",
+          "optional": true,
+          "defaultValue": "10000L"
+        }
+      ]
+    },
+    {
+      "name": "loadUrl",
+      "signature": "fun loadUrl(url: String)",
+      "returnType": "Unit",
+      "description": "Loads a specific URL in the browser without suspending.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The URL to load."
+        }
+      ]
+    },
+    {
+      "name": "loadUrlAsync",
+      "signature": "fun loadUrlAsync(url: String, waitUntil: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Loads a specific URL and returns a CompletableFuture that completes when the requested stage is reached.",
+      "parameters": [
+        {
+          "name": "url",
+          "type": "String",
+          "description": "The URL to load."
+        },
+        {
+          "name": "waitUntil",
+          "type": "NavigationStage",
+          "description": "The lifecycle stage to await (default: LOADED).",
+          "optional": true,
+          "defaultValue": "NavigationStage.LOADED"
+        },
+        {
+          "name": "timeoutMs",
+          "type": "Long",
+          "description": "Maximum time to wait in milliseconds.",
+          "optional": true,
+          "defaultValue": "10000L"
+        }
+      ]
+    },
+    {
+      "name": "waitForNavigation",
+      "signature": "suspend fun waitForNavigation(stage: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): Boolean",
+      "returnType": "Boolean",
+      "description": "Waits for the page navigation lifecycle to reach the specified stage.",
+      "parameters": [
+        {
+          "name": "stage",
+          "type": "NavigationStage",
+          "description": "The lifecycle stage to await.",
+          "optional": true,
+          "defaultValue": "NavigationStage.LOADED"
+        },
+        {
+          "name": "timeoutMs",
+          "type": "Long",
+          "description": "Maximum time to wait in milliseconds.",
+          "optional": true,
+          "defaultValue": "10000L"
+        }
+      ]
+    },
+    {
+      "name": "waitForNavigationAsync",
+      "signature": "fun waitForNavigationAsync(stage: NavigationStage = NavigationStage.LOADED, timeoutMs: Long = 10_000L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Waits for the page navigation lifecycle to reach the specified stage and returns a CompletableFuture.",
+      "parameters": [
+        {
+          "name": "stage",
+          "type": "NavigationStage",
+          "description": "The lifecycle stage to await.",
+          "optional": true,
+          "defaultValue": "NavigationStage.LOADED"
+        },
+        {
+          "name": "timeoutMs",
+          "type": "Long",
+          "description": "Maximum time to wait in milliseconds.",
+          "optional": true,
+          "defaultValue": "10000L"
+        }
+      ]
+    },
+    {
+      "name": "waitForNetworkIdle",
+      "signature": "suspend fun waitForNetworkIdle(idleTimeMs: Long = 500L, maxTimeoutMs: Long = 10_000L, pollIntervalMs: Long = 50L): Boolean",
+      "returnType": "Boolean",
+      "description": "Waits until there are no active in-flight network requests for a specific duration.",
+      "parameters": [
+        {
+          "name": "idleTimeMs",
+          "type": "Long",
+          "description": "The continuous duration (in ms) that network requests must be at zero.",
+          "optional": true,
+          "defaultValue": "500L"
+        },
+        {
+          "name": "maxTimeoutMs",
+          "type": "Long",
+          "description": "Maximum time to wait before giving up.",
+          "optional": true,
+          "defaultValue": "10000L"
+        },
+        {
+          "name": "pollIntervalMs",
+          "type": "Long",
+          "description": "The frequency to check the network state (in ms).",
+          "optional": true,
+          "defaultValue": "50L"
+        }
+      ]
+    },
+    {
+      "name": "waitForNetworkIdleAsync",
+      "signature": "fun waitForNetworkIdleAsync(idleTimeMs: Long = 500L, maxTimeoutMs: Long = 10_000L, pollIntervalMs: Long = 50L): CompletableFuture<Boolean>",
+      "returnType": "CompletableFuture<Boolean>",
+      "description": "Waits until there are no active in-flight network requests and returns a CompletableFuture.",
+      "parameters": [
+        {
+          "name": "idleTimeMs",
+          "type": "Long",
+          "description": "The continuous duration (in ms) that network requests must be at zero.",
+          "optional": true,
+          "defaultValue": "500L"
+        },
+        {
+          "name": "maxTimeoutMs",
+          "type": "Long",
+          "description": "Maximum time to wait before giving up.",
+          "optional": true,
+          "defaultValue": "10000L"
+        },
+        {
+          "name": "pollIntervalMs",
+          "type": "Long",
+          "description": "The frequency to check the network state (in ms).",
+          "optional": true,
+          "defaultValue": "50L"
+        }
+      ]
+    },
+    {
+      "name": "loadHtml",
+      "signature": "fun loadHtml(html: String, url: String = \"http://kromium.local/\")",
+      "returnType": "Unit",
+      "description": "Loads raw HTML content directly into the browser.",
+      "parameters": [
+        {
+          "name": "html",
+          "type": "String",
+          "description": "The raw HTML string."
+        },
+        {
+          "name": "url",
+          "type": "String",
+          "description": "A dummy URL to use as the origin/base (default is \"http://kromium.local/\").",
+          "optional": true,
+          "defaultValue": "\"http://kromium.local/\""
+        }
+      ]
+    },
+    {
+      "name": "goBack",
+      "signature": "fun goBack()",
+      "returnType": "Unit",
+      "description": "Navigates backwards in the history, if possible."
+    },
+    {
+      "name": "goForward",
+      "signature": "fun goForward()",
+      "returnType": "Unit",
+      "description": "Navigates forwards in the history, if possible."
+    },
+    {
+      "name": "canGoBack",
+      "signature": "fun canGoBack(): Boolean",
+      "returnType": "Boolean",
+      "description": "Returns true if the browser can navigate backwards."
+    },
+    {
+      "name": "canGoForward",
+      "signature": "fun canGoForward(): Boolean",
+      "returnType": "Boolean",
+      "description": "Returns true if the browser can navigate forwards."
+    },
+    {
+      "name": "reload",
+      "signature": "fun reload(ignoreCache: Boolean = false)",
+      "returnType": "Unit",
+      "description": "Reloads the current page.",
+      "parameters": [
+        {
+          "name": "ignoreCache",
+          "type": "Boolean",
+          "description": "Whether to bypass the cache when reloading.",
+          "optional": true,
+          "defaultValue": "false"
+        }
+      ]
+    },
+    {
+      "name": "stopLoad",
+      "signature": "fun stopLoad()",
+      "returnType": "Unit",
+      "description": "Stops any pending or current load operation."
+    }
+  ]
+}

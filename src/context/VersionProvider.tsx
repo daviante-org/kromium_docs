@@ -4,12 +4,18 @@ import { VersionManifest } from '../types/VersionManifest';
 import { VersionContext } from './VersionContext';
 
 export function VersionProvider({ children }: { children: ReactNode }) {
-  const [currentVersion, setCurrentVersion] = useState<string>('v1.0.0.150-b16');
+  const [currentVersion, setCurrentVersion] = useState<string>('v1.0.0.150-b18');
   const [versions, setVersions] = useState<VersionItem[]>([
+    {
+      version: 'v1.0.0.150-b18',
+      name: 'v1.0.0.150-b18',
+      isLatest: true,
+      releaseDate: '2026-11-02',
+    },
     {
       version: 'v1.0.0.150-b16',
       name: 'v1.0.0.150-b16',
-      isLatest: true,
+      isLatest: false,
       releaseDate: '2026-10-20',
     },
     {
@@ -19,7 +25,7 @@ export function VersionProvider({ children }: { children: ReactNode }) {
       releaseDate: '2026-09-26',
     },
   ]);
-  const [latestVersion, setLatestVersion] = useState<string>('v1.0.0.150-b16');
+  const [latestVersion, setLatestVersion] = useState<string>('v1.0.0.150-b18');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {

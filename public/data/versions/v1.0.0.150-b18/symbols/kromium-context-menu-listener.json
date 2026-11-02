@@ -1,0 +1,50 @@
+{
+  "id": "kromium-context-menu-listener",
+  "name": "KromiumContextMenuListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Functional interface for intercepting, suppressing, or customizing right-click context menus.",
+  "declaration": "fun interface KromiumContextMenuListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onBuildContextMenu",
+      "signature": "fun onBuildContextMenu(builder: KromiumMenuBuilder, context: KromiumContextMenuContext)",
+      "returnType": "Unit",
+      "description": "Called when a context menu is about to be displayed.",
+      "parameters": [
+        { "name": "builder", "type": "KromiumMenuBuilder", "description": "Declarative builder for adding, removing, or customizing menu items." },
+        { "name": "context", "type": "KromiumContextMenuContext", "description": "Click coordinates, target URLs, selected text, and helper actions." }
+      ]
+    }
+  ],
+  "companionMethods": [
+    {
+      "name": "disabled",
+      "signature": "fun disabled(): KromiumContextMenuListener",
+      "returnType": "KromiumContextMenuListener",
+      "description": "Suppresses context menus entirely by clearing all items."
+    },
+    {
+      "name": "defaultMenu",
+      "signature": "fun defaultMenu(): KromiumContextMenuListener",
+      "returnType": "KromiumContextMenuListener",
+      "description": "Preserves default native context menu items without modifications."
+    },
+    {
+      "name": "devToolsOnly",
+      "signature": "fun devToolsOnly(): KromiumContextMenuListener",
+      "returnType": "KromiumContextMenuListener",
+      "description": "Replaces default menus with a minimal developer menu containing only 'Inspect Element'."
+    },
+    {
+      "name": "minimalEditing",
+      "signature": "fun minimalEditing(includeInspectElement: Boolean = false): KromiumContextMenuListener",
+      "returnType": "KromiumContextMenuListener",
+      "description": "Turnkey menu tailored for clean desktop applications with copy, paste, select all, and optional inspect element.",
+      "parameters": [
+        { "name": "includeInspectElement", "type": "Boolean", "description": "Whether to include inspect element option.", "optional": true, "defaultValue": "false" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "proxy-configuration",
+  "title": "Enterprise Networking & Proxies API",
+  "summary": "Configure HTTP, HTTPS, SOCKS5, and PAC proxies, remote DNS leak protection, and dynamic proxy switching.",
+  "category": "Networking",
+  "readTime": "6 min",
+  "lastUpdated": "2026-09-27",
+  "sections": [
+    {
+      "id": "proxy-modes",
+      "title": "Supported Proxy Modes",
+      "content": "Kromium models proxy configurations via the type-safe sealed class KromiumProxy.\n\n| Mode | Class | Description |\n| :--- | :--- | :--- |\n| **System Default** | `KromiumProxy.System` | Adopts host OS proxy settings. |\n| **Direct** | `KromiumProxy.Direct` | Bypasses all proxies. |\n| **Auto-Detect** | `KromiumProxy.AutoDetect` | Uses WPAD via DHCP and DNS queries. |\n| **PAC Script** | `KromiumProxy.Pac(pacUrl)` | Downloads and evaluates PAC script. |\n| **HTTP / HTTPS** | `KromiumProxy.Http(...)` | Standard HTTP or TLS-encrypted forward proxy. |\n| **SOCKS5 / SOCKS4** | `KromiumProxy.Socks5(...)` | SOCKS proxy with optional remote DNS leak protection. |\n| **Multi-Protocol** | `KromiumProxy.MultiProtocol(...)` | Routes different protocols through separate endpoints. |"
+    },
+    {
+      "id": "configuring-proxies",
+      "title": "Configuring Proxies",
+      "content": "Configure the proxy when building KromiumConfig before engine startup.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val config = KromiumConfig.builder()\n    .browserConfig { b ->\n        b.proxy(\n            KromiumProxy.Http(\n                host = \"proxy.corp.internal\",\n                port = 8080,\n                username = \"corporate_user\",\n                password = \"secure_password\",\n                isSecure = true,\n                bypassList = listOf(\"<local>\", \"127.0.0.1\", \"*.internal.net\")\n            )\n        )\n    }\n    .build()"
+      }
+    },
+    {
+      "id": "socks5-remote-dns",
+      "title": "SOCKS5 with Remote DNS Leak Protection",
+      "content": "Setting remoteDns = true ensures DNS queries are resolved exclusively through the proxy rather than leaking to local ISP.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val socks5 = KromiumProxy.Socks5(\n    host = \"10.0.0.1\",\n    port = 1080,\n    remoteDns = true\n)"
+      }
+    },
+    {
+      "id": "runtime-switching",
+      "title": "Dynamic Runtime Proxy Switching",
+      "content": "Switch proxies dynamically on active client sessions without restarting the engine.",
+      "codeSnippet": {
+        "language": "kotlin",
+        "code": "val proxyManager = client.proxyManager\nproxyManager.setProxy(KromiumProxy.Direct)"
+      }
+    }
+  ],
+  "relatedApis": [
+    { "name": "KromiumProxy", "path": "/api/kromium-proxy" },
+    { "name": "KromiumProxyManager", "path": "/api/kromium-proxy-manager" }
+  ]
+}

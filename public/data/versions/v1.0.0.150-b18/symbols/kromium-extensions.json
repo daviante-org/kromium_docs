@@ -1,0 +1,33 @@
+{
+  "id": "kromium-extensions",
+  "name": "KromiumExtensions",
+  "kind": "file",
+  "package": "org.daviante.kromium.api.core",
+  "summary": "Extension functions for streamlined creation of headless browser instances on KromiumEngine and KromiumClient.",
+  "declaration": "package org.daviante.kromium.api.core",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "createHeadlessBrowser",
+      "signature": "fun KromiumEngine.createHeadlessBrowser(url: String = \"about:blank\", width: Int = 1280, height: Int = 800): KromiumBrowser",
+      "returnType": "KromiumBrowser",
+      "description": "Creates a new zero-dependency headless KromiumBrowser instance within a new isolated client session.",
+      "parameters": [
+        { "name": "url", "type": "String", "description": "The initial URL to load.", "optional": true, "defaultValue": "\"about:blank\"" },
+        { "name": "width", "type": "Int", "description": "The initial width of the headless viewport.", "optional": true, "defaultValue": "1280" },
+        { "name": "height", "type": "Int", "description": "The initial height of the headless viewport.", "optional": true, "defaultValue": "800" }
+      ]
+    },
+    {
+      "name": "createHeadlessBrowser",
+      "signature": "fun KromiumClient.createHeadlessBrowser(url: String = \"about:blank\", width: Int = 1280, height: Int = 800): KromiumBrowser",
+      "returnType": "KromiumBrowser",
+      "description": "Creates a new zero-dependency headless KromiumBrowser instance on this client.",
+      "parameters": [
+        { "name": "url", "type": "String", "description": "The initial URL to load.", "optional": true, "defaultValue": "\"about:blank\"" },
+        { "name": "width", "type": "Int", "description": "The initial width of the headless viewport.", "optional": true, "defaultValue": "1280" },
+        { "name": "height", "type": "Int", "description": "The initial height of the headless viewport.", "optional": true, "defaultValue": "800" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "id": "kromium-security-config",
+  "name": "KromiumSecurityConfig",
+  "module": "kromium-api",
+  "category": "Configuration",
+  "package": "org.daviante.kromium.api.config",
+  "declaration": "@ConsistentCopyVisibility data class KromiumSecurityConfig internal constructor(val sandboxEnabled: Boolean, val blockRegistryAndTelemetry: Boolean, val doNotTrack: Boolean, val webrtcIpHandlingPolicy: String?, val authServerAllowlist: List<String>, val authNegotiateDelegateAllowlist: List<String>)",
+  "description": "Handles security boundaries, privacy headers, WebRTC IP leak prevention, enterprise NTLM/Kerberos authentication allowlists, and background telemetry blocking.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Configure within KromiumConfig.builder().securityConfig { ... } to lock down browser security, protect user privacy, or configure corporate SSO authentication.",
+  "options": [],
+  "properties": [
+    {
+      "name": "sandboxEnabled",
+      "signature": "val sandboxEnabled: Boolean",
+      "description": "Whether native Chromium sandboxing is enforced.",
+      "type": "Boolean",
+      "default": "true"
+    },
+    {
+      "name": "blockRegistryAndTelemetry",
+      "signature": "val blockRegistryAndTelemetry: Boolean",
+      "description": "Whether to block Windows registry touchpoints and outgoing background telemetry (metrics, crash reports).",
+      "type": "Boolean",
+      "default": "true"
+    },
+    {
+      "name": "doNotTrack",
+      "signature": "val doNotTrack: Boolean",
+      "description": "Whether DNT: 1 and Sec-GPC: 1 privacy headers are asserted.",
+      "type": "Boolean",
+      "default": "true"
+    },
+    {
+      "name": "webrtcIpHandlingPolicy",
+      "signature": "val webrtcIpHandlingPolicy: String?",
+      "description": "WebRTC IP handling policy to prevent local/private IP address leaks (e.g. disable_non_proxied_udp).",
+      "type": "String?",
+      "default": "null"
+    },
+    {
+      "name": "authServerAllowlist",
+      "signature": "val authServerAllowlist: List<String>",
+      "description": "Allowlist of servers permitted for integrated HTTP Windows authentication (NTLM/Kerberos).",
+      "type": "List<String>",
+      "default": "emptyList()"
+    },
+    {
+      "name": "authNegotiateDelegateAllowlist",
+      "signature": "val authNegotiateDelegateAllowlist: List<String>",
+      "description": "Allowlist of servers to which Kerberos credentials can be delegated.",
+      "type": "List<String>",
+      "default": "emptyList()"
+    }
+  ],
+  "methods": [
+    {
+      "name": "builder",
+      "signature": "@JvmStatic fun builder(): Builder",
+      "description": "Returns a new builder for KromiumSecurityConfig.",
+      "returns": "Builder",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.config.KromiumSecurityConfig\n\nval securityConfig = KromiumSecurityConfig.builder()\n    .sandboxEnabled(true)\n    .blockRegistryAndTelemetry(true)\n    .doNotTrack(true)\n    .webrtcIpHandlingPolicy(\"disable_non_proxied_udp\")\n    .authServerAllowlist(listOf(\"*.corp.internal\"))\n    .build()"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.config.KromiumSecurityConfig;\nimport java.util.List;\n\npublic class SecuritySetup {\n    public static KromiumSecurityConfig create() {\n        return KromiumSecurityConfig.builder()\n            .sandboxEnabled(true)\n            .doNotTrack(true)\n            .authServerAllowlist(List.of(\"*.corp.internal\"))\n            .build();\n    }\n}"
+    }
+  ]
+}

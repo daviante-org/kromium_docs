@@ -1,0 +1,37 @@
+{
+  "id": "kromium-proxy-manager",
+  "name": "KromiumProxyManager",
+  "module": "kromium-api",
+  "category": "Network & Security",
+  "package": "org.daviante.kromium.api.proxy",
+  "declaration": "interface KromiumProxyManager",
+  "description": "Facade for managing the proxy settings of the browser at runtime without restarting the browser engine or recreating the browser instance.",
+  "since": "v1.0.0.150-b11",
+  "whenToUse": "Access via browser.proxyManager to dynamically update proxy routing for an active browser instance.",
+  "options": [],
+  "properties": [],
+  "methods": [
+    {
+      "name": "updateProxy",
+      "signature": "fun updateProxy(proxy: KromiumProxy): Boolean",
+      "description": "Dynamically updates the proxy for this browser session.",
+      "returns": "Boolean",
+      "isSuspend": false,
+      "throws": []
+    }
+  ],
+  "exceptions": [],
+  "variants": [],
+  "frameworkExamples": [
+    {
+      "framework": "Compose Multiplatform",
+      "lang": "kotlin",
+      "code": "import org.daviante.kromium.api.core.KromiumBrowser\nimport org.daviante.kromium.api.proxy.KromiumProxy\n\nfun switchProxy(browser: KromiumBrowser, proxyHost: String, proxyPort: Int) {\n    val proxy = KromiumProxy.http(proxyHost, proxyPort)\n    val success = browser.proxyManager.updateProxy(proxy)\n    println(\"Proxy switch success: $success\")\n}"
+    },
+    {
+      "framework": "Pure Java",
+      "lang": "java",
+      "code": "import org.daviante.kromium.api.core.KromiumBrowser;\nimport org.daviante.kromium.api.proxy.KromiumProxy;\n\npublic class ProxySwitcher {\n    public static void setDirect(KromiumBrowser browser) {\n        browser.getProxyManager().updateProxy(KromiumProxy.direct());\n    }\n}"
+    }
+  ]
+}

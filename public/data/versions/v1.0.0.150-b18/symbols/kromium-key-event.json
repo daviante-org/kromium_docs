@@ -1,0 +1,40 @@
+{
+  "id": "kromium-key-event",
+  "name": "KromiumKeyEvent",
+  "kind": "class",
+  "package": "org.daviante.kromium.api.ui",
+  "summary": "Framework-independent model representing a keyboard event in Kromium.",
+  "declaration": "data class KromiumKeyEvent(\n    val type: KromiumKeyEventType,\n    val keyCode: Int = 0,\n    val keyChar: Char = CHAR_UNDEFINED,\n    val modifiers: Int = 0\n)",
+  "since": "v1.0.0.150-b11",
+  "constructors": [
+    {
+      "signature": "KromiumKeyEvent(type: KromiumKeyEventType, keyCode: Int = 0, keyChar: Char = CHAR_UNDEFINED, modifiers: Int = 0)",
+      "description": "Constructs a keyboard event model.",
+      "parameters": [
+        { "name": "type", "type": "KromiumKeyEventType", "description": "Whether this is a key down, character typed, or key up." },
+        { "name": "keyCode", "type": "Int", "description": "Standard virtual key code.", "optional": true, "defaultValue": "0" },
+        { "name": "keyChar", "type": "Char", "description": "Character value for printable input.", "optional": true, "defaultValue": "CHAR_UNDEFINED" },
+        { "name": "modifiers", "type": "Int", "description": "Bitmask of active modifier keys.", "optional": true, "defaultValue": "0" }
+      ]
+    }
+  ],
+  "properties": [
+    { "name": "type", "type": "KromiumKeyEventType", "description": "Whether this is a key down, key character typed, or key up." },
+    { "name": "keyCode", "type": "Int", "description": "Standard virtual key code (see KromiumKeyCodes)." },
+    { "name": "keyChar", "type": "Char", "description": "Character value for printable input and text composition." },
+    { "name": "modifiers", "type": "Int", "description": "Bitmask of active modifier keys." },
+    { "name": "isShiftDown", "type": "Boolean", "description": "True if Shift key is depressed." },
+    { "name": "isControlDown", "type": "Boolean", "description": "True if Control key is depressed." },
+    { "name": "isAltDown", "type": "Boolean", "description": "True if Alt key is depressed." },
+    { "name": "isMetaDown", "type": "Boolean", "description": "True if Meta/Windows/Command key is depressed." },
+    { "name": "isAltGraphDown", "type": "Boolean", "description": "True if AltGraph key is depressed." }
+  ],
+  "companionProperties": [
+    { "name": "CHAR_UNDEFINED", "type": "Char", "description": "Undefined character constant ('\\uFFFF')." },
+    { "name": "SHIFT_MASK", "type": "Int", "description": "Shift key modifier bitmask." },
+    { "name": "CTRL_MASK", "type": "Int", "description": "Control key modifier bitmask." },
+    { "name": "ALT_MASK", "type": "Int", "description": "Alt key modifier bitmask." },
+    { "name": "META_MASK", "type": "Int", "description": "Meta key modifier bitmask." },
+    { "name": "ALT_GRAPH_MASK", "type": "Int", "description": "AltGraph key modifier bitmask." }
+  ]
+}

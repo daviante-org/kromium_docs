@@ -1,0 +1,17 @@
+{
+  "id": "kromium-clipboard",
+  "name": "KromiumClipboard",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.automation",
+  "summary": "Facade for clipboard and editing operations.",
+  "declaration": "interface KromiumClipboard",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    { "name": "copy", "signature": "fun copy()", "returnType": "Unit", "description": "Copies the current selection to the clipboard." },
+    { "name": "paste", "signature": "fun paste()", "returnType": "Unit", "description": "Pastes the clipboard content into the current focused element." },
+    { "name": "cut", "signature": "fun cut()", "returnType": "Unit", "description": "Cuts the current selection to the clipboard." },
+    { "name": "selectAll", "signature": "fun selectAll()", "returnType": "Unit", "description": "Selects all text/content in the current focused element." },
+    { "name": "undo", "signature": "fun undo()", "returnType": "Unit", "description": "Undoes the last editing action." },
+    { "name": "redo", "signature": "fun redo()", "returnType": "Unit", "description": "Redoes the last undone editing action." }
+  ]
+}

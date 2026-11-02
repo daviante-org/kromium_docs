@@ -1,0 +1,24 @@
+{
+  "id": "kromium-auth-listener",
+  "name": "KromiumAuthListener",
+  "kind": "interface",
+  "package": "org.daviante.kromium.api.network",
+  "summary": "Listener for handling HTTP Basic, Digest, or Proxy authentication challenges.",
+  "declaration": "fun interface KromiumAuthListener",
+  "since": "v1.0.0.150-b11",
+  "methods": [
+    {
+      "name": "onAuthRequired",
+      "signature": "fun onAuthRequired(request: KromiumAuthRequest): KromiumAuthResponse",
+      "returnType": "KromiumAuthResponse",
+      "description": "Called when an authentication challenge is received.",
+      "parameters": [
+        {
+          "name": "request",
+          "type": "KromiumAuthRequest",
+          "description": "The authentication challenge details."
+        }
+      ]
+    }
+  ]
+}
