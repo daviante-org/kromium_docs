@@ -114,7 +114,14 @@ class SearchService {
           },
         });
 
-        miniSearch.addAll(searchItems);
+        const seenIds = new Set<string>();
+        const uniqueItems = searchItems.filter((item) => {
+          if (seenIds.has(item.id)) return false;
+          seenIds.add(item.id);
+          return true;
+        });
+
+        miniSearch.addAll(uniqueItems);
         this.indexes.set(version, miniSearch);
       } finally {
         this.building.delete(version);
